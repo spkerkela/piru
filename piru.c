@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#define MENU_ITEM_COUNT 4
 
 SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL;
@@ -63,8 +62,8 @@ int main_menu()
   bool quit = false;
   SDL_Event e;
   int selected = START_GAME;
-  char *menu_items[MENU_ITEM_COUNT] = {"Start Game", "Show Intro", "Credits",
-                                       "Quit"};
+  char *menu_items[MAIN_MENU_ITEM_COUNT] = {"Start Game", "Show Intro", "Credits",
+                                            "Quit"};
 
   start_menu_music();
   while (!quit)
