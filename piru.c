@@ -21,16 +21,42 @@ enum MAIN_MENU_SELECTIONS
   MAIN_MENU_ITEM_COUNT
 };
 
-bool game_init()
+enum GAME_START_MODE
+{
+  NEW_GAME,
+  LOAD_GAME
+};
+
+bool load_file_exists()
+{
+  return false;
+}
+
+bool start_game(enum GAME_START_MODE start_mode)
 {
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
   return false;
 }
 
+bool game_init()
+{
+  stop_music();
+  if (load_file_exists())
+  {
+    return start_game(LOAD_GAME);
+  }
+  else
+  {
+    return start_game(NEW_GAME);
+  }
+}
+
 void show_intro()
 {
+  stop_music();
   printf("Amazing intro with cool effects.. Wow!\n");
+  start_menu_music();
 }
 
 void show_credits()
