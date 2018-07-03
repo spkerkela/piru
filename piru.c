@@ -29,11 +29,82 @@ enum GAME_START_MODE
 
 bool load_file_exists()
 {
-  return false;
+  return true;
+}
+
+void create_new_character()
+{
+  printf("Create a new character\n");
+}
+
+void select_character_menu()
+{
+  printf("Select character\n");
+  const int CHAR_COUNT = 5;
+  char *temp_characters[5] = {
+      "Char1",
+      "Char2",
+      "Char3",
+      "Char4",
+      "Create New"};
+  int selected = 0;
+  SDL_Event e;
+  bool in_character_select = true;
+  while (in_character_select)
+  {
+    while (SDL_PollEvent(&e) != 0)
+    {
+      if (e.type == SDL_KEYDOWN)
+      {
+        switch (e.key.keysym.sym)
+        {
+        case SDLK_UP:
+          selected--;
+          if (selected < 0)
+          {
+            selected = MAIN_MENU_ITEM_COUNT - 1;
+          }
+          break;
+        case SDLK_DOWN:
+          selected++;
+          if (selected > CHAR_COUNT)
+          {
+            selected = 0;
+          }
+          break;
+        case SDLK_RETURN:
+          if (selected == CHAR_COUNT)
+          {
+            create_new_character();
+          }
+          else
+          {
+            // Load selected char
+          }
+          in_character_select = false;
+          break;
+        case SDLK_ESCAPE:
+          return;
+        default:
+          break;
+        }
+        printf("%s\n", temp_characters[selected]);
+      }
+    }
+  }
 }
 
 bool start_game(enum GAME_START_MODE start_mode)
 {
+  switch (start_mode)
+  {
+  case LOAD_GAME:
+    select_character_menu();
+    break;
+  case NEW_GAME:
+    create_new_character();
+    break;
+  }
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
   return false;
