@@ -86,12 +86,12 @@ void create_new_character()
           selected--;
           if (selected < 0)
           {
-            selected = MAIN_MENU_ITEM_COUNT - 1;
+            selected = CHARACTER_CLASS_COUNT - 1;
           }
           break;
         case SDLK_DOWN:
           selected++;
-          if (selected >= CHARACTER_CLASS_COUNT)
+          if (selected >= CHARACTER_CLASS_COUNT - 1)
           {
             selected = 0;
           }
