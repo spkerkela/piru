@@ -272,6 +272,8 @@ int main_menu()
         printf("%s\n", menu_items[selected]);
       }
     }
+    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 0));
+    SDL_UpdateWindowSurface(gWindow);
   }
   stop_music();
   return 0;
