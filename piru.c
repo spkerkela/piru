@@ -9,11 +9,16 @@ SDL_Surface *gScreenSurface = NULL;
 
 enum CHARACTER_CLASS
 {
-  WARRIOR,
-  ROGUE,
   MAGE,
+  ROGUE,
+  WARRIOR,
   CHARACTER_CLASS_COUNT
 };
+
+char *character_class_str[CHARACTER_CLASS_COUNT] = {
+    "Mage",
+    "Rogue",
+    "Warrior"};
 
 enum ARMOR_CLASS
 {
@@ -61,9 +66,42 @@ bool load_file_exists()
 void create_new_character()
 {
   printf("Create a new character\n");
+  bool in_character_create = true;
+  SDL_Event e;
+  int selected = 0;
+  while (in_character_create)
+  {
+    while (SDL_PollEvent(&e) != 0)
+    {
+      if (e.type == SDL_KEYDOWN)
+      {
+        switch (e.key.keysym.sym)
+        {
+        case SDLK_UP:
+          selected--;
+          if (selected < 0)
+          {
+            selected = MAIN_MENU_ITEM_COUNT - 1;
+          }
+          break;
+        case SDLK_DOWN:
+          selected++;
+          if (selected >= CHARACTER_CLASS_COUNT)
+          {
+            selected = 0;
+          }
+          break;
+        case SDLK_RETURN:
+          in_character_create = false;
+          break;
+        }
+      }
+      printf("%s\n", character_class_str[selected]);
+    }
+  }
   gPlayer.level = 1;
-  gPlayer.character_class = WARRIOR;
-  gPlayer.armor_class = HEAVY;
+  gPlayer.character_class = selected;
+  gPlayer.armor_class = selected;
 }
 
 void select_character_menu()
