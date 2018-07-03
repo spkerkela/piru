@@ -1,5 +1,7 @@
-CC=cc
+UNAME := $(shell uname)
+CC=gcc
 C_FLAGS=-Wall -std=c99
+ifeq ($(UNAME), Darwin)
 SDL=SDL2
 FRAMEWORKS=-framework SDL2
 default: all
@@ -10,3 +12,16 @@ all: piru
 
 clean:
 	rm piru
+endif
+
+ifeq ($(UNAME), MINGW32_NT-6.2)
+COMPILER_FLAGS = -w -Wl,-subsystem,windows
+INCLUDE_PATHS = -IC:/mingw_dev_lib/include/SDL2 
+#INCLUDE_PATHS = -I/usr/local/x86_64-w64-mingw32/include/SDL2 -Dmain=SDL_main 
+LIBRARY_PATHS = -LC:/mingw_dev_lib/lib
+#LIBRARY_PATHS = -L/usr/local/x86_64-w64-mingw32/lib
+LINKER_FLAGS =-lmingw32 -lSDL2main -lSDL2
+piru: piru.c
+	$(CC) -o piru piru.c $(COMPILER_FLAGS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(LINKER_FLAGS) 
+all: piru
+endif
