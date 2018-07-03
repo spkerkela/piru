@@ -7,17 +7,26 @@
 SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL;
 
-enum PLAYER_CLASS
+enum CHARACTER_CLASS
 {
   WARRIOR,
   ROGUE,
   MAGE,
-  PLAYER_CLASS_COUNT
+  CHARACTER_CLASS_COUNT
+};
+
+enum ARMOR_CLASS
+{
+  LIGHT,
+  MEDIUM,
+  HEAVY,
+  ARMOR_CLASS_COUNT
 };
 
 typedef struct
 {
-  enum PLAYER_CLASS class;
+  enum CHARACTER_CLASS character_class;
+  enum ARMOR_CLASS armor_class;
   int level;
 } Player;
 
@@ -46,14 +55,15 @@ enum GAME_START_MODE
 
 bool load_file_exists()
 {
-  return true;
+  return false;
 }
 
 void create_new_character()
 {
   printf("Create a new character\n");
   gPlayer.level = 1;
-  gPlayer.class = WARRIOR;
+  gPlayer.character_class = WARRIOR;
+  gPlayer.armor_class = HEAVY;
 }
 
 void select_character_menu()
@@ -124,7 +134,7 @@ bool start_game(enum GAME_START_MODE start_mode)
     create_new_character();
     break;
   }
-  printf("level: %d class: %d", gPlayer.level, gPlayer.class);
+  printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
   return false;
