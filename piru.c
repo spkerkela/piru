@@ -6,6 +6,23 @@
 
 SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL;
+
+enum PLAYER_CLASS
+{
+  WARRIOR,
+  ROGUE,
+  MAGE,
+  PLAYER_CLASS_COUNT
+};
+
+typedef struct
+{
+  enum PLAYER_CLASS class;
+  int level;
+} Player;
+
+Player gPlayer;
+
 bool init_SDL() { return SDL_Init(SDL_INIT_EVERYTHING) >= 0; }
 
 void start_menu_music() { printf("Ominous music playing..\n"); }
@@ -35,6 +52,8 @@ bool load_file_exists()
 void create_new_character()
 {
   printf("Create a new character\n");
+  gPlayer.level = 1;
+  gPlayer.class = WARRIOR;
 }
 
 void select_character_menu()
@@ -105,6 +124,7 @@ bool start_game(enum GAME_START_MODE start_mode)
     create_new_character();
     break;
   }
+  printf("level: %d class: %d", gPlayer.level, gPlayer.class);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
   return false;
