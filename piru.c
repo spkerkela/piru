@@ -38,6 +38,9 @@ typedef struct
   enum CHARACTER_CLASS character_class;
   enum ARMOR_CLASS armor_class;
   int level;
+  int current_game_level;
+  int world_x;
+  int world_y;
 } Player;
 
 Player gPlayer;
@@ -91,7 +94,7 @@ void create_new_character()
           break;
         case SDLK_DOWN:
           selected++;
-          if (selected >= CHARACTER_CLASS_COUNT - 1)
+          if (selected > CHARACTER_CLASS_COUNT - 1)
           {
             selected = 0;
           }
@@ -166,6 +169,46 @@ void select_character_menu()
   }
 }
 
+void init_player_position()
+{
+  gPlayer.world_x = 0;
+  gPlayer.world_y = 0;
+  gPlayer.current_game_level = 0;
+}
+
+void draw_and_blit()
+{
+  SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 255));
+  SDL_UpdateWindowSurface(gWindow);
+}
+
+void run_game_loop(enum GAME_START_MODE start_mode)
+{
+  bool gameRunning = true;
+  SDL_Event e;
+  draw_and_blit();
+  while (gameRunning)
+  {
+    while (SDL_PollEvent(&e) != 0)
+    {
+      if (e.type == SDL_QUIT)
+      {
+        gameRunning = false;
+      }
+      else if (e.type == SDL_KEYDOWN)
+      {
+        switch (e.key.keysym.sym)
+        {
+        case SDLK_RETURN:
+          gameRunning = false;
+          break;
+        }
+      }
+    }
+    draw_and_blit();
+  }
+}
+
 bool start_game(enum GAME_START_MODE start_mode)
 {
   switch (start_mode)
@@ -178,6 +221,8 @@ bool start_game(enum GAME_START_MODE start_mode)
     break;
   }
   printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
+  init_player_position();
+  run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
   return false;
