@@ -13,8 +13,10 @@
 #include <unistd.h>
 
 SDL_Window *gWindow = NULL;
-SDL_Surface *gScreenSurface = NULL;
 SDL_Renderer *gRenderer = NULL;
+
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
 
 bool gGameRunning;
 bool gGamePaused;
@@ -276,8 +278,10 @@ void draw_and_blit()
   SDL_RenderClear(gRenderer);
 
   //Render texture to screen
+  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 95, (SCREEN_HEIGHT / 2) - 95, 150, 150};
+
   SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
-                 &gAnimations[0].frames[gAnimations[0].currentFrame], NULL);
+                 &gAnimations[0].frames[gAnimations[0].currentFrame], &playerRenderQuad);
 
   //Update screen
   SDL_RenderPresent(gRenderer);
@@ -472,7 +476,7 @@ int main(int argc, char const *argv[])
 
   gWindow =
       SDL_CreateWindow("Piru", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       640, 480, SDL_WINDOW_SHOWN);
+                       SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
   if (!gWindow)
   {
