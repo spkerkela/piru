@@ -152,7 +152,7 @@ bool load_animations()
 
 bool load_assets()
 {
-  ImageAsset playerSpriteSheet = load_image_asset("assets/player.png");
+  ImageAsset playerSpriteSheet = load_image_asset("assets/player2.png");
   gImageAssets[0] = playerSpriteSheet;
   load_animations();
 
