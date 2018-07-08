@@ -1,6 +1,7 @@
 #ifdef _WIN32
 #define SDL_MAIN_HANDLED
-#include <SDL.H>
+#include <SDL.h>
+#include <SDL_image.h>
 #else
 #include <SDL2/SDL.H>
 #include <SDL2/SDL_render.H>
