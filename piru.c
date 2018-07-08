@@ -43,10 +43,32 @@ enum ARMOR_CLASS
   ARMOR_CLASS_COUNT
 };
 
+enum DIRECTION
+{
+  SOUTH,
+  SOUTH_WEST_1,
+  SOUTH_WEST_2,
+  SOUTH_WEST_3,
+  WEST,
+  NORTH_WEST_1,
+  NORTH_WEST_2,
+  NORTH_WEST_3,
+  NORTH,
+  NORTH_EAST_1,
+  NORTH_EAST_2,
+  NORTH_EAST_3,
+  EAST,
+  SOUTH_EAST_1,
+  SOUTH_EAST_2,
+  SOUTH_EAST_3,
+  DIRECTION_COUNT
+};
+
 typedef struct
 {
   enum CHARACTER_CLASS character_class;
   enum ARMOR_CLASS armor_class;
+  enum DIRECTION direction;
   int level;
   int current_game_level;
   int world_x;
@@ -73,6 +95,7 @@ typedef struct
 
 ImageAsset gImageAssets[256];
 Animation gAnimations[256];
+Animation gPlayerAnimations[256];
 
 bool init_SDL()
 {
@@ -150,6 +173,26 @@ bool load_animations()
   gAnimations[0].rows = animationRows;
   gAnimations[0].speed = 1;
   gAnimations[0].image = playerSpriteSheet;
+
+  enum DIRECTION dir;
+  for (dir = SOUTH; dir < DIRECTION_COUNT; dir++)
+  {
+    int x;
+    for (x = 0; x < animationColumns; x++)
+    {
+      gPlayerAnimations[dir].currentFrame = 0;
+      gPlayerAnimations[dir].columns = animationColumns;
+      gPlayerAnimations[dir].rows = 1;
+      gPlayerAnimations[dir].speed = 1;
+      gPlayerAnimations[dir].image = playerSpriteSheet;
+
+      gPlayerAnimations[dir].frames[x].x = x * frameWidth;
+      gPlayerAnimations[dir].frames[x].y = dir * frameHeight;
+      gPlayerAnimations[dir].frames[x].w = frameWidth;
+      gPlayerAnimations[dir].frames[x].h = frameHeight;
+    }
+  }
+
   return true;
 }
 
@@ -270,6 +313,7 @@ void init_player_position()
   gPlayer.world_x = 0;
   gPlayer.world_y = 0;
   gPlayer.current_game_level = 0;
+  gPlayer.direction = SOUTH;
 }
 
 void draw_and_blit()
@@ -280,8 +324,11 @@ void draw_and_blit()
   //Render texture to screen
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 95, (SCREEN_HEIGHT / 2) - 95, 150, 150};
 
+  Animation currentPlayerAnimation = gPlayerAnimations[gPlayer.direction];
+
   SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
-                 &gAnimations[0].frames[gAnimations[0].currentFrame], &playerRenderQuad);
+                 &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
+                 &playerRenderQuad);
 
   //Update screen
   SDL_RenderPresent(gRenderer);
@@ -297,13 +344,62 @@ void draw_and_blit()
   */
 }
 
+void update_input()
+{
+  SDL_Event e;
+  while (SDL_PollEvent(&e) != 0)
+  {
+    if (e.type == SDL_QUIT)
+    {
+      gGameRunning = false;
+      break;
+    }
+    if (e.type == SDL_KEYDOWN)
+    {
+      switch (e.key.keysym.sym)
+      {
+      case SDLK_RETURN:
+        gGameRunning = false;
+        break;
+      case SDLK_ESCAPE:
+        gGamePaused = !gGamePaused;
+        break;
+      case SDLK_LEFT:
+        gPlayer.direction++;
+        if (gPlayer.direction >= DIRECTION_COUNT)
+        {
+          gPlayer.direction = SOUTH;
+        }
+        break;
+      case SDLK_RIGHT:
+        if (gPlayer.direction == SOUTH)
+        {
+          gPlayer.direction = SOUTH_EAST_3;
+        }
+        else
+        {
+          gPlayer.direction--;
+        }
+
+        break;
+      default:
+        break;
+      }
+    }
+  }
+}
+
 void update_animations()
 {
-  int animFrames = gAnimations[0].columns * gAnimations[0].rows;
-  gAnimations[0].currentFrame += 1;
-  if (gAnimations[0].currentFrame >= animFrames)
+  enum DIRECTION dir;
+  for (dir = SOUTH; dir < DIRECTION_COUNT; dir++)
   {
-    gAnimations[0].currentFrame = 0;
+    int animFrames = gPlayerAnimations[dir].columns;
+    gPlayerAnimations[dir].currentFrame += 1;
+    if (gPlayerAnimations[dir].currentFrame >= animFrames)
+    {
+      gPlayerAnimations[dir].currentFrame = 0;
+    }
   }
 }
 
@@ -312,36 +408,23 @@ void game_loop()
   if (!gGamePaused)
   {
     SDL_Delay(50);
+    update_input();
     update_animations();
   }
   else
   {
+
+    update_input();
   }
 }
 
 void run_game_loop(enum GAME_START_MODE start_mode)
 {
   gGameRunning = true;
-  SDL_Event e;
+  gGamePaused = false;
   draw_and_blit();
   while (gGameRunning)
   {
-    while (SDL_PollEvent(&e) != 0)
-    {
-      if (e.type == SDL_QUIT)
-      {
-        gGameRunning = false;
-      }
-      else if (e.type == SDL_KEYDOWN)
-      {
-        switch (e.key.keysym.sym)
-        {
-        case SDLK_RETURN:
-          gGameRunning = false;
-          break;
-        }
-      }
-    }
     game_loop();
     draw_and_blit();
   }
