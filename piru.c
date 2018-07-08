@@ -6,6 +6,7 @@
 #include <SDL2/SDL.H>
 #include <SDL2/SDL_render.H>
 #include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 #endif
 #include <stdbool.h>
 #include <stdio.h>
@@ -14,6 +15,7 @@
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
+TTF_Font *gFont = NULL;
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -175,6 +177,29 @@ bool load_animations()
   return true;
 }
 
+void draw_text(char *text, SDL_Color textColor, SDL_Rect *source, SDL_Rect *dest)
+{
+  SDL_Surface *textSurface = TTF_RenderText_Solid(gFont, text, textColor);
+  if (textSurface == NULL)
+  {
+    printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+  }
+  else
+  {
+    //Create texture from surface pixels
+    SDL_Texture *mTexture = NULL;
+    mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+    if (mTexture == NULL)
+    {
+      printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+    }
+    //Get rid of old surface
+    SDL_RenderCopy(gRenderer, mTexture, source, dest);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(mTexture);
+    mTexture = NULL;
+  }
+}
 bool load_assets()
 {
   ImageAsset playerSpriteSheet = load_image_asset("assets/player2.png");
@@ -186,7 +211,7 @@ bool load_assets()
 
 bool load_file_exists()
 {
-  return true;
+  return false;
 }
 
 void create_new_character()
@@ -449,16 +474,35 @@ bool game_init()
   }
 }
 
+void show_text_screen(char *text)
+{
+  bool show_credits = true;
+  SDL_Event e;
+  while (show_credits)
+  {
+    while (SDL_PollEvent(&e) != 0)
+    {
+      if (e.type == SDL_QUIT || e.type == SDL_KEYDOWN)
+      {
+        return;
+      }
+    }
+    SDL_RenderClear(gRenderer);
+
+    SDL_Color color = {255, 0, 0};
+    SDL_Rect dest = {10, 10, SCREEN_WIDTH, 200};
+    draw_text(text, color, NULL, &dest);
+
+    //Update screen
+    SDL_RenderPresent(gRenderer);
+  }
+}
+
 void show_intro()
 {
   stop_music();
-  printf("Amazing intro with cool effects.. Wow!\n");
+  show_text_screen("Amazing intro with cool effects.. Wow!");
   start_menu_music();
-}
-
-void show_credits()
-{
-  printf("Piru was made by Simo-Pekka Kerkelä!\n");
 }
 
 bool select_main_menu_item(enum MAIN_MENU_SELECTIONS selection)
@@ -471,7 +515,7 @@ bool select_main_menu_item(enum MAIN_MENU_SELECTIONS selection)
     show_intro();
     return false;
   case CREDITS:
-    show_credits();
+    show_text_screen("Piru was made by Simo-Pekka Kerkela!");
     return false;
   case QUIT:
     return true;
@@ -522,17 +566,34 @@ int main_menu()
         default:
           break;
         }
-        printf("%s\n", menu_items[selected]);
       }
     }
     //Clear screen
     SDL_RenderClear(gRenderer);
+
+    SDL_Color color = {255, 255, 0};
+    draw_text(menu_items[selected], color, NULL, NULL);
 
     //Update screen
     SDL_RenderPresent(gRenderer);
   }
   stop_music();
   return 0;
+}
+
+bool load_font()
+{
+  bool success = true;
+
+  //Open the font
+  gFont = TTF_OpenFont("font.ttf", 28);
+  if (gFont == NULL)
+  {
+    printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+    success = false;
+  }
+
+  return success;
 }
 
 int main(int argc, char const *argv[])
@@ -562,6 +623,16 @@ int main(int argc, char const *argv[])
   if (!(IMG_Init(imgFlags) & imgFlags))
   {
     printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+    return 1;
+  }
+  if (TTF_Init() == -1)
+  {
+    printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+    return 1;
+  }
+  if (!load_font())
+  {
+    printf("SDL_ttf could not load font! SDL_ttf Error: %s\n", TTF_GetError());
     return 1;
   }
   else

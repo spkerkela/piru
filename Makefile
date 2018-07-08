@@ -3,7 +3,7 @@ CC=gcc
 C_FLAGS=-Wall -std=c99
 ifeq ($(UNAME), Darwin)
 SDL=SDL2
-FRAMEWORKS=-framework SDL2 -framework SDL2_image
+FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf
 default: all
 piru: piru.c
 	$(CC) piru.c -o piru $(C_FLAGS) $(FRAMEWORKS)
