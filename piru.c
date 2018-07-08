@@ -48,7 +48,18 @@ typedef struct
 
 Player gPlayer;
 
-bool init_SDL() { return SDL_Init(SDL_INIT_EVERYTHING) >= 0; }
+typedef struct
+{
+  char *assetName;
+  SDL_Surface *surface;
+} ImageAsset;
+
+ImageAsset gImageAssets[256];
+
+bool init_SDL()
+{
+  return SDL_Init(SDL_INIT_EVERYTHING) >= 0;
+}
 
 void start_menu_music() { printf("Ominous music playing..\n"); }
 
@@ -68,6 +79,35 @@ enum GAME_START_MODE
   NEW_GAME,
   LOAD_GAME
 };
+
+ImageAsset load_image_asset(char *fileName)
+{
+  SDL_Surface *optimizedSurface = NULL;
+  SDL_Surface *loadedSurface = IMG_Load(fileName);
+  if (loadedSurface == NULL)
+  {
+    printf("Unable to load image %s! SDL_image Error: %s\n", fileName, IMG_GetError());
+  }
+  else
+  {
+    optimizedSurface = SDL_ConvertSurface(loadedSurface, gScreenSurface->format, 0);
+    if (optimizedSurface == NULL)
+    {
+      printf("Unable to optimize image %s! SDL Error: %s\n", fileName, SDL_GetError());
+    }
+    SDL_FreeSurface(loadedSurface);
+  }
+  ImageAsset asset;
+  asset.assetName = fileName;
+  asset.surface = optimizedSurface;
+  return asset;
+}
+
+bool load_assets()
+{
+  gImageAssets[0] = load_image_asset("assets/player.png");
+  return true;
+}
 
 bool load_file_exists()
 {
@@ -182,6 +222,9 @@ void init_player_position()
 void draw_and_blit()
 {
   SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 255));
+
+  SDL_BlitSurface(gImageAssets[0].surface, NULL, gScreenSurface, NULL);
+
   SDL_UpdateWindowSurface(gWindow);
 }
 
@@ -235,6 +278,7 @@ bool start_game(enum GAME_START_MODE start_mode)
     break;
   }
   printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
+  load_assets();
   init_player_position();
   run_game_loop(start_mode);
   printf("Started game..\n");
