@@ -3,6 +3,7 @@
 #include <SDL.H>
 #else
 #include <SDL2/SDL.H>
+#include <SDL2/SDL_render.H>
 #include <SDL2_image/SDL_image.h>
 #endif
 #include <stdbool.h>
@@ -12,8 +13,11 @@
 
 SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL;
+SDL_Renderer *gRenderer = NULL;
+
 bool gGameRunning;
 bool gGamePaused;
+SDL_Rect gPlayerSprites[8 * 16];
 
 enum CHARACTER_CLASS
 {
@@ -51,10 +55,21 @@ Player gPlayer;
 typedef struct
 {
   char *assetName;
-  SDL_Surface *surface;
+  SDL_Texture *texture;
 } ImageAsset;
 
+typedef struct
+{
+  SDL_Rect frames[1024];
+  int columns;
+  int rows;
+  int currentFrame;
+  ImageAsset image;
+  int speed;
+} Animation;
+
 ImageAsset gImageAssets[256];
+Animation gAnimations[256];
 
 bool init_SDL()
 {
@@ -82,7 +97,7 @@ enum GAME_START_MODE
 
 ImageAsset load_image_asset(char *fileName)
 {
-  SDL_Surface *optimizedSurface = NULL;
+  SDL_Texture *texture = NULL;
   SDL_Surface *loadedSurface = IMG_Load(fileName);
   if (loadedSurface == NULL)
   {
@@ -90,8 +105,8 @@ ImageAsset load_image_asset(char *fileName)
   }
   else
   {
-    optimizedSurface = SDL_ConvertSurface(loadedSurface, gScreenSurface->format, 0);
-    if (optimizedSurface == NULL)
+    texture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+    if (texture == NULL)
     {
       printf("Unable to optimize image %s! SDL Error: %s\n", fileName, SDL_GetError());
     }
@@ -99,13 +114,48 @@ ImageAsset load_image_asset(char *fileName)
   }
   ImageAsset asset;
   asset.assetName = fileName;
-  asset.surface = optimizedSurface;
+  asset.texture = texture;
   return asset;
+}
+
+bool load_animations()
+{
+  ImageAsset playerSpriteSheet = gImageAssets[0];
+  int width;
+  int height;
+  SDL_QueryTexture(playerSpriteSheet.texture, NULL, NULL, &width, &height);
+  printf("%d,%d\n", width, height);
+  int animationColumns = 8;
+  int animationRows = 16;
+  int frameWidth = width / animationColumns;
+  int frameHeight = height / animationRows;
+  int i, x, y;
+  i = 0;
+  for (y = 0; y < animationRows; y++)
+  {
+    for (x = 0; x < animationColumns; x++)
+    {
+      gAnimations[0].frames[i].x = x * frameWidth;
+      gAnimations[0].frames[i].y = y * frameHeight;
+      gAnimations[0].frames[i].w = frameWidth;
+      gAnimations[0].frames[i].h = frameHeight;
+      i++;
+    }
+  }
+  gAnimations[0].currentFrame = 0;
+  gAnimations[0].columns = animationColumns;
+  gAnimations[0].rows = animationRows;
+  gAnimations[0].speed = 1;
+  gAnimations[0].image = playerSpriteSheet;
+  return true;
 }
 
 bool load_assets()
 {
-  gImageAssets[0] = load_image_asset("assets/player.png");
+  ImageAsset playerSpriteSheet = load_image_asset("assets/player.png");
+  gImageAssets[0] = playerSpriteSheet;
+  load_animations();
+
   return true;
 }
 
@@ -221,17 +271,43 @@ void init_player_position()
 
 void draw_and_blit()
 {
-  SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 255));
+  //Clear screen
+  SDL_RenderClear(gRenderer);
 
+  //Render texture to screen
+  SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
+                 &gAnimations[0].frames[gAnimations[0].currentFrame], NULL);
+
+  //Update screen
+  SDL_RenderPresent(gRenderer);
+
+  /*
+  SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 255));
   SDL_BlitSurface(gImageAssets[0].surface, NULL, gScreenSurface, NULL);
+  SDL_Rect renderQuad = {0, 0, gScreenSurface->w, gScreenSurface->h};
+
+  SDL_RenderCopy(gRenderer, gAnimations[0].image.surface, &gAnimations[0].frames[gAnimations[0].currentFrame], &renderQuad);
 
   SDL_UpdateWindowSurface(gWindow);
+  */
+}
+
+void update_animations()
+{
+  int animFrames = gAnimations[0].columns * gAnimations[0].rows;
+  gAnimations[0].currentFrame += 1;
+  if (gAnimations[0].currentFrame >= animFrames)
+  {
+    gAnimations[0].currentFrame = 0;
+  }
 }
 
 void game_loop()
 {
   if (!gGamePaused)
   {
+    SDL_Delay(50);
+    update_animations();
   }
   else
   {
@@ -375,8 +451,11 @@ int main_menu()
         printf("%s\n", menu_items[selected]);
       }
     }
-    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 0));
-    SDL_UpdateWindowSurface(gWindow);
+    //Clear screen
+    SDL_RenderClear(gRenderer);
+
+    //Update screen
+    SDL_RenderPresent(gRenderer);
   }
   stop_music();
   return 0;
@@ -399,19 +478,21 @@ int main(int argc, char const *argv[])
     printf("%s", SDL_GetError());
     return 1;
   }
+  gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (!gRenderer)
+  {
+    printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+    return 1;
+  }
   int imgFlags = IMG_INIT_PNG;
   if (!(IMG_Init(imgFlags) & imgFlags))
   {
     printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+    return 1;
   }
   else
   {
-    gScreenSurface = SDL_GetWindowSurface(gWindow);
-    if (!gScreenSurface)
-    {
-      printf("%s", SDL_GetError());
-      return 1;
-    }
+    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 0);
 
     srand(SDL_GetTicks());
 
