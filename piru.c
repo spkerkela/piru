@@ -3,6 +3,7 @@
 #include <SDL.H>
 #else
 #include <SDL2/SDL.H>
+#include <SDL2_image/SDL_image.h>
 #endif
 #include <stdbool.h>
 #include <stdio.h>
@@ -354,21 +355,29 @@ int main(int argc, char const *argv[])
     printf("%s", SDL_GetError());
     return 1;
   }
-  gScreenSurface = SDL_GetWindowSurface(gWindow);
-  if (!gScreenSurface)
+  int imgFlags = IMG_INIT_PNG;
+  if (!(IMG_Init(imgFlags) & imgFlags))
   {
-    printf("%s", SDL_GetError());
-    return 1;
+    printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
   }
+  else
+  {
+    gScreenSurface = SDL_GetWindowSurface(gWindow);
+    if (!gScreenSurface)
+    {
+      printf("%s", SDL_GetError());
+      return 1;
+    }
 
-  srand(SDL_GetTicks());
+    srand(SDL_GetTicks());
 
-  printf("Hello Piru\n");
-  printf("%d\n", rand());
+    printf("Hello Piru\n");
+    printf("%d\n", rand());
 
-  main_menu();
+    main_menu();
 
-  SDL_DestroyWindow(gWindow);
-  SDL_Quit();
-  return 0;
+    SDL_DestroyWindow(gWindow);
+    SDL_Quit();
+    return 0;
+  }
 }
