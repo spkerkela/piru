@@ -11,6 +11,8 @@
 
 SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL;
+bool gGameRunning;
+bool gGamePaused;
 
 enum CHARACTER_CLASS
 {
@@ -182,29 +184,40 @@ void draw_and_blit()
   SDL_UpdateWindowSurface(gWindow);
 }
 
+void game_loop()
+{
+  if (!gGamePaused)
+  {
+  }
+  else
+  {
+  }
+}
+
 void run_game_loop(enum GAME_START_MODE start_mode)
 {
-  bool gameRunning = true;
+  gGameRunning = true;
   SDL_Event e;
   draw_and_blit();
-  while (gameRunning)
+  while (gGameRunning)
   {
     while (SDL_PollEvent(&e) != 0)
     {
       if (e.type == SDL_QUIT)
       {
-        gameRunning = false;
+        gGameRunning = false;
       }
       else if (e.type == SDL_KEYDOWN)
       {
         switch (e.key.keysym.sym)
         {
         case SDLK_RETURN:
-          gameRunning = false;
+          gGameRunning = false;
           break;
         }
       }
     }
+    game_loop();
     draw_and_blit();
   }
 }
