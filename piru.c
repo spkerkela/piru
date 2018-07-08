@@ -437,6 +437,18 @@ void game_loop()
 
 typedef struct
 {
+  char f;
+  char h;
+  short g;
+  int x;
+  int y;
+  struct PathNode *parent;
+  struct PathNode *children[8];
+  struct PathNode *next_node;
+} PathNode;
+
+typedef struct
+{
   int x;
   int y;
   int monster_id;
