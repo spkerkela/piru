@@ -94,7 +94,6 @@ typedef struct
 } Animation;
 
 ImageAsset gImageAssets[256];
-Animation gAnimations[256];
 Animation gPlayerAnimations[256];
 
 bool init_SDL()
@@ -155,25 +154,6 @@ bool load_animations()
   int animationRows = 16;
   int frameWidth = width / animationColumns;
   int frameHeight = height / animationRows;
-  int i, x, y;
-  i = 0;
-  for (y = 0; y < animationRows; y++)
-  {
-    for (x = 0; x < animationColumns; x++)
-    {
-      gAnimations[0].frames[i].x = x * frameWidth;
-      gAnimations[0].frames[i].y = y * frameHeight;
-      gAnimations[0].frames[i].w = frameWidth;
-      gAnimations[0].frames[i].h = frameHeight;
-      i++;
-    }
-  }
-  gAnimations[0].currentFrame = 0;
-  gAnimations[0].columns = animationColumns;
-  gAnimations[0].rows = animationRows;
-  gAnimations[0].speed = 1;
-  gAnimations[0].image = playerSpriteSheet;
-
   enum DIRECTION dir;
   for (dir = SOUTH; dir < DIRECTION_COUNT; dir++)
   {
@@ -185,7 +165,6 @@ bool load_animations()
       gPlayerAnimations[dir].rows = 1;
       gPlayerAnimations[dir].speed = 1;
       gPlayerAnimations[dir].image = playerSpriteSheet;
-
       gPlayerAnimations[dir].frames[x].x = x * frameWidth;
       gPlayerAnimations[dir].frames[x].y = dir * frameHeight;
       gPlayerAnimations[dir].frames[x].w = frameWidth;
@@ -207,7 +186,7 @@ bool load_assets()
 
 bool load_file_exists()
 {
-  return false;
+  return true;
 }
 
 void create_new_character()
@@ -249,6 +228,19 @@ void create_new_character()
   gPlayer.level = 1;
   gPlayer.character_class = selected;
   gPlayer.armor_class = selected;
+}
+
+void render_select_character_screen(int selected, char *character_names[], int char_count)
+{
+  //Clear screen
+  SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+  SDL_RenderClear(gRenderer);
+  SDL_Rect fillRect = {SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+  SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 0);
+  SDL_RenderFillRect(gRenderer, &fillRect);
+
+  //Render texture to screen
+  SDL_RenderPresent(gRenderer);
 }
 
 void select_character_menu()
@@ -305,6 +297,7 @@ void select_character_menu()
         printf("%s\n", temp_characters[selected]);
       }
     }
+    render_select_character_screen(selected, temp_characters, CHAR_COUNT);
   }
 }
 
@@ -322,7 +315,10 @@ void draw_and_blit()
   SDL_RenderClear(gRenderer);
 
   //Render texture to screen
-  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 95, (SCREEN_HEIGHT / 2) - 95, 150, 150};
+  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 95,
+                               (SCREEN_HEIGHT / 2) - 95,
+                               150,
+                               150};
 
   Animation currentPlayerAnimation = gPlayerAnimations[gPlayer.direction];
 
@@ -332,16 +328,6 @@ void draw_and_blit()
 
   //Update screen
   SDL_RenderPresent(gRenderer);
-
-  /*
-  SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 255, 0, 255));
-  SDL_BlitSurface(gImageAssets[0].surface, NULL, gScreenSurface, NULL);
-  SDL_Rect renderQuad = {0, 0, gScreenSurface->w, gScreenSurface->h};
-
-  SDL_RenderCopy(gRenderer, gAnimations[0].image.surface, &gAnimations[0].frames[gAnimations[0].currentFrame], &renderQuad);
-
-  SDL_UpdateWindowSurface(gWindow);
-  */
 }
 
 void update_input()
@@ -580,7 +566,7 @@ int main(int argc, char const *argv[])
   }
   else
   {
-    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 0);
+    SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 
     srand(SDL_GetTicks());
 
