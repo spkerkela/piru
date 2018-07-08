@@ -247,7 +247,13 @@ void create_new_character()
           break;
         }
       }
-      printf("%s\n", character_class_str[selected]);
+      SDL_RenderClear(gRenderer);
+
+      SDL_Color color = {255, 255, 0};
+      draw_text(character_class_str[selected], color, NULL, NULL);
+
+      //Update screen
+      SDL_RenderPresent(gRenderer);
     }
   }
   gPlayer.level = 1;
