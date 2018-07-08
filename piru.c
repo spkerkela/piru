@@ -435,10 +435,32 @@ void game_loop()
   }
 }
 
+typedef struct
+{
+  int x;
+  int y;
+  int monster_id;
+  int item_id;
+  int object_id;
+  int player_id;
+} MouseCursor;
+
+MouseCursor gCursor;
+
+void init_cursor()
+{
+  SDL_GetMouseState(&gCursor.x, &gCursor.y);
+  gCursor.monster_id = -1;
+  gCursor.item_id = -1;
+  gCursor.object_id = -1;
+  gCursor.player_id = -1;
+}
+
 void run_game_loop(enum GAME_START_MODE start_mode)
 {
   gGameRunning = true;
   gGamePaused = false;
+  init_cursor();
   draw_and_blit();
   while (gGameRunning)
   {
