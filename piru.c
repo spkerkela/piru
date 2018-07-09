@@ -9,6 +9,7 @@
 #include <SDL2_ttf/SDL_ttf.h>
 #endif
 #include <stdbool.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -65,6 +66,75 @@ enum DIRECTION
   SOUTH_EAST_3,
   DIRECTION_COUNT
 };
+
+char *direction_str[DIRECTION_COUNT] = {
+    "SOUTH",
+    "SOUTH_WEST_1",
+    "SOUTH_WEST_2",
+    "SOUTH_WEST_3",
+    "WEST",
+    "NORTH_WEST_1",
+    "NORTH_WEST_2",
+    "NORTH_WEST_3",
+    "NORTH",
+    "NORTH_EAST_1",
+    "NORTH_EAST_2",
+    "NORTH_EAST_3",
+    "EAST",
+    "SOUTH_EAST_1",
+    "SOUTH_EAST_2",
+    "SOUTH_EAST_3"};
+
+enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
+{
+  const double step = 360.0 / DIRECTION_COUNT;
+  double angle = -atan2((double)y2 - (double)y1, (double)x2 - (double)x1) * 180 / M_PI;
+  if (angle >= 0)
+  {
+    enum DIRECTION dir = EAST;
+    double start = -step / 2;
+    while (true)
+    {
+
+      if (angle < step + start)
+      {
+        return dir;
+      }
+      start += step;
+      --dir;
+
+      if (start > 1000.0)
+      {
+        break;
+      }
+    }
+  }
+  else
+  {
+    enum DIRECTION dir = EAST;
+    double start = step / 2;
+    while (true)
+    {
+      if (angle > (start - step))
+      {
+        return dir;
+      }
+      start -= step;
+      dir++;
+      if (dir >= DIRECTION_COUNT)
+      {
+        dir = SOUTH;
+      }
+
+      if (start < -1000.0)
+      {
+        break;
+      }
+    }
+  }
+
+  return SOUTH;
+}
 
 typedef struct
 {
@@ -404,6 +474,9 @@ void update_input()
       }
     }
   }
+  int mx, my;
+  SDL_GetMouseState(&mx, &my);
+  gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
 }
 
 void update_animations()
