@@ -88,7 +88,7 @@ char *direction_str[DIRECTION_COUNT] = {
 
 enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
 {
-  const double step = 360.0 / DIRECTION_COUNT;
+  static const double step = 360.0 / DIRECTION_COUNT;
   double angle = -atan2((double)y2 - (double)y1, (double)x2 - (double)x1) * 180 / M_PI;
   if (angle >= 0)
   {
