@@ -332,7 +332,7 @@ void create_new_character()
   gPlayer.armor_class = selected;
 }
 
-void render_select_character_screen(int selected, char *character_names[], int char_count)
+void render_select_character_screen(const int selected, const char *character_names[], int char_count)
 {
   //Clear screen
   SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
@@ -348,8 +348,8 @@ void render_select_character_screen(int selected, char *character_names[], int c
 void select_character_menu()
 {
   printf("Select character\n");
-  const int CHAR_COUNT = 5;
-  char *temp_characters[5] = {
+  static const int CHAR_COUNT = 5;
+  static const char *temp_characters[5] = {
       "Char1",
       "Char2",
       "Char3",
@@ -710,12 +710,12 @@ bool load_font()
   return success;
 }
 
-int main(int argc, char const *argv[])
+bool init()
 {
   if (!init_SDL())
   {
     printf("%s", SDL_GetError());
-    return 1;
+    return false;
   }
 
   gWindow =
@@ -725,43 +725,48 @@ int main(int argc, char const *argv[])
   if (!gWindow)
   {
     printf("%s", SDL_GetError());
-    return 1;
+    return false;
   }
   gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (!gRenderer)
   {
     printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-    return 1;
+    return false;
   }
   int imgFlags = IMG_INIT_PNG;
   if (!(IMG_Init(imgFlags) & imgFlags))
   {
     printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-    return 1;
+    return false;
   }
   if (TTF_Init() == -1)
   {
     printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-    return 1;
+    return false;
   }
   if (!load_font())
   {
     printf("SDL_ttf could not load font! SDL_ttf Error: %s\n", TTF_GetError());
-    return 1;
+    return false;
   }
-  else
+  return true;
+}
+
+int main(int argc, char const *argv[])
+{
+  if (init())
   {
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
-
     srand(SDL_GetTicks());
-
     printf("Hello Piru\n");
     printf("%d\n", rand());
-
     main_menu();
-
     SDL_DestroyWindow(gWindow);
     SDL_Quit();
     return 0;
+  }
+  else
+  {
+    return 1;
   }
 }
