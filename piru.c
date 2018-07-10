@@ -21,6 +21,11 @@ TTF_Font *gFont = NULL;
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
+#define DUNGEON_SIZE 112
+#define TILE_WIDTH 32
+#define TILE_HEIGHT 32
+
+char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 
 bool gGameRunning;
 bool gGamePaused;
@@ -85,6 +90,36 @@ char *direction_str[DIRECTION_COUNT] = {
     "SOUTH_EAST_1",
     "SOUTH_EAST_2",
     "SOUTH_EAST_3"};
+
+typedef struct
+{
+  int x;
+  int y;
+} Point;
+
+Point cartesian_to_isometric(const Point cartesian_point)
+{
+  Point isometric_point;
+  isometric_point.x = cartesian_point.x - cartesian_point.y;
+  isometric_point.y = (cartesian_point.x + cartesian_point.y) / 2;
+  return isometric_point;
+}
+
+Point isometric_to_cartesian(const Point isometric_point)
+{
+  Point cartesian_point;
+  cartesian_point.x = (2 * isometric_point.y + isometric_point.x) / 2;
+  cartesian_point.y = (2 * isometric_point.y - isometric_point.x) / 2;
+  return cartesian_point;
+}
+
+Point get_tile_coordinates(const Point cartesian_point)
+{
+  Point tile_coordinates;
+  tile_coordinates.x = cartesian_point.x / TILE_WIDTH;
+  tile_coordinates.y = cartesian_point.y / TILE_HEIGHT;
+  return tile_coordinates;
+}
 
 enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
 {
@@ -168,6 +203,25 @@ typedef struct
 
 ImageAsset gImageAssets[256];
 Animation gPlayerAnimations[256];
+
+void create_dungeon()
+{
+  int x, y;
+  for (x = 0; x < DUNGEON_SIZE; x++)
+  {
+    for (y = 0; y < DUNGEON_SIZE; y++)
+    {
+      if (x == 0 || x == DUNGEON_SIZE - 1 || y == 0 || y == DUNGEON_SIZE - 1)
+      {
+        gDungeon[y][x] = 'w';
+      }
+      else
+      {
+        gDungeon[y][x] = 'f';
+      }
+    }
+  }
+}
 
 bool init_SDL()
 {
@@ -411,10 +465,46 @@ void init_player_position()
   gPlayer.direction = SOUTH;
 }
 
+void draw_dungeon()
+{
+  int x, y;
+  Point isometric_point, cartesian_point;
+  for (x = 0; x < DUNGEON_SIZE; x++)
+  {
+    for (y = 0; y < DUNGEON_SIZE; y++)
+    {
+      cartesian_point.x = x * TILE_WIDTH;
+      cartesian_point.y = y * TILE_HEIGHT;
+      isometric_point = cartesian_to_isometric(cartesian_point);
+
+      //Render texture to screen
+
+      if (gDungeon[y][x] == 'w')
+      {
+        SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 0);
+      }
+      if (gDungeon[y][x] == 'f')
+      {
+        SDL_SetRenderDrawColor(gRenderer, 0, 255, 0, 0);
+      }
+
+      SDL_Rect fillRect = {isometric_point.x, isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
+      SDL_RenderFillRect(gRenderer, &fillRect);
+
+      SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
+      SDL_Rect fillRect2 = {64, 105, 32, 32};
+      SDL_RenderFillRect(gRenderer, &fillRect2);
+    }
+  }
+}
+
 void draw_and_blit()
 {
   //Clear screen
+  SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
   SDL_RenderClear(gRenderer);
+
+  draw_dungeon();
 
   //Render texture to screen
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 95,
@@ -478,6 +568,12 @@ void update_input()
   int mx, my;
   SDL_GetMouseState(&mx, &my);
   gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
+  Point mouse_point;
+  mouse_point.x = mx;
+  mouse_point.y = my;
+  Point tile_coordinates = get_tile_coordinates(mouse_point);
+  printf("MOUSEPOINT(%d, %d)\n", mouse_point.x, mouse_point.y);
+  printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
 }
 
 void update_animations()
@@ -569,6 +665,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
   load_assets();
   init_player_position();
+  create_dungeon();
   run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
@@ -683,6 +780,7 @@ int main_menu()
       }
     }
     //Clear screen
+    SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
     SDL_RenderClear(gRenderer);
 
     SDL_Color color = {255, 255, 0};
