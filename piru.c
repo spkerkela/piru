@@ -22,8 +22,8 @@ TTF_Font *gFont = NULL;
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define DUNGEON_SIZE 112
-#define TILE_WIDTH 32
-#define TILE_HEIGHT 32
+#define TILE_WIDTH 64
+#define TILE_HEIGHT 64
 
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 
@@ -221,6 +221,8 @@ void create_dungeon()
       }
     }
   }
+
+  gDungeon[3][5] = 'w';
 }
 
 bool init_SDL()
@@ -327,8 +329,13 @@ void draw_text(char *text, SDL_Color textColor, SDL_Rect *source, SDL_Rect *dest
 }
 bool load_assets()
 {
+  int asset_index = 0;
   ImageAsset playerSpriteSheet = load_image_asset("assets/player2.png");
-  gImageAssets[0] = playerSpriteSheet;
+  ImageAsset grovelSpriteSheet = load_image_asset("assets/dirt_E.png");
+  ImageAsset stoneSpriteSheet = load_image_asset("assets/stone_N.png");
+  gImageAssets[asset_index++] = playerSpriteSheet;
+  gImageAssets[asset_index++] = grovelSpriteSheet;
+  gImageAssets[asset_index++] = stoneSpriteSheet;
   load_animations();
 
   return true;
@@ -469,31 +476,34 @@ void draw_dungeon()
 {
   int x, y;
   Point isometric_point, cartesian_point;
-  for (x = 0; x < DUNGEON_SIZE; x++)
+  ImageAsset asset;
+  for (y = 0; y < DUNGEON_SIZE; y++)
   {
-    for (y = 0; y < DUNGEON_SIZE; y++)
+    for (x = 0; x < DUNGEON_SIZE; x++)
     {
-      cartesian_point.x = x * TILE_WIDTH;
-      cartesian_point.y = y * TILE_HEIGHT;
+      cartesian_point.x = x * TILE_WIDTH / 2;
+      cartesian_point.y = y * TILE_HEIGHT / 2;
       isometric_point = cartesian_to_isometric(cartesian_point);
 
       //Render texture to screen
 
       if (gDungeon[y][x] == 'w')
       {
-        SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 0);
+        asset = gImageAssets[2];
       }
       if (gDungeon[y][x] == 'f')
       {
-        SDL_SetRenderDrawColor(gRenderer, 0, 255, 0, 0);
+        asset = gImageAssets[1];
       }
-
-      SDL_Rect fillRect = {isometric_point.x, isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
-      SDL_RenderFillRect(gRenderer, &fillRect);
+      SDL_Rect fillRect = {isometric_point.x,
+                           isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
+      SDL_Rect drawRect = {
+          0, 64, 64, 64};
+      SDL_RenderCopy(gRenderer, asset.texture,
+                     &drawRect,
+                     &fillRect);
 
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
-      SDL_Rect fillRect2 = {64, 105, 32, 32};
-      SDL_RenderFillRect(gRenderer, &fillRect2);
     }
   }
 }
