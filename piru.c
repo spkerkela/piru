@@ -22,6 +22,8 @@ TTF_Font *gFont = NULL;
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define DUNGEON_SIZE 112
+#define MAX_NODES 300
+#define MAX_PATH_LENGTH 25
 const int TILE_WIDTH = 64;
 const int TILE_HEIGHT = 32;
 const int TILE_WIDTH_HALF = TILE_WIDTH / 2;
@@ -186,6 +188,7 @@ typedef struct
   int current_game_level;
   int world_x;
   int world_y;
+  char path[MAX_PATH_LENGTH];
 } Player;
 
 Player gPlayer;
@@ -211,7 +214,8 @@ Animation gPlayerAnimations[256];
 
 bool tile_is_blocked(const Point p)
 {
-  return gDungeon[p.y][p.x];
+  printf("received: %d, %d, %d\n", p.x, p.y, gDungeonBlockTable[p.y][p.x]);
+  return gDungeonBlockTable[p.y][p.x];
 }
 
 void create_dungeon()
@@ -229,6 +233,7 @@ void create_dungeon()
       else
       {
         gDungeon[y][x] = 'f';
+        gDungeonBlockTable[y][x] = false;
       }
     }
   }
@@ -250,8 +255,6 @@ typedef struct PathNode
   struct PathNode *next_node;
 } PathNode;
 
-#define MAX_NODES 300
-#define MAX_PATH_LENGTH 25
 PathNode pre_allocated_nodes[MAX_NODES];
 int path_nodes_in_use;
 
@@ -272,6 +275,7 @@ PathNode *get_new_node()
 {
   if (path_nodes_in_use >= MAX_NODES)
   {
+    printf("Too many nodes!!\n");
     return NULL;
   }
   else
@@ -519,14 +523,21 @@ bool path_get_path(PathNode *path, const Point from)
 
   for (i = 0; i < 8; i++)
   {
+    printf("iteration %d\n", i + 1);
     next_destination.x = path->x + movement_directions_x[i];
     next_destination.y = path->y + movement_directions_y[i];
-    if (path_parent_path(path, next_destination, from))
+    printf("sending: %d %d\n", next_destination.x, next_destination.y);
+    if (!tile_is_blocked(next_destination))
     {
-      // TODO: wat
-      return true;
+      if (path_parent_path(path, next_destination, from))
+      {
+        // TODO: wat
+        return true;
+      }
+      printf("Damn, tile blocked\n");
     }
   }
+  printf("Returning false\n");
   return false;
 }
 
@@ -542,6 +553,11 @@ bool find_path(const Point source, const Point destination, Path out_path)
   bool path_is_full;
   int *step_ptr;
   char step;
+
+  if (destination.x < 0 || destination.y < 0)
+  {
+    return false;
+  }
 
   path_nodes_in_use = 0;
   distance_sorted_frontier_list = get_new_node();
@@ -563,10 +579,12 @@ bool find_path(const Point source, const Point destination, Path out_path)
     next_node = get_next_path_node();
     if (!next_node)
     {
+      printf("Failed to get node\n");
       return false;
     }
     if (next_node->x == destination.x && next_node->y == destination.y)
     {
+      printf("found result!\n");
       break;
     }
     if (!path_get_path(next_node, destination))
@@ -579,6 +597,7 @@ bool find_path(const Point source, const Point destination, Path out_path)
   path_length = 0;
   if (*previous_node)
   {
+    printf("Starting to create path\n");
     while (true)
     {
       path_is_full = path_length == MAX_PATH_LENGTH;
@@ -606,6 +625,7 @@ bool find_path(const Point source, const Point destination, Path out_path)
     {
       step = *step_ptr;
       --step_ptr;
+      printf("inserting into out_path\n");
       out_path[result++] = step;
     } while (result < path_length);
   }
@@ -780,6 +800,7 @@ void create_new_character()
   gPlayer.level = 1;
   gPlayer.character_class = selected;
   gPlayer.armor_class = selected;
+  memset(gPlayer.path, -1, 25);
 }
 
 void render_select_character_screen(const int selected, const char *character_names[], int char_count)
@@ -855,8 +876,8 @@ void select_character_menu()
 
 void init_player_position()
 {
-  gPlayer.world_x = 0;
-  gPlayer.world_y = 0;
+  gPlayer.world_x = 1;
+  gPlayer.world_y = 1;
   gPlayer.current_game_level = 0;
   gPlayer.direction = SOUTH;
 }
@@ -978,9 +999,16 @@ void update_input()
   mouse_point.x = mx - (SCREEN_WIDTH / 2);
   mouse_point.y = my - (SCREEN_HEIGHT / 2);
   Point tile_coordinates = isometric_to_cartesian(mouse_point);
-  printf("MOUSEPOINT(%d, %d)\n", mouse_point.x, mouse_point.y);
-  printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
+  //printf("MOUSEPOINT(%d, %d)\n", mouse_point.x, mouse_point.y);
+  //printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
   selectedTile = tile_coordinates;
+  Point player_position = {gPlayer.world_x, gPlayer.world_y};
+  if (find_path(player_position, selectedTile, gPlayer.path))
+  {
+    printf("FOUND PATH!!!\n");
+    printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
+    printf("PLAYER POSITION(%d, %d)\n", player_position.x, player_position.y);
+  }
 }
 
 void update_animations()
