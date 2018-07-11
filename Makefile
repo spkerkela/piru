@@ -1,6 +1,6 @@
 UNAME := $(shell uname)
 CC=gcc
-C_FLAGS=-Wall -std=c99
+C_FLAGS=-Wall -std=c99 -g
 ifeq ($(UNAME), Darwin)
 SDL=SDL2
 FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf

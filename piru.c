@@ -214,7 +214,6 @@ Animation gPlayerAnimations[256];
 
 bool tile_is_blocked(const Point p)
 {
-  printf("received: %d, %d, %d\n", p.x, p.y, gDungeonBlockTable[p.y][p.x]);
   return gDungeonBlockTable[p.y][p.x];
 }
 
@@ -285,6 +284,10 @@ PathNode *get_new_node()
     return new_node;
   }
 }
+bool path_solid_pieces(PathNode *path, int a, int b)
+{
+  return true;
+}
 void path_next_node(PathNode *path)
 {
   PathNode *current;
@@ -311,16 +314,6 @@ char get_heuristic_cost(const Point source, const Point destination)
 
   int delta_x = abs(source.x - destination.x);
   int delta_y = abs(source.y - destination.y);
-  /*
-  int min_delta;
-  min_delta = delta_x;
-  if (delta_x >= delta_y)
-  {
-    min_delta = delta_y;
-    if (delta_x > delta_y)
-      delta_y = delta_x;
-  }
-  */
   return 2 * (delta_x + delta_y);
 }
 
@@ -333,12 +326,17 @@ PathNode *get_next_path_node()
     result->next_node = visited_nodes_list->next_node;
     visited_nodes_list->next_node = result;
   }
+  else
+  {
+    printf("Failed \n");
+  }
   return result;
 }
 
 PathNode *get_frontier_node(const Point point)
 {
-  PathNode *result = distance_sorted_frontier_list;
+  PathNode *result;
+  result = distance_sorted_frontier_list;
   do
   {
     result = result->next_node;
@@ -348,7 +346,8 @@ PathNode *get_frontier_node(const Point point)
 
 PathNode *get_visited_node(const Point point)
 {
-  PathNode *result = visited_nodes_list;
+  PathNode *result;
+  result = visited_nodes_list;
   do
   {
     result = result->next_node;
@@ -401,7 +400,7 @@ void path_set_coords(PathNode *path)
       if (old_path->g_movement_cost + path_check_equal(old_path, p) <
           active_path->g_movement_cost)
       {
-        //if (path_solid_pieces(old_path, active_path->x, active_path->y))
+        if (path_solid_pieces(old_path, active_path->x, active_path->y))
         {
           active_path->parent = old_path;
           Point p2 = {active_path->x, active_path->y};
@@ -427,10 +426,13 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
   PathNode **path_child_pointer;
 
   char new_heuristic;
+  PathNode *visited_node;
 
   next_g_movement_cost = path->g_movement_cost + path_check_equal(path, next_destination);
 
-  PathNode *next_frontier = get_frontier_node(next_destination);
+  PathNode *next_frontier;
+  PathNode *new_node;
+  next_frontier = get_frontier_node(next_destination);
   if (next_frontier)
   {
     empty_slot = 0;
@@ -447,7 +449,7 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
     path->children[empty_slot] = next_frontier;
     if (next_g_movement_cost < next_frontier->g_movement_cost)
     {
-      //if (path_solid_pieces(path, next_destination))
+      if (path_solid_pieces(path, next_destination.x, next_destination.y))
       {
         // we'll explore it later, just update
         dxdy_heuristic = next_frontier->heuristic;
@@ -459,7 +461,7 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
   }
   else
   {
-    PathNode *visited_node = get_visited_node(next_destination);
+    visited_node = get_visited_node(next_destination);
     if (visited_node)
     {
       empty_slot = 0;
@@ -476,7 +478,7 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
       path->children[empty_slot] = visited_node;
       if (next_g_movement_cost < visited_node->g_movement_cost)
       {
-        //if (path_solid_pieces(path, next_destination))
+        if (path_solid_pieces(path, next_destination.x, next_destination.y))
         {
           dxdy_f_score = next_g_movement_cost + visited_node->heuristic;
           visited_node->parent = path;
@@ -488,9 +490,12 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
     }
     else
     {
-      PathNode *new_node = get_new_node();
+      new_node = get_new_node();
       if (!new_node)
+      {
         return false;
+      }
+
       new_node->parent = path;
       new_node->g_movement_cost = next_g_movement_cost;
       new_heuristic = get_heuristic_cost(next_destination, from);
@@ -523,22 +528,19 @@ bool path_get_path(PathNode *path, const Point from)
 
   for (i = 0; i < 8; i++)
   {
-    printf("iteration %d\n", i + 1);
     next_destination.x = path->x + movement_directions_x[i];
     next_destination.y = path->y + movement_directions_y[i];
-    printf("sending: %d %d\n", next_destination.x, next_destination.y);
-    if (!tile_is_blocked(next_destination))
+    if (tile_is_blocked(next_destination))
     {
-      if (path_parent_path(path, next_destination, from))
-      {
-        // TODO: wat
-        return true;
-      }
-      printf("Damn, tile blocked\n");
+      continue;
+    }
+    path_parent_path(path, next_destination, from);
+    if (path_nodes_in_use >= MAX_NODES)
+    {
+      return false;
     }
   }
-  printf("Returning false\n");
-  return false;
+  return true;
 }
 
 bool find_path(const Point source, const Point destination, Path out_path)
@@ -553,7 +555,6 @@ bool find_path(const Point source, const Point destination, Path out_path)
   bool path_is_full;
   int *step_ptr;
   char step;
-
   if (destination.x < 0 || destination.y < 0)
   {
     return false;
@@ -584,7 +585,6 @@ bool find_path(const Point source, const Point destination, Path out_path)
     }
     if (next_node->x == destination.x && next_node->y == destination.y)
     {
-      printf("found result!\n");
       break;
     }
     if (!path_get_path(next_node, destination))
@@ -597,7 +597,6 @@ bool find_path(const Point source, const Point destination, Path out_path)
   path_length = 0;
   if (*previous_node)
   {
-    printf("Starting to create path\n");
     while (true)
     {
       path_is_full = path_length == MAX_PATH_LENGTH;
@@ -623,9 +622,8 @@ bool find_path(const Point source, const Point destination, Path out_path)
     step_ptr = &reconstructed_path[path_length - 1];
     do
     {
-      step = *step_ptr;
+      step = (char)*step_ptr;
       --step_ptr;
-      printf("inserting into out_path\n");
       out_path[result++] = step;
     } while (result < path_length);
   }
@@ -800,7 +798,7 @@ void create_new_character()
   gPlayer.level = 1;
   gPlayer.character_class = selected;
   gPlayer.armor_class = selected;
-  memset(gPlayer.path, -1, 25);
+  memset(gPlayer.path, -1, MAX_PATH_LENGTH);
 }
 
 void render_select_character_screen(const int selected, const char *character_names[], int char_count)
@@ -891,8 +889,8 @@ void draw_dungeon()
   {
     for (x = 0; x < DUNGEON_SIZE; x++)
     {
-      cartesian_point.x = x;
-      cartesian_point.y = y;
+      cartesian_point.x = x - gPlayer.world_x;
+      cartesian_point.y = y - gPlayer.world_y;
       isometric_point = cartesian_to_isometric(cartesian_point);
 
       //Render texture to screen
@@ -1032,6 +1030,8 @@ void game_loop()
     SDL_Delay(50);
     update_input();
     update_animations();
+    //gPlayer.world_x = (rand() % DUNGEON_SIZE) + 1;
+    //gPlayer.world_y = (rand() % DUNGEON_SIZE) + 1;
   }
   else
   {
