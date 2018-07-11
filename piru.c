@@ -243,6 +243,14 @@ void create_dungeon()
   gDungeonBlockTable[2][5] = true;
   gDungeon[1][5] = 'w';
   gDungeonBlockTable[1][5] = true;
+  gDungeon[5][2] = 'w';
+  gDungeonBlockTable[5][2] = true;
+  gDungeon[5][3] = 'w';
+  gDungeonBlockTable[5][3] = true;
+  gDungeon[5][4] = 'w';
+  gDungeonBlockTable[5][4] = true;
+  gDungeon[5][5] = 'w';
+  gDungeonBlockTable[5][5] = true;
 }
 // Path finding
 typedef char *Path;
@@ -934,8 +942,8 @@ void draw_debug_path()
   int i;
   Point draw_point;
   Point isometric_point;
-  draw_point.x = 1;
-  draw_point.y = 1;
+  draw_point.x = 0;
+  draw_point.y = 0;
   for (i = 0; i < sizeof(gPlayer.path); i++)
   {
     int code = (int)gPlayer.path[i];
