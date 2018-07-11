@@ -123,7 +123,7 @@ Point isometric_to_cartesian(const Point isometric_point)
 Point get_tile_coordinates(const Point cartesian_point)
 {
   Point tile_coordinates;
-  tile_coordinates.x = cartesian_point.x / TILE_WIDTH;
+  tile_coordinates.x = cartesian_point.x / TILE_HEIGHT;
   tile_coordinates.y = cartesian_point.y / TILE_HEIGHT;
   return tile_coordinates;
 }
@@ -238,6 +238,11 @@ void create_dungeon()
   }
 
   gDungeon[3][5] = 'w';
+  gDungeonBlockTable[3][5] = true;
+  gDungeon[2][5] = 'w';
+  gDungeonBlockTable[2][5] = true;
+  gDungeon[1][5] = 'w';
+  gDungeonBlockTable[1][5] = true;
 }
 // Path finding
 typedef char *Path;
@@ -740,9 +745,11 @@ bool load_assets()
   ImageAsset playerSpriteSheet = load_image_asset("assets/player2.png");
   ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
   ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
+  ImageAsset selectionSpriteSheet = load_image_asset("assets/iso_selection.png");
   gImageAssets[asset_index++] = playerSpriteSheet;
   gImageAssets[asset_index++] = grovelSpriteSheet;
   gImageAssets[asset_index++] = stoneSpriteSheet;
+  gImageAssets[asset_index++] = selectionSpriteSheet;
   load_animations();
 
   return true;
@@ -912,15 +919,69 @@ void draw_dungeon()
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
     }
   }
-  cartesian_point.x = selectedTile.x;
-  cartesian_point.y = selectedTile.y;
+  cartesian_point.x = selectedTile.x - gPlayer.world_x;
+  cartesian_point.y = selectedTile.y - gPlayer.world_y;
   isometric_point = cartesian_to_isometric(cartesian_point);
   SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                        isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
-  SDL_Rect drawRect = {0, 0, 64, 32};
-  SDL_RenderCopy(gRenderer, gImageAssets[2].texture,
-                 &drawRect,
+  SDL_RenderCopy(gRenderer, gImageAssets[3].texture,
+                 NULL,
                  &fillRect);
+}
+
+void draw_debug_path()
+{
+  int i;
+  Point draw_point;
+  Point isometric_point;
+  draw_point.x = 1;
+  draw_point.y = 1;
+  for (i = 0; i < sizeof(gPlayer.path); i++)
+  {
+    int code = (int)gPlayer.path[i];
+    switch (code)
+    {
+    case 5:
+      draw_point.x--;
+      draw_point.y--;
+      break;
+    case 1:
+      draw_point.y--;
+      break;
+    case 6:
+      draw_point.x++;
+      draw_point.y--;
+      break;
+    case 2:
+      draw_point.x--;
+      break;
+    case 0:
+      break;
+    case 3:
+      draw_point.x++;
+      break;
+    case 8:
+      draw_point.x--;
+      draw_point.y++;
+      break;
+    case 4:
+      draw_point.y++;
+      break;
+    case 7:
+      draw_point.x++;
+      draw_point.y++;
+      break;
+    default:
+      continue;
+    }
+
+    isometric_point = cartesian_to_isometric(draw_point);
+    SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
+                         isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
+    SDL_RenderCopy(gRenderer, gImageAssets[3].texture,
+                   NULL,
+                   &fillRect);
+  }
 }
 
 void draw_and_blit()
@@ -930,6 +991,7 @@ void draw_and_blit()
   SDL_RenderClear(gRenderer);
 
   draw_dungeon();
+  draw_debug_path();
 
   //Render texture to screen
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 108,
@@ -952,6 +1014,26 @@ void update_input()
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0)
   {
+    if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEMOTION)
+    {
+      int mx, my;
+      SDL_GetMouseState(&mx, &my);
+      Point mouse_point;
+      mouse_point.x = mx - (SCREEN_WIDTH / 2);
+      mouse_point.y = my - (SCREEN_HEIGHT / 2);
+      Point tile_coordinates = isometric_to_cartesian(mouse_point);
+      selectedTile = tile_coordinates;
+      Point player_position = {gPlayer.world_x, gPlayer.world_y};
+
+      memset(gPlayer.path, -1, MAX_PATH_LENGTH);
+      printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
+      if (find_path(player_position, tile_coordinates, gPlayer.path))
+      {
+        gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
+        printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
+        printf("PLAYER POSITION(%d, %d)\n", player_position.x, player_position.y);
+      }
+    }
     if (e.type == SDL_QUIT)
     {
       gGameRunning = false;
@@ -990,23 +1072,6 @@ void update_input()
       }
     }
   }
-  int mx, my;
-  SDL_GetMouseState(&mx, &my);
-  gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
-  Point mouse_point;
-  mouse_point.x = mx - (SCREEN_WIDTH / 2);
-  mouse_point.y = my - (SCREEN_HEIGHT / 2);
-  Point tile_coordinates = isometric_to_cartesian(mouse_point);
-  //printf("MOUSEPOINT(%d, %d)\n", mouse_point.x, mouse_point.y);
-  //printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
-  selectedTile = tile_coordinates;
-  Point player_position = {gPlayer.world_x, gPlayer.world_y};
-  if (find_path(player_position, selectedTile, gPlayer.path))
-  {
-    printf("FOUND PATH!!!\n");
-    printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
-    printf("PLAYER POSITION(%d, %d)\n", player_position.x, player_position.y);
-  }
 }
 
 void update_animations()
@@ -1030,8 +1095,6 @@ void game_loop()
     SDL_Delay(50);
     update_input();
     update_animations();
-    //gPlayer.world_x = (rand() % DUNGEON_SIZE) + 1;
-    //gPlayer.world_y = (rand() % DUNGEON_SIZE) + 1;
   }
   else
   {
