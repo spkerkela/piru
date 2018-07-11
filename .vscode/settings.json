@@ -1,6 +1,7 @@
 {
   "editor.formatOnSave": true,
   "files.associations": {
-    "sdl.h": "c"
+    "sdl.h": "c",
+    "__locale": "c"
   }
 }
