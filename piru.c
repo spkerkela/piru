@@ -22,8 +22,10 @@ TTF_Font *gFont = NULL;
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define DUNGEON_SIZE 112
-#define TILE_WIDTH 64
-#define TILE_HEIGHT 64
+const int TILE_WIDTH = 64;
+const int TILE_HEIGHT = 32;
+const int TILE_WIDTH_HALF = TILE_WIDTH / 2;
+const int TILE_HEIGHT_HALF = TILE_HEIGHT / 2;
 
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 
@@ -100,16 +102,16 @@ typedef struct
 Point cartesian_to_isometric(const Point cartesian_point)
 {
   Point isometric_point;
-  isometric_point.x = cartesian_point.x - cartesian_point.y;
-  isometric_point.y = (cartesian_point.x + cartesian_point.y) / 2;
+  isometric_point.x = (cartesian_point.x - cartesian_point.y) * TILE_WIDTH_HALF;
+  isometric_point.y = (cartesian_point.x + cartesian_point.y) * TILE_HEIGHT_HALF;
   return isometric_point;
 }
 
 Point isometric_to_cartesian(const Point isometric_point)
 {
   Point cartesian_point;
-  cartesian_point.x = (2 * isometric_point.y + isometric_point.x) / 2;
-  cartesian_point.y = (2 * isometric_point.y - isometric_point.x) / 2;
+  cartesian_point.x = (isometric_point.x / TILE_WIDTH_HALF + isometric_point.y / TILE_HEIGHT_HALF) / 2;
+  cartesian_point.y = (isometric_point.y / TILE_HEIGHT_HALF - (isometric_point.x / TILE_WIDTH_HALF)) / 2;
   return cartesian_point;
 }
 
@@ -331,8 +333,8 @@ bool load_assets()
 {
   int asset_index = 0;
   ImageAsset playerSpriteSheet = load_image_asset("assets/player2.png");
-  ImageAsset grovelSpriteSheet = load_image_asset("assets/dirt_E.png");
-  ImageAsset stoneSpriteSheet = load_image_asset("assets/stone_N.png");
+  ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
+  ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
   gImageAssets[asset_index++] = playerSpriteSheet;
   gImageAssets[asset_index++] = grovelSpriteSheet;
   gImageAssets[asset_index++] = stoneSpriteSheet;
@@ -481,8 +483,8 @@ void draw_dungeon()
   {
     for (x = 0; x < DUNGEON_SIZE; x++)
     {
-      cartesian_point.x = x * TILE_WIDTH / 2;
-      cartesian_point.y = y * TILE_HEIGHT / 2;
+      cartesian_point.x = x;
+      cartesian_point.y = y;
       isometric_point = cartesian_to_isometric(cartesian_point);
 
       //Render texture to screen
@@ -495,12 +497,10 @@ void draw_dungeon()
       {
         asset = gImageAssets[1];
       }
-      SDL_Rect fillRect = {isometric_point.x,
+      SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                            isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
-      SDL_Rect drawRect = {
-          0, 64, 64, 64};
       SDL_RenderCopy(gRenderer, asset.texture,
-                     &drawRect,
+                     NULL,
                      &fillRect);
 
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
