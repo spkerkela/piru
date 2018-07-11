@@ -28,6 +28,7 @@ const int TILE_WIDTH_HALF = TILE_WIDTH / 2;
 const int TILE_HEIGHT_HALF = TILE_HEIGHT / 2;
 
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
+bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 
 bool gGameRunning;
 bool gGamePaused;
@@ -208,6 +209,11 @@ typedef struct
 ImageAsset gImageAssets[256];
 Animation gPlayerAnimations[256];
 
+bool tile_is_blocked(const Point p)
+{
+  return gDungeon[p.y][p.x];
+}
+
 void create_dungeon()
 {
   int x, y;
@@ -218,6 +224,7 @@ void create_dungeon()
       if (x == 0 || x == DUNGEON_SIZE - 1 || y == 0 || y == DUNGEON_SIZE - 1)
       {
         gDungeon[y][x] = 'w';
+        gDungeonBlockTable[y][x] = true;
       }
       else
       {
