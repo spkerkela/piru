@@ -99,6 +99,8 @@ typedef struct
   int y;
 } Point;
 
+Point selectedTile;
+
 Point cartesian_to_isometric(const Point cartesian_point)
 {
   Point isometric_point;
@@ -280,7 +282,6 @@ bool load_animations()
   int width;
   int height;
   SDL_QueryTexture(playerSpriteSheet.texture, NULL, NULL, &width, &height);
-  printf("%d,%d\n", width, height);
   int animationColumns = 8;
   int animationRows = 16;
   int frameWidth = width / animationColumns;
@@ -506,6 +507,15 @@ void draw_dungeon()
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
     }
   }
+  cartesian_point.x = selectedTile.x;
+  cartesian_point.y = selectedTile.y;
+  isometric_point = cartesian_to_isometric(cartesian_point);
+  SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
+                       isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
+  SDL_Rect drawRect = {0, 0, 64, 32};
+  SDL_RenderCopy(gRenderer, gImageAssets[2].texture,
+                 &drawRect,
+                 &fillRect);
 }
 
 void draw_and_blit()
@@ -579,11 +589,12 @@ void update_input()
   SDL_GetMouseState(&mx, &my);
   gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
   Point mouse_point;
-  mouse_point.x = mx;
+  mouse_point.x = mx - (SCREEN_WIDTH / 2);
   mouse_point.y = my;
-  Point tile_coordinates = get_tile_coordinates(mouse_point);
+  Point tile_coordinates = isometric_to_cartesian(mouse_point);
   printf("MOUSEPOINT(%d, %d)\n", mouse_point.x, mouse_point.y);
   printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
+  selectedTile = tile_coordinates;
 }
 
 void update_animations()
