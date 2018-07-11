@@ -499,7 +499,7 @@ void draw_dungeon()
         asset = gImageAssets[1];
       }
       SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
-                           isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
+                           isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
       SDL_RenderCopy(gRenderer, asset.texture,
                      NULL,
                      &fillRect);
@@ -511,7 +511,7 @@ void draw_dungeon()
   cartesian_point.y = selectedTile.y;
   isometric_point = cartesian_to_isometric(cartesian_point);
   SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
-                       isometric_point.y, TILE_WIDTH, TILE_HEIGHT};
+                       isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
   SDL_Rect drawRect = {0, 0, 64, 32};
   SDL_RenderCopy(gRenderer, gImageAssets[2].texture,
                  &drawRect,
@@ -527,8 +527,8 @@ void draw_and_blit()
   draw_dungeon();
 
   //Render texture to screen
-  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 95,
-                               (SCREEN_HEIGHT / 2) - 95,
+  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 108,
+                               (SCREEN_HEIGHT / 2) - 120,
                                150,
                                150};
 
@@ -590,7 +590,7 @@ void update_input()
   gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
   Point mouse_point;
   mouse_point.x = mx - (SCREEN_WIDTH / 2);
-  mouse_point.y = my;
+  mouse_point.y = my - (SCREEN_HEIGHT / 2);
   Point tile_coordinates = isometric_to_cartesian(mouse_point);
   printf("MOUSEPOINT(%d, %d)\n", mouse_point.x, mouse_point.y);
   printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
