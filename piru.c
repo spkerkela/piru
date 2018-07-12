@@ -44,12 +44,6 @@ char *character_class_str[CHARACTER_CLASS_COUNT] = {
     "Rogue",
     "Warrior"};
 
-typedef struct
-{
-  int x;
-  int y;
-} Point;
-
 Point selectedTile;
 
 Point cartesian_to_isometric(const Point cartesian_point)
@@ -127,35 +121,7 @@ enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int
   return SOUTH;
 }
 
-typedef struct
-{
-  enum CHARACTER_CLASS character_class;
-  enum ARMOR_CLASS armor_class;
-  enum DIRECTION direction;
-  int level;
-  int current_game_level;
-  int world_x;
-  int world_y;
-  char path[MAX_PATH_LENGTH];
-} Player;
-
 Player gPlayer;
-
-typedef struct
-{
-  char *assetName;
-  SDL_Texture *texture;
-} ImageAsset;
-
-typedef struct
-{
-  SDL_Rect frames[1024];
-  int columns;
-  int rows;
-  int currentFrame;
-  ImageAsset image;
-  int speed;
-} Animation;
 
 ImageAsset gImageAssets[256];
 Animation gPlayerAnimations[256];
@@ -202,18 +168,6 @@ void create_dungeon()
 }
 // Path finding
 typedef char *Path;
-
-typedef struct PathNode
-{
-  char f_score;
-  char heuristic;
-  short g_movement_cost;
-  int x;
-  int y;
-  struct PathNode *parent;
-  struct PathNode *children[8];
-  struct PathNode *next_node;
-} PathNode;
 
 PathNode pre_allocated_nodes[MAX_NODES];
 int path_nodes_in_use;
@@ -1043,16 +997,6 @@ void game_loop()
     update_input();
   }
 }
-
-typedef struct
-{
-  int x;
-  int y;
-  int monster_id;
-  int item_id;
-  int object_id;
-  int player_id;
-} MouseCursor;
 
 MouseCursor gCursor;
 
