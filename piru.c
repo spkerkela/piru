@@ -15,6 +15,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "enums.h"
+#include "structs.h"
+#include "pathfinding.h"
+
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
 TTF_Font *gFont = NULL;
@@ -36,48 +40,6 @@ bool gGameRunning;
 bool gGamePaused;
 SDL_Rect gPlayerSprites[8 * 16];
 
-enum CHARACTER_CLASS
-{
-  MAGE,
-  ROGUE,
-  WARRIOR,
-  CHARACTER_CLASS_COUNT
-};
-
-char *character_class_str[CHARACTER_CLASS_COUNT] = {
-    "Mage",
-    "Rogue",
-    "Warrior"};
-
-enum ARMOR_CLASS
-{
-  LIGHT,
-  MEDIUM,
-  HEAVY,
-  ARMOR_CLASS_COUNT
-};
-
-enum DIRECTION
-{
-  SOUTH,
-  SOUTH_WEST_1,
-  SOUTH_WEST_2,
-  SOUTH_WEST_3,
-  WEST,
-  NORTH_WEST_1,
-  NORTH_WEST_2,
-  NORTH_WEST_3,
-  NORTH,
-  NORTH_EAST_1,
-  NORTH_EAST_2,
-  NORTH_EAST_3,
-  EAST,
-  SOUTH_EAST_1,
-  SOUTH_EAST_2,
-  SOUTH_EAST_3,
-  DIRECTION_COUNT
-};
-
 char *direction_str[DIRECTION_COUNT] = {
     "SOUTH",
     "SOUTH_WEST_1",
@@ -95,6 +57,11 @@ char *direction_str[DIRECTION_COUNT] = {
     "SOUTH_EAST_1",
     "SOUTH_EAST_2",
     "SOUTH_EAST_3"};
+
+char *character_class_str[CHARACTER_CLASS_COUNT] = {
+    "Mage",
+    "Rogue",
+    "Warrior"};
 
 typedef struct
 {
@@ -654,21 +621,6 @@ bool init_SDL()
 void start_menu_music() { printf("Ominous music playing..\n"); }
 
 void stop_music() { printf("Music stopped..\n"); }
-
-enum MAIN_MENU_SELECTIONS
-{
-  START_GAME,
-  SHOW_INTRO,
-  CREDITS,
-  QUIT,
-  MAIN_MENU_ITEM_COUNT
-};
-
-enum GAME_START_MODE
-{
-  NEW_GAME,
-  LOAD_GAME
-};
 
 ImageAsset load_image_asset(char *fileName)
 {

@@ -1,0 +1,56 @@
+#ifndef _ENUMS_H
+#define _ENUMS_H
+
+enum CHARACTER_CLASS
+{
+    MAGE,
+    ROGUE,
+    WARRIOR,
+    CHARACTER_CLASS_COUNT
+};
+
+enum ARMOR_CLASS
+{
+    LIGHT,
+    MEDIUM,
+    HEAVY,
+    ARMOR_CLASS_COUNT
+};
+
+enum DIRECTION
+{
+    SOUTH,
+    SOUTH_WEST_1,
+    SOUTH_WEST_2,
+    SOUTH_WEST_3,
+    WEST,
+    NORTH_WEST_1,
+    NORTH_WEST_2,
+    NORTH_WEST_3,
+    NORTH,
+    NORTH_EAST_1,
+    NORTH_EAST_2,
+    NORTH_EAST_3,
+    EAST,
+    SOUTH_EAST_1,
+    SOUTH_EAST_2,
+    SOUTH_EAST_3,
+    DIRECTION_COUNT
+};
+
+enum MAIN_MENU_SELECTIONS
+{
+    START_GAME,
+    SHOW_INTRO,
+    CREDITS,
+    QUIT,
+    MAIN_MENU_ITEM_COUNT
+};
+
+enum GAME_START_MODE
+{
+    NEW_GAME,
+    LOAD_GAME
+};
+
+#endif
