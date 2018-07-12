@@ -21,7 +21,7 @@ piru: $(obj)
 
 .PHONY: clean
 clean:
-	rm -f $(obj) piru
+	rm -rf $(obj) $(dep) piru piru.dSYM
 endif
 
 ifeq ($(UNAME), MINGW32_NT-6.2)
