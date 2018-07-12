@@ -11,4 +11,15 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
 #endif
+#include <stdbool.h>
+#include "constants.h"
+
+extern SDL_Window *gWindow;
+extern SDL_Renderer *gRenderer;
+extern TTF_Font *gFont;
+
+bool init();
+bool init_SDL();
+bool load_font();
+
 #endif
