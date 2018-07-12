@@ -1,17 +1,27 @@
+
 UNAME := $(shell uname)
+src=$(wildcard *.c)
+obj=$(src:.c=.o)
+dep = $(obj:.o=.d)
+-include $(dep)   # include all dep files in the makefile
 CC=gcc
 C_FLAGS=-Wall -std=c99 -g
 ifeq ($(UNAME), Darwin)
 SDL=SDL2
 FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf
+
 default: all
-piru: piru.c
-	$(CC) piru.c -o piru $(C_FLAGS) $(FRAMEWORKS)
+piru: $(obj)
+	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS)
+
+%.d: %.c
+	@$(CPP) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@	
 
 all: piru
 
+.PHONY: clean
 clean:
-	rm piru
+	rm -f $(obj) piru
 endif
 
 ifeq ($(UNAME), MINGW32_NT-6.2)

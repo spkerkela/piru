@@ -1,7 +1,6 @@
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
 #include "enums.h"
-#include "pathfinding.h"
 #include "sdl.h"
 #include "constants.h"
 
