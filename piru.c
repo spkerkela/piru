@@ -1,14 +1,3 @@
-#ifdef _WIN32
-#define SDL_MAIN_HANDLED
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#else
-#include <SDL2/SDL.H>
-#include <SDL2/SDL_render.H>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
-#endif
 #include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
@@ -18,6 +7,7 @@
 #include "enums.h"
 #include "structs.h"
 #include "pathfinding.h"
+#include "sdl.h"
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
