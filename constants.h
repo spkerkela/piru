@@ -1,0 +1,14 @@
+#ifndef _CONSTANTS_H
+
+#define _CONSTANTS_H
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+#define DUNGEON_SIZE 112
+#define MAX_NODES 300
+#define MAX_PATH_LENGTH 25
+#define TILE_WIDTH 64
+#define TILE_HEIGHT 32
+#define TILE_WIDTH_HALF (TILE_WIDTH / 2)
+#define TILE_HEIGHT_HALF (TILE_HEIGHT / 2)
+
+#endif

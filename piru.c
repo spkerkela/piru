@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "constants.h"
 #include "enums.h"
 #include "structs.h"
 #include "pathfinding.h"
@@ -12,16 +13,6 @@
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
 TTF_Font *gFont = NULL;
-
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
-#define DUNGEON_SIZE 112
-#define MAX_NODES 300
-#define MAX_PATH_LENGTH 25
-const int TILE_WIDTH = 64;
-const int TILE_HEIGHT = 32;
-const int TILE_WIDTH_HALF = TILE_WIDTH / 2;
-const int TILE_HEIGHT_HALF = TILE_HEIGHT / 2;
 
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
