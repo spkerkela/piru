@@ -1,7 +1,6 @@
 #include "sdl.h"
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
-TTF_Font *gFont = NULL;
 
 bool init()
 {
@@ -48,19 +47,4 @@ bool init()
 bool init_SDL()
 {
     return SDL_Init(SDL_INIT_EVERYTHING) >= 0;
-}
-
-bool load_font()
-{
-    bool success = true;
-
-    //Open the font
-    gFont = TTF_OpenFont("font.ttf", 28);
-    if (gFont == NULL)
-    {
-        printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
-        success = false;
-    }
-
-    return success;
 }
