@@ -1,4 +1,5 @@
-
+default: piru
+all: piru
 UNAME := $(shell uname)
 src=$(wildcard *.c)
 obj=$(src:.c=.o)
@@ -10,14 +11,13 @@ ifeq ($(UNAME), Darwin)
 SDL=SDL2
 FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf
 
-default: all
 piru: $(obj)
 	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS)
 
 %.d: %.c
 	@$(CPP) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@	
 
-all: piru
+.PHONY: all
 
 .PHONY: clean
 clean:
