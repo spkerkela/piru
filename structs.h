@@ -1,7 +1,7 @@
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
 #include "enums.h"
-#include "sdl.h"
+#include "sdl2.h"
 #include "constants.h"
 
 typedef struct

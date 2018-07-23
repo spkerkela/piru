@@ -2,7 +2,7 @@
 #define _ASSETS_H
 
 #include <stdbool.h>
-#include "sdl.h"
+#include "sdl2.h"
 #include "structs.h"
 
 extern Animation gPlayerAnimations[256];

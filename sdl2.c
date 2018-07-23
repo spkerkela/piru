@@ -1,4 +1,4 @@
-#include "sdl.h"
+#include "sdl2.h"
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
 
