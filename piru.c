@@ -294,8 +294,8 @@ void draw_dungeon()
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
     }
   }
-  cartesian_point.x = selectedTile.x - gPlayer.world_x;
-  cartesian_point.y = selectedTile.y - gPlayer.world_y;
+  cartesian_point.x = selectedTile.x;
+  cartesian_point.y = selectedTile.y;
   isometric_point = cartesian_to_isometric(cartesian_point);
   SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                        isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
@@ -359,26 +359,29 @@ void update_input()
   {
     if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEMOTION)
     {
+      bool mouse_was_pressed = e.type == SDL_MOUSEBUTTONDOWN;
       int mx, my;
+      Point player_position = {gPlayer.world_x, gPlayer.world_y};
       SDL_GetMouseState(&mx, &my);
       Point mouse_point;
-      mouse_point.x = mx - (SCREEN_WIDTH / 2);
-      mouse_point.y = my - (SCREEN_HEIGHT / 2);
+      Point offset = cartesian_to_isometric(player_position);
+      mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
+      mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
       Point tile_coordinates = isometric_to_cartesian(mouse_point);
       selectedTile = tile_coordinates;
 
-      Point player_position = {gPlayer.world_x, gPlayer.world_y};
-      memset(gPlayer.path, -1, MAX_PATH_LENGTH);
-      printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
-      if (find_path(player_position, tile_coordinates, gPlayer.path))
+      if (mouse_was_pressed)
+      {
+        memset(gPlayer.path, -1, MAX_PATH_LENGTH);
+      }
+      if (mouse_was_pressed && find_path(player_position, selectedTile, gPlayer.path))
       {
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
           gPlayer.moving = true;
-          gPlayer.target = tile_coordinates;
+          gPlayer.point_in_path = 0;
+          gPlayer.target = selectedTile;
           gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
-          printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
-          printf("PLAYER POSITION(%d, %d)\n", player_position.x, player_position.y);
         }
       }
     }
@@ -450,6 +453,7 @@ void update_player()
       if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
       {
         gPlayer.moving = false;
+        gPlayer.point_in_path = 0;
       }
     }
   }
