@@ -80,10 +80,12 @@ bool load_assets()
     ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
     ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
     ImageAsset selectionSpriteSheet = load_image_asset("assets/iso_selection.png");
+    ImageAsset cursorSword = load_image_asset("assets/sword.png");
     gImageAssets[asset_index++] = playerSpriteSheet;
     gImageAssets[asset_index++] = grovelSpriteSheet;
     gImageAssets[asset_index++] = stoneSpriteSheet;
     gImageAssets[asset_index++] = selectionSpriteSheet;
+    gImageAssets[asset_index++] = cursorSword;
     load_animations();
 
     return true;

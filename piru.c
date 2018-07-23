@@ -327,6 +327,16 @@ void draw_debug_path()
   }
 }
 
+void draw_cursor()
+{
+  int mx, my;
+  SDL_GetMouseState(&mx, &my);
+  SDL_Rect cursorQuad = {mx, my, 24, 24};
+  SDL_RenderCopy(gRenderer, gImageAssets[4].texture,
+                 NULL,
+                 &cursorQuad);
+}
+
 void draw_and_blit()
 {
   //Clear screen
@@ -348,6 +358,7 @@ void draw_and_blit()
                  &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
                  &playerRenderQuad);
 
+  draw_cursor();
   //Update screen
   SDL_RenderPresent(gRenderer);
 }
