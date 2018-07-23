@@ -2,6 +2,7 @@
 #define _DUNGEON_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include "constants.h"
 #include "structs.h"
 

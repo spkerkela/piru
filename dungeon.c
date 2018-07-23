@@ -24,6 +24,17 @@ void create_dungeon()
                 gDungeon[y][x] = 'f';
                 gDungeonBlockTable[y][x] = false;
             }
+
+            if (x > 6 && y > 6)
+            {
+                int random = rand();
+                bool put_wall = random % 5 == 0;
+                if (put_wall)
+                {
+                    gDungeon[y][x] = 'w';
+                    gDungeonBlockTable[y][x] = true;
+                }
+            }
         }
     }
 
