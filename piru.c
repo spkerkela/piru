@@ -311,36 +311,36 @@ void draw_debug_path()
   draw_point.y = 0;
   for (i = 0; i < sizeof(gPlayer.path); i++)
   {
-    int code = (int)gPlayer.path[i];
+    enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[i];
     switch (code)
     {
-    case 5:
+    case UP_LEFT:
       draw_point.x--;
       draw_point.y--;
       break;
-    case 1:
+    case UP:
       draw_point.y--;
       break;
-    case 6:
+    case UP_RIGHT:
       draw_point.x++;
       draw_point.y--;
       break;
-    case 2:
+    case LEFT:
       draw_point.x--;
       break;
-    case 0:
+    case PATH_NONE:
       break;
-    case 3:
+    case RIGHT:
       draw_point.x++;
       break;
-    case 8:
+    case DOWN_LEFT:
       draw_point.x--;
       draw_point.y++;
       break;
-    case 4:
+    case DOWN:
       draw_point.y++;
       break;
-    case 7:
+    case DOWN_RIGHT:
       draw_point.x++;
       draw_point.y++;
       break;

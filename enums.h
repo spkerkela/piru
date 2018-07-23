@@ -53,4 +53,18 @@ enum GAME_START_MODE
     LOAD_GAME
 };
 
+enum PATH_CODE
+{
+    PATH_NONE,
+    UP,
+    LEFT,
+    RIGHT,
+    DOWN,
+    UP_LEFT,
+    UP_RIGHT,
+    DOWN_RIGHT,
+    DOWN_LEFT,
+    PATH_CODE_COUNT
+};
+
 #endif
