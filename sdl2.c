@@ -41,6 +41,7 @@ bool init()
         printf("SDL_ttf could not load font! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
+    SDL_SetRelativeMouseMode(SDL_TRUE);
     return true;
 }
 
