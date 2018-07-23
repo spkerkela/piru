@@ -24,7 +24,7 @@ clean:
 endif
 
 ifeq ($(UNAME), MINGW32_NT-6.2)
-COMPILER_FLAGS = -Wall -Wl,-subsystem,windows
+COMPILER_FLAGS = -g -Wall -Wl,-subsystem,windows
 INCLUDE_PATHS = -IC:/mingw_dev_lib/include/SDL2
 LIBRARY_PATHS = -LC:/mingw_dev_lib/lib
 LINKER_FLAGS =-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf

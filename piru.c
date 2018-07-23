@@ -440,13 +440,17 @@ void update_player()
 {
   if (gPlayer.moving)
   {
-    enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[gPlayer.point_in_path++];
-    Point direction = get_direction_from_path(code);
-    gPlayer.world_x += direction.x;
-    gPlayer.world_y += direction.y;
-    if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
+    enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[gPlayer.point_in_path];
+    if (code != -1)
     {
-      gPlayer.moving = false;
+      gPlayer.point_in_path++;
+      Point direction = get_direction_from_path(code);
+      gPlayer.world_x += direction.x;
+      gPlayer.world_y += direction.y;
+      if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
+      {
+        gPlayer.moving = false;
+      }
     }
   }
   SDL_Delay(60);
