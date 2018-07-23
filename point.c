@@ -23,3 +23,47 @@ Point get_tile_coordinates(const Point cartesian_point)
     tile_coordinates.y = cartesian_point.y / TILE_HEIGHT;
     return tile_coordinates;
 }
+
+Point get_direction_from_path(enum PATH_CODE code)
+{
+    Point point;
+    point.x = 0;
+    point.y = 0;
+    switch (code)
+    {
+    case UP_LEFT:
+        point.x--;
+        point.y--;
+        break;
+    case UP:
+        point.y--;
+        break;
+    case UP_RIGHT:
+        point.x++;
+        point.y--;
+        break;
+    case LEFT:
+        point.x--;
+        break;
+    case PATH_NONE:
+        break;
+    case RIGHT:
+        point.x++;
+        break;
+    case DOWN_LEFT:
+        point.x--;
+        point.y++;
+        break;
+    case DOWN:
+        point.y++;
+        break;
+    case DOWN_RIGHT:
+        point.x++;
+        point.y++;
+        break;
+    default:
+        break;
+    }
+
+    return point;
+}

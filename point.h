@@ -10,4 +10,6 @@ Point isometric_to_cartesian(const Point isometric_point);
 
 Point get_tile_coordinates(const Point cartesian_point);
 
+Point get_direction_from_path(enum PATH_CODE code);
+
 #endif

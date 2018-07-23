@@ -312,41 +312,9 @@ void draw_debug_path()
   for (i = 0; i < sizeof(gPlayer.path); i++)
   {
     enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[i];
-    switch (code)
-    {
-    case UP_LEFT:
-      draw_point.x--;
-      draw_point.y--;
-      break;
-    case UP:
-      draw_point.y--;
-      break;
-    case UP_RIGHT:
-      draw_point.x++;
-      draw_point.y--;
-      break;
-    case LEFT:
-      draw_point.x--;
-      break;
-    case PATH_NONE:
-      break;
-    case RIGHT:
-      draw_point.x++;
-      break;
-    case DOWN_LEFT:
-      draw_point.x--;
-      draw_point.y++;
-      break;
-    case DOWN:
-      draw_point.y++;
-      break;
-    case DOWN_RIGHT:
-      draw_point.x++;
-      draw_point.y++;
-      break;
-    default:
-      continue;
-    }
+    Point dir = get_direction_from_path(code);
+    draw_point.x += dir.x;
+    draw_point.y += dir.x;
 
     isometric_point = cartesian_to_isometric(draw_point);
     SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
