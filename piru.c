@@ -1,17 +1,17 @@
-#include <stdbool.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "constants.h"
-#include "enums.h"
-#include "structs.h"
-#include "dungeon.h"
-#include "pathfinding.h"
-#include "sdl.h"
 #include "assets.h"
+#include "constants.h"
+#include "dungeon.h"
+#include "enums.h"
+#include "pathfinding.h"
 #include "point.h"
+#include "sdl2.h"
+#include "structs.h"
 
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;

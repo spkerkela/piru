@@ -12,6 +12,7 @@
 #include <SDL2_ttf/SDL_ttf.h>
 #endif
 #include <stdbool.h>
+#include <stdio.h>
 #include "constants.h"
 
 extern SDL_Window *gWindow;
