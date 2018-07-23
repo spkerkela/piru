@@ -20,6 +20,9 @@ typedef struct
     int world_x;
     int world_y;
     char path[MAX_PATH_LENGTH];
+    int point_in_path;
+    bool moving;
+    Point target;
 } Player;
 
 typedef struct

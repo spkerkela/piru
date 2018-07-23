@@ -258,6 +258,8 @@ void init_player_position()
   gPlayer.world_y = 1;
   gPlayer.current_game_level = 0;
   gPlayer.direction = SOUTH;
+  gPlayer.point_in_path = 0;
+  gPlayer.moving = false;
 }
 
 void draw_dungeon()
@@ -314,7 +316,7 @@ void draw_debug_path()
     enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[i];
     Point dir = get_direction_from_path(code);
     draw_point.x += dir.x;
-    draw_point.y += dir.x;
+    draw_point.y += dir.y;
 
     isometric_point = cartesian_to_isometric(draw_point);
     SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
@@ -364,15 +366,20 @@ void update_input()
       mouse_point.y = my - (SCREEN_HEIGHT / 2);
       Point tile_coordinates = isometric_to_cartesian(mouse_point);
       selectedTile = tile_coordinates;
-      Point player_position = {gPlayer.world_x, gPlayer.world_y};
 
+      Point player_position = {gPlayer.world_x, gPlayer.world_y};
       memset(gPlayer.path, -1, MAX_PATH_LENGTH);
       printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
       if (find_path(player_position, tile_coordinates, gPlayer.path))
       {
-        gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
-        printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
-        printf("PLAYER POSITION(%d, %d)\n", player_position.x, player_position.y);
+        if (e.type == SDL_MOUSEBUTTONDOWN)
+        {
+          gPlayer.moving = true;
+          gPlayer.target = tile_coordinates;
+          gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
+          printf("TILE_COORDINATES(%d, %d)\n", tile_coordinates.x, tile_coordinates.y);
+          printf("PLAYER POSITION(%d, %d)\n", player_position.x, player_position.y);
+        }
       }
     }
     if (e.type == SDL_QUIT)
@@ -429,6 +436,22 @@ void update_animations()
   }
 }
 
+void update_player()
+{
+  if (gPlayer.moving)
+  {
+    enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[gPlayer.point_in_path++];
+    Point direction = get_direction_from_path(code);
+    gPlayer.world_x += direction.x;
+    gPlayer.world_y += direction.y;
+    if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
+    {
+      gPlayer.moving = false;
+    }
+  }
+  SDL_Delay(60);
+}
+
 void game_loop()
 {
   if (!gGamePaused)
@@ -436,6 +459,7 @@ void game_loop()
     SDL_Delay(50);
     update_input();
     update_animations();
+    update_player();
   }
   else
   {
