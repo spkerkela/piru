@@ -49,6 +49,8 @@ char *character_class_str[CHARACTER_CLASS_COUNT] = {
 Point selectedTile;
 
 extern Player gPlayer;
+Monster monsters[MAX_MONSTERS];
+int created_monsters = 0;
 
 // Path finding
 void start_menu_music() { printf("Ominous music playing..\n"); }
@@ -82,6 +84,29 @@ void draw_text(char *text, SDL_Color textColor, SDL_Rect *source, SDL_Rect *dest
 bool load_file_exists()
 {
   return false;
+}
+
+bool create_monster(const Point at)
+{
+  if (gDungeonBlockTable[at.y][at.x])
+  {
+    return false;
+  }
+  if (created_monsters >= MAX_MONSTERS)
+  {
+    return false;
+  }
+  Monster monster;
+  monster.world_x = at.x;
+  monster.world_y = at.y;
+  monster.id = created_monsters;
+  monster.level = 1;
+  monster.state = MONSTER_STANDING;
+  Point monster_target = {monster.world_x, monster.world_y};
+  monster.target = monster_target;
+  memset(monster.path, -1, MAX_PATH_LENGTH);
+  monsters[created_monsters++] = monster;
+  return true;
 }
 
 void create_new_character()
@@ -210,7 +235,7 @@ void init_player_position()
   gPlayer.current_game_level = 0;
   gPlayer.direction = SOUTH;
   gPlayer.point_in_path = 0;
-  gPlayer.state = STANDING;
+  gPlayer.state = PLAYER_STANDING;
 }
 
 void draw_dungeon()
@@ -288,6 +313,25 @@ void draw_cursor()
                  &cursorQuad);
 }
 
+void draw_monsters()
+{
+  int i;
+  int offset_x = gPlayer.world_x;
+  int offset_y = gPlayer.world_y;
+  for (i = 0; i < created_monsters; i++)
+  {
+    Point monster_point = {
+        monsters[i].world_x - offset_x,
+        monsters[i].world_y - offset_y};
+    Point isometric_point = cartesian_to_isometric(monster_point);
+
+    SDL_Rect monster_quad = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
+                             isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
+    SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
+                   NULL,
+                   &monster_quad);
+  }
+}
 void draw_and_blit()
 {
   //Clear screen
@@ -296,6 +340,8 @@ void draw_and_blit()
 
   draw_dungeon();
   draw_debug_path();
+
+  draw_monsters();
 
   //Render texture to screen
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 108,
@@ -339,7 +385,7 @@ void update_input()
       {
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
-          gPlayer.state = MOVING;
+          gPlayer.state = PLAYER_MOVING;
           gPlayer.point_in_path = 0;
           gPlayer.target = selectedTile;
         }
@@ -454,6 +500,11 @@ bool start_game(enum GAME_START_MODE start_mode)
   load_assets();
   init_player_position();
   create_dungeon();
+  Point monster_point = {9, 8};
+  create_monster(monster_point);
+  monster_point.x = 11;
+  monster_point.y = 12;
+  create_monster(monster_point);
   run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");

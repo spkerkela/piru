@@ -16,7 +16,7 @@ void update_player_movement()
     gPlayer.world_y += direction.y;
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
     {
-      gPlayer.state = STANDING;
+      gPlayer.state = PLAYER_STANDING;
       gPlayer.point_in_path = 0;
     }
   }
@@ -26,7 +26,7 @@ void update_player()
 {
   switch (gPlayer.state)
   {
-  case MOVING:
+  case PLAYER_MOVING:
     update_player_movement();
     break;
   default:
