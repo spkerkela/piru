@@ -103,6 +103,7 @@ bool create_monster(const Point at)
   monster.id = created_monsters;
   monster.level = 1;
   monster.state = MONSTER_STANDING;
+  monster.direction = MONSTER_SOUTH;
   Point monster_target = {monster.world_x, monster.world_y};
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
@@ -326,10 +327,11 @@ void draw_monsters()
         monsters[i].world_y - offset_y};
     Point isometric_point = cartesian_to_isometric(monster_point);
 
+    Animation currentMonsterAnimation = animations[1][monsters[i].direction];
     SDL_Rect monster_quad = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
-                             isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
-    SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
-                   NULL,
+                             isometric_point.y + (SCREEN_HEIGHT / 2), 120, 100};
+    SDL_RenderCopy(gRenderer, gImageAssets[5].texture,
+                   &currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame],
                    &monster_quad);
   }
 }
@@ -432,7 +434,7 @@ void update_input()
   }
 }
 
-void update_animations()
+void update_player_animations()
 {
   enum PLAYER_DIRECTION dir;
   for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
@@ -444,6 +446,26 @@ void update_animations()
       animations[0][dir].currentFrame = 0;
     }
   }
+}
+
+void update_monster_animations()
+{
+  enum MONSTER_DIRECTION dir;
+  for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++)
+  {
+    int animFrames = animations[0][dir].columns;
+    animations[1][dir].currentFrame += 1;
+    if (animations[1][dir].currentFrame >= animFrames)
+    {
+      animations[1][dir].currentFrame = 0;
+    }
+  }
+}
+
+void update_animations()
+{
+  update_player_animations();
+  update_monster_animations();
 }
 
 void game_loop()

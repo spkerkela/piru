@@ -6,11 +6,11 @@ obj=$(src:.c=.o)
 dep = $(obj:.o=.d)
 -include $(dep)   # include all dep files in the makefile
 CC=gcc
-C_FLAGS=-Wall -std=c99 -g
+C_FLAGS=-g -Wall -std=c99
 ifeq ($(UNAME), Darwin)
 FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf
 
-piru: $(obj)
+piru: $(src)
 	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS)
 
 %.d: %.c

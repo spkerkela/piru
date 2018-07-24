@@ -33,6 +33,7 @@ typedef struct
     int level;
     int world_x;
     int world_y;
+    int animation_frame;
     enum MONSTER_DIRECTION direction;
     enum MONSTER_STATE state;
 } Monster;

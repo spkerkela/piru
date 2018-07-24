@@ -111,6 +111,6 @@ bool load_assets()
     gImageAssets[asset_index++] = cursorSword;
     gImageAssets[asset_index++] = skeletonIdleSpriteSheet;
     load_animations(playerSpriteSheet, 8, 16, 0);
-    load_animations(skeletonIdleSpriteSheet, 8, 8, 0);
+    load_animations(skeletonIdleSpriteSheet, 8, 8, 1);
     return true;
 }
