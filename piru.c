@@ -14,6 +14,7 @@
 #include "structs.h"
 #include "player.h"
 #include "direction.h"
+#include "monster.h"
 
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;
@@ -103,7 +104,7 @@ bool create_monster(const Point at)
   monster.id = created_monsters;
   monster.level = 1;
   monster.state = MONSTER_STANDING;
-  monster.direction = MONSTER_SOUTH;
+  monster.direction = rand() % MONSTER_DIRECTION_COUNT;
   Point monster_target = {monster.world_x, monster.world_y};
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
@@ -347,7 +348,7 @@ void draw_and_blit()
   SDL_RenderClear(gRenderer);
 
   draw_dungeon();
-  draw_debug_path();
+  //draw_debug_path();
 
   draw_monsters();
 
@@ -355,8 +356,8 @@ void draw_and_blit()
   Animation currentPlayerAnimation = animations[0][gPlayer.direction];
   int width = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].w;
   int height = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].h;
-  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,  // 108
-                               (SCREEN_HEIGHT / 2) + currentPlayerAnimation.offset_y, //120
+  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
+                               (SCREEN_HEIGHT / 2) + currentPlayerAnimation.offset_y,
                                width,
                                height};
 
@@ -474,6 +475,15 @@ void update_animations()
   update_monster_animations();
 }
 
+void update_monsters()
+{
+  int id;
+  for (id = 0; id < created_monsters; id++)
+  {
+    update_monster(id);
+  }
+}
+
 void game_loop()
 {
   if (!gGamePaused)
@@ -482,6 +492,7 @@ void game_loop()
     update_input();
     update_animations();
     update_player();
+    update_monsters();
   }
   else
   {

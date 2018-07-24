@@ -11,7 +11,7 @@ void update_player_movement()
     gPlayer.point_in_path++;
     Point direction = get_direction_from_path(code);
 
-    gPlayer.direction = get_direction_from_path_code(code);
+    gPlayer.direction = player_get_direction_from_path_code(code);
     gPlayer.world_x += direction.x;
     gPlayer.world_y += direction.y;
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)

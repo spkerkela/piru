@@ -34,6 +34,7 @@ typedef struct
     int world_x;
     int world_y;
     int animation_frame;
+    int point_in_path;
     enum MONSTER_DIRECTION direction;
     enum MONSTER_STATE state;
 } Monster;

@@ -1,5 +1,5 @@
 #include "direction.h"
-enum PLAYER_DIRECTION get_direction_from_path_code(enum PATH_CODE code)
+enum PLAYER_DIRECTION player_get_direction_from_path_code(enum PATH_CODE code)
 {
   switch (code)
   {
@@ -21,6 +21,31 @@ enum PLAYER_DIRECTION get_direction_from_path_code(enum PATH_CODE code)
     return PLAYER_SOUTH;
   default:
     return PLAYER_SOUTH;
+  }
+}
+
+enum MONSTER_DIRECTION monster_get_direction_from_path_code(enum PATH_CODE code)
+{
+  switch (code)
+  {
+  case UP:
+    return MONSTER_NORTH_EAST;
+  case DOWN:
+    return MONSTER_SOUTH_WEST;
+  case LEFT:
+    return MONSTER_NORTH_WEST;
+  case RIGHT:
+    return MONSTER_SOUTH_EAST;
+  case UP_LEFT:
+    return MONSTER_NORTH;
+  case UP_RIGHT:
+    return MONSTER_EAST;
+  case DOWN_LEFT:
+    return MONSTER_WEST;
+  case DOWN_RIGHT:
+    return MONSTER_SOUTH;
+  default:
+    return MONSTER_SOUTH;
   }
 }
 
