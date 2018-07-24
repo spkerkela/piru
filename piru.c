@@ -446,11 +446,11 @@ void update_player_animations()
   enum PLAYER_DIRECTION dir;
   for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
   {
-    int animFrames = animations[0][dir].columns;
-    animations[0][dir].currentFrame += 1;
-    if (animations[0][dir].currentFrame >= animFrames)
+    int animFrames = animations[ANIM_WARRIOR_WALK][dir].columns;
+    animations[ANIM_WARRIOR_WALK][dir].currentFrame += 1;
+    if (animations[ANIM_WARRIOR_WALK][dir].currentFrame >= animFrames)
     {
-      animations[0][dir].currentFrame = 0;
+      animations[ANIM_WARRIOR_WALK][dir].currentFrame = 0;
     }
   }
 }
@@ -460,11 +460,11 @@ void update_monster_animations()
   enum MONSTER_DIRECTION dir;
   for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++)
   {
-    int animFrames = animations[0][dir].columns;
-    animations[1][dir].currentFrame += 1;
-    if (animations[1][dir].currentFrame >= animFrames)
+    int animFrames = animations[ANIM_SKELETON_IDLE][dir].columns;
+    animations[ANIM_SKELETON_IDLE][dir].currentFrame += 1;
+    if (animations[ANIM_SKELETON_IDLE][dir].currentFrame >= animFrames)
     {
-      animations[1][dir].currentFrame = 0;
+      animations[ANIM_SKELETON_IDLE][dir].currentFrame = 0;
     }
   }
 }
