@@ -12,6 +12,8 @@
 #include "point.h"
 #include "sdl2.h"
 #include "structs.h"
+#include "player.h"
+#include "direction.h"
 
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;
@@ -46,82 +48,7 @@ char *character_class_str[CHARACTER_CLASS_COUNT] = {
 
 Point selectedTile;
 
-enum DIRECTION get_direction_from_path_code(enum PATH_CODE code)
-{
-  switch (code)
-  {
-  case UP:
-    return NORTH_EAST_2;
-  case DOWN:
-    return SOUTH_WEST_2;
-  case LEFT:
-    return NORTH_WEST_2;
-  case RIGHT:
-    return SOUTH_EAST_2;
-  case UP_LEFT:
-    return NORTH;
-  case UP_RIGHT:
-    return EAST;
-  case DOWN_LEFT:
-    return WEST;
-  case DOWN_RIGHT:
-    return SOUTH;
-  default:
-    return SOUTH;
-  }
-}
-enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
-{
-  static const double step = 360.0 / DIRECTION_COUNT;
-  double angle = -atan2((double)y2 - (double)y1, (double)x2 - (double)x1) * 180 / M_PI;
-  if (angle >= 0)
-  {
-    enum DIRECTION dir = EAST;
-    double start = -step / 2;
-    while (true)
-    {
-
-      if (angle < step + start)
-      {
-        return dir;
-      }
-      start += step;
-      --dir;
-
-      if (start > 1000.0)
-      {
-        break;
-      }
-    }
-  }
-  else
-  {
-    enum DIRECTION dir = EAST;
-    double start = step / 2;
-    while (true)
-    {
-      if (angle > (start - step))
-      {
-        return dir;
-      }
-      start -= step;
-      dir++;
-      if (dir >= DIRECTION_COUNT)
-      {
-        dir = SOUTH;
-      }
-
-      if (start < -1000.0)
-      {
-        break;
-      }
-    }
-  }
-
-  return SOUTH;
-}
-
-Player gPlayer;
+extern Player gPlayer;
 
 // Path finding
 void start_menu_music() { printf("Ominous music playing..\n"); }
@@ -471,30 +398,6 @@ void update_animations()
       gPlayerAnimations[dir].currentFrame = 0;
     }
   }
-}
-
-void update_player()
-{
-  if (gPlayer.moving)
-  {
-    char raw_code = gPlayer.path[gPlayer.point_in_path];
-    if (raw_code != -1)
-    {
-      enum PATH_CODE code = (enum PATH_CODE)raw_code;
-      gPlayer.point_in_path++;
-      Point direction = get_direction_from_path(code);
-
-      gPlayer.direction = get_direction_from_path_code(code);
-      gPlayer.world_x += direction.x;
-      gPlayer.world_y += direction.y;
-      if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
-      {
-        gPlayer.moving = false;
-        gPlayer.point_in_path = 0;
-      }
-    }
-  }
-  SDL_Delay(60);
 }
 
 void game_loop()
