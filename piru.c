@@ -102,7 +102,8 @@ bool create_monster(const Point at)
   monster.world_y = at.y;
   monster.id = created_monsters;
   monster.level = 1;
-  monster.state = MONSTER_ATTACKING;
+  monster.state = MONSTER_STANDING;
+  monster.next_state = MONSTER_NO_STATE;
   monster.direction = rand() % MONSTER_DIRECTION_COUNT;
   Point monster_target = {monster.world_x, monster.world_y};
   monster.target = monster_target;
@@ -403,7 +404,7 @@ void update_input()
       {
         memset(gPlayer.path, -1, MAX_PATH_LENGTH);
       }
-      if (mouse_was_pressed && (player_position.x != selectedTile.x && player_position.y != selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
+      if (mouse_was_pressed && !(player_position.x == selectedTile.x && player_position.y == selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
       {
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
@@ -472,6 +473,11 @@ void update_monster_animations()
     monsters[id].animation_frame++;
     if (monsters[id].animation_frame >= animFrames)
     {
+      if (monsters[id].next_state != MONSTER_NO_STATE)
+      {
+        monsters[id].state = monsters[id].next_state;
+        monsters[id].next_state = MONSTER_NO_STATE;
+      }
       monsters[id].animation_frame = 0;
     }
   }
@@ -556,14 +562,12 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  /*
-  for (ms = 0; ms < 10; ms++)
+  for (ms = 0; ms < 40; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);
   }
-  */
   monster_point.x = 1;
   monster_point.y = 1;
   create_monster(monster_point);

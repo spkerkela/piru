@@ -64,6 +64,7 @@ void update_monster(int id)
     break;
   case MONSTER_ATTACKING:
     monsters[id].animation = ANIM_SKELETON_ATTACK;
+    monsters[id].next_state = MONSTER_STANDING;
     break;
   default:
     break;

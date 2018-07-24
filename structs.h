@@ -34,6 +34,7 @@ typedef struct
     enum ANIMATION animation;
     enum MONSTER_DIRECTION direction;
     enum MONSTER_STATE state;
+    enum MONSTER_STATE next_state;
     int animation_frame;
     int id;
     int level;
