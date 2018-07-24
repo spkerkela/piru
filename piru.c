@@ -353,7 +353,7 @@ void draw_and_blit()
   draw_monsters();
 
   //Render texture to screen
-  Animation currentPlayerAnimation = animations[ANIM_WARRIOR_WALK][gPlayer.direction];
+  Animation currentPlayerAnimation = animations[ANIM_WARRIOR_ATTACK][gPlayer.direction];
   int width = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].w;
   int height = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].h;
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
@@ -446,11 +446,11 @@ void update_player_animations()
   enum PLAYER_DIRECTION dir;
   for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
   {
-    int animFrames = animations[ANIM_WARRIOR_WALK][dir].columns;
-    animations[ANIM_WARRIOR_WALK][dir].currentFrame += 1;
-    if (animations[ANIM_WARRIOR_WALK][dir].currentFrame >= animFrames)
+    int animFrames = animations[ANIM_WARRIOR_ATTACK][dir].columns;
+    animations[ANIM_WARRIOR_ATTACK][dir].currentFrame += 1;
+    if (animations[ANIM_WARRIOR_ATTACK][dir].currentFrame >= animFrames)
     {
-      animations[ANIM_WARRIOR_WALK][dir].currentFrame = 0;
+      animations[ANIM_WARRIOR_ATTACK][dir].currentFrame = 0;
     }
   }
 }

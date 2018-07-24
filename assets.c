@@ -51,7 +51,7 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, enum ANIMATI
     int animationRows = rows;
     int frameWidth = width / animationColumns;
     int frameHeight = height / animationRows;
-    if (animationIndex == ANIM_WARRIOR_WALK) // Player animation
+    if (animationIndex == ANIM_WARRIOR_WALK || animationIndex == ANIM_WARRIOR_IDLE || animationIndex == ANIM_WARRIOR_ATTACK) // Player animation
     {
         enum PLAYER_DIRECTION dir;
         for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
@@ -102,7 +102,9 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, enum ANIMATI
 bool load_assets()
 {
     // load
-    ImageAsset warriorMoveSpriteSheet = load_image_asset("assets/player2.png");
+    ImageAsset warriorMoveSpriteSheet = load_image_asset("assets/player_walk.png");
+    ImageAsset warriorIdleSpriteSheet = load_image_asset("assets/player_idle.png");
+    ImageAsset warriorAttackSpriteSheet = load_image_asset("assets/player_attack.png");
     ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
     ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
     ImageAsset selectionSpriteSheet = load_image_asset("assets/iso_selection.png");
@@ -112,6 +114,8 @@ bool load_assets()
 
     // allocate images
     gImageAssets[SPRITE_WARRIOR_WALK] = warriorMoveSpriteSheet;
+    gImageAssets[SPRITE_WARRIOR_ATTACK] = warriorAttackSpriteSheet;
+    gImageAssets[SPRITE_WARRIOR_IDLE] = warriorIdleSpriteSheet;
     gImageAssets[SPRITE_GROVEL] = grovelSpriteSheet;
     gImageAssets[SPRITE_STONE] = stoneSpriteSheet;
     gImageAssets[SPRITE_SELECTION] = selectionSpriteSheet;
@@ -121,6 +125,8 @@ bool load_assets()
 
     // allocate animations
     load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);
+    load_animations(warriorIdleSpriteSheet, 8, 16, ANIM_WARRIOR_IDLE, -80, -88);
+    load_animations(warriorAttackSpriteSheet, 9, 16, ANIM_WARRIOR_ATTACK, -174, -88);
     load_animations(skeletonIdleSpriteSheet, 8, 8, ANIM_SKELETON_IDLE, -80, -56);
     load_animations(skeletonWalkSpriteSheet, 8, 8, ANIM_SKELETON_WALK, -80, -56);
     return true;
