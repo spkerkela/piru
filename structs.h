@@ -12,18 +12,29 @@ typedef struct
 
 typedef struct
 {
-    enum CHARACTER_CLASS character_class;
+    Point target;
+    char path[MAX_PATH_LENGTH];
     enum ARMOR_CLASS armor_class;
+    enum CHARACTER_CLASS character_class;
     enum DIRECTION direction;
-    int level;
+    enum PLAYER_STATE state;
     int current_game_level;
+    int level;
+    int point_in_path;
     int world_x;
     int world_y;
-    char path[MAX_PATH_LENGTH];
-    int point_in_path;
-    bool moving;
-    Point target;
 } Player;
+
+typedef struct
+{
+    Point target;
+    char path[MAX_PATH_LENGTH];
+    int id;
+    int level;
+    int world_x;
+    int world_y;
+    enum MONSTER_STATE state;
+} Monster;
 
 typedef struct
 {

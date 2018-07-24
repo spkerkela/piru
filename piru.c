@@ -210,7 +210,7 @@ void init_player_position()
   gPlayer.current_game_level = 0;
   gPlayer.direction = SOUTH;
   gPlayer.point_in_path = 0;
-  gPlayer.moving = false;
+  gPlayer.state = STANDING;
 }
 
 void draw_dungeon()
@@ -329,8 +329,7 @@ void update_input()
       Point offset = cartesian_to_isometric(player_position);
       mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
       mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
-      Point tile_coordinates = isometric_to_cartesian(mouse_point);
-      selectedTile = tile_coordinates;
+      selectedTile = isometric_to_cartesian(mouse_point);
 
       if (mouse_was_pressed)
       {
@@ -340,7 +339,7 @@ void update_input()
       {
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
-          gPlayer.moving = true;
+          gPlayer.state = MOVING;
           gPlayer.point_in_path = 0;
           gPlayer.target = selectedTile;
         }
