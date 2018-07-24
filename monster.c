@@ -37,7 +37,10 @@ void update_monster_movement(int i)
       monsters[i].point_in_path = 0;
     }
   }
-  monsters[i].state = MONSTER_STANDING;
+  else
+  {
+    monsters[i].state = MONSTER_STANDING;
+  }
 }
 
 void update_monster(int id)
@@ -46,9 +49,17 @@ void update_monster(int id)
   {
   case MONSTER_MOVING:
     update_monster_movement(id);
+    monsters[id].animation = ANIM_SKELETON_WALK;
     break;
   case MONSTER_STANDING:
-    find_path_to_player(id);
+    if (gPlayer.world_x != monsters[id].world_x && gPlayer.world_y != monsters[id].world_y)
+    {
+      find_path_to_player(id);
+    }
+    else
+    {
+      monsters[id].animation = ANIM_SKELETON_IDLE;
+    }
     break;
   default:
     break;

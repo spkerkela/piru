@@ -28,6 +28,10 @@ void update_player()
   {
   case PLAYER_MOVING:
     update_player_movement();
+    gPlayer.animation = ANIM_WARRIOR_WALK;
+    break;
+  case PLAYER_STANDING:
+    gPlayer.animation = ANIM_WARRIOR_IDLE;
     break;
   default:
     break;

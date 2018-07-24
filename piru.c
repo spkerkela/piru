@@ -54,7 +54,6 @@ Monster monsters[MAX_MONSTERS];
 
 int created_monsters = 0;
 
-// Path finding
 void start_menu_music() { printf("Ominous music playing..\n"); }
 
 void stop_music() { printf("Music stopped..\n"); }
@@ -109,7 +108,7 @@ bool create_monster(const Point at)
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
   monster.animation_frame = 0;
-  monster.animation = ANIM_SKELETON_WALK;
+  monster.animation = ANIM_SKELETON_IDLE;
   monsters[created_monsters++] = monster;
   return true;
 }
@@ -241,7 +240,7 @@ void init_player_position()
   gPlayer.direction = PLAYER_SOUTH;
   gPlayer.point_in_path = 0;
   gPlayer.state = PLAYER_STANDING;
-  gPlayer.animation = ANIM_WARRIOR_WALK;
+  gPlayer.animation = ANIM_WARRIOR_IDLE;
 }
 
 void draw_dungeon()
@@ -340,7 +339,7 @@ void draw_monsters()
     Point isometric_point = cartesian_to_isometric(monster_point);
 
     int current_frame = monsters[i].animation_frame;
-    Animation currentMonsterAnimation = animations[ANIM_SKELETON_WALK][monsters[i].direction];
+    Animation currentMonsterAnimation = animations[monsters[i].animation][monsters[i].direction];
     int width = currentMonsterAnimation.frames[current_frame].w;
     int height = currentMonsterAnimation.frames[current_frame].h;
     SDL_Rect monster_quad = {
@@ -365,7 +364,7 @@ void draw_and_blit()
   draw_monsters();
 
   //Render texture to screen
-  Animation currentPlayerAnimation = animations[ANIM_WARRIOR_WALK][gPlayer.direction];
+  Animation currentPlayerAnimation = animations[gPlayer.animation][gPlayer.direction];
   int current_frame = gPlayer.animation_frame;
   int width = currentPlayerAnimation.frames[current_frame].w;
   int height = currentPlayerAnimation.frames[current_frame].h;
@@ -404,7 +403,7 @@ void update_input()
       {
         memset(gPlayer.path, -1, MAX_PATH_LENGTH);
       }
-      if (mouse_was_pressed && find_path(player_position, selectedTile, gPlayer.path))
+      if (mouse_was_pressed && (player_position.x != selectedTile.x && player_position.y != selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
       {
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
