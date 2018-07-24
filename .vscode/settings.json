@@ -4,6 +4,8 @@
     "sdl.h": "c",
     "__locale": "c",
     "sdl2.h": "c",
-    "constants.h": "c"
+    "constants.h": "c",
+    "assets.h": "c",
+    "structs.h": "c"
   }
 }

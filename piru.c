@@ -46,6 +46,30 @@ char *character_class_str[CHARACTER_CLASS_COUNT] = {
 
 Point selectedTile;
 
+enum DIRECTION get_direction_from_path_code(enum PATH_CODE code)
+{
+  switch (code)
+  {
+  case UP:
+    return NORTH_EAST_2;
+  case DOWN:
+    return SOUTH_WEST_2;
+  case LEFT:
+    return NORTH_WEST_2;
+  case RIGHT:
+    return SOUTH_EAST_2;
+  case UP_LEFT:
+    return NORTH;
+  case UP_RIGHT:
+    return EAST;
+  case DOWN_LEFT:
+    return WEST;
+  case DOWN_RIGHT:
+    return SOUTH;
+  default:
+    return SOUTH;
+  }
+}
 enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
 {
   static const double step = 360.0 / DIRECTION_COUNT;
@@ -392,7 +416,6 @@ void update_input()
           gPlayer.moving = true;
           gPlayer.point_in_path = 0;
           gPlayer.target = selectedTile;
-          gPlayer.direction = get_direction(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, mx, my);
         }
       }
     }
@@ -454,11 +477,14 @@ void update_player()
 {
   if (gPlayer.moving)
   {
-    enum PATH_CODE code = (enum PATH_CODE)gPlayer.path[gPlayer.point_in_path];
-    if (code != -1)
+    char raw_code = gPlayer.path[gPlayer.point_in_path];
+    if (raw_code != -1)
     {
+      enum PATH_CODE code = (enum PATH_CODE)raw_code;
       gPlayer.point_in_path++;
       Point direction = get_direction_from_path(code);
+
+      gPlayer.direction = get_direction_from_path_code(code);
       gPlayer.world_x += direction.x;
       gPlayer.world_y += direction.y;
       if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
