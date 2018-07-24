@@ -328,7 +328,7 @@ void draw_monsters()
         monsters[i].world_y - offset_y};
     Point isometric_point = cartesian_to_isometric(monster_point);
 
-    Animation currentMonsterAnimation = animations[ANIM_SKELETON_IDLE][monsters[i].direction];
+    Animation currentMonsterAnimation = animations[ANIM_SKELETON_WALK][monsters[i].direction];
     int width = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].w;
     int height = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].h;
     SDL_Rect monster_quad = {
@@ -336,7 +336,7 @@ void draw_monsters()
         isometric_point.y + (SCREEN_HEIGHT / 2) + currentMonsterAnimation.offset_y,
         width,
         height};
-    SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_SKELETON_IDLE].texture,
+    SDL_RenderCopy(gRenderer, currentMonsterAnimation.image.texture,
                    &currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame],
                    &monster_quad);
   }
@@ -361,7 +361,7 @@ void draw_and_blit()
                                width,
                                height};
 
-  SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_WARRIOR_WALK].texture,
+  SDL_RenderCopy(gRenderer, currentPlayerAnimation.image.texture,
                  &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
                  &playerRenderQuad);
 
@@ -460,11 +460,11 @@ void update_monster_animations()
   enum MONSTER_DIRECTION dir;
   for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++)
   {
-    int animFrames = animations[ANIM_SKELETON_IDLE][dir].columns;
-    animations[ANIM_SKELETON_IDLE][dir].currentFrame += 1;
-    if (animations[ANIM_SKELETON_IDLE][dir].currentFrame >= animFrames)
+    int animFrames = animations[ANIM_SKELETON_WALK][dir].columns;
+    animations[ANIM_SKELETON_WALK][dir].currentFrame += 1;
+    if (animations[ANIM_SKELETON_WALK][dir].currentFrame >= animFrames)
     {
-      animations[ANIM_SKELETON_IDLE][dir].currentFrame = 0;
+      animations[ANIM_SKELETON_WALK][dir].currentFrame = 0;
     }
   }
 }
