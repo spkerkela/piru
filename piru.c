@@ -102,7 +102,7 @@ bool create_monster(const Point at)
   monster.world_y = at.y;
   monster.id = created_monsters;
   monster.level = 1;
-  monster.state = MONSTER_STANDING;
+  monster.state = MONSTER_ATTACKING;
   monster.direction = rand() % MONSTER_DIRECTION_COUNT;
   Point monster_target = {monster.world_x, monster.world_y};
   monster.target = monster_target;
@@ -556,12 +556,17 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < MAX_MONSTERS; ms++)
+  /*
+  for (ms = 0; ms < 10; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);
   }
+  */
+  monster_point.x = 1;
+  monster_point.y = 1;
+  create_monster(monster_point);
   run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");

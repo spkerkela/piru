@@ -31,10 +31,11 @@ void update_monster_movement(int i)
     monsters[i].direction = monster_get_direction_from_path_code(code);
     monsters[i].world_x += direction.x;
     monsters[i].world_y += direction.y;
-    if (monsters[i].world_x == monsters[i].target.x && monsters[i].world_y == monsters[i].target.y)
+    if (monsters[i].path[monsters[i].point_in_path + 1] == -1)
     {
-      monsters[i].state = MONSTER_STANDING;
+      monsters[i].state = MONSTER_ATTACKING;
       monsters[i].point_in_path = 0;
+      monsters[i].animation_frame = 0;
     }
   }
   else
@@ -60,6 +61,9 @@ void update_monster(int id)
     {
       monsters[id].animation = ANIM_SKELETON_IDLE;
     }
+    break;
+  case MONSTER_ATTACKING:
+    monsters[id].animation = ANIM_SKELETON_ATTACK;
     break;
   default:
     break;
