@@ -250,6 +250,10 @@ void draw_dungeon()
   {
     for (x = 0; x < DUNGEON_SIZE; x++)
     {
+      if (x < gPlayer.world_x - CUTOFF_X || x > gPlayer.world_x + CUTOFF_X || y < gPlayer.world_y - CUTOFF_Y || y > gPlayer.world_y + CUTOFF_Y)
+      {
+        continue;
+      }
       cartesian_point.x = x - gPlayer.world_x;
       cartesian_point.y = y - gPlayer.world_y;
       isometric_point = cartesian_to_isometric(cartesian_point);
@@ -323,6 +327,10 @@ void draw_monsters()
   int offset_y = gPlayer.world_y;
   for (i = 0; i < created_monsters; i++)
   {
+    if (monsters[i].world_x < gPlayer.world_x - CUTOFF_X || monsters[i].world_x > gPlayer.world_x + CUTOFF_X || monsters[i].world_y < gPlayer.world_y - CUTOFF_Y || monsters[i].world_y > gPlayer.world_y + CUTOFF_Y)
+    {
+      continue;
+    }
     Point monster_point = {
         monsters[i].world_x - offset_x,
         monsters[i].world_y - offset_y};
@@ -353,7 +361,7 @@ void draw_and_blit()
   draw_monsters();
 
   //Render texture to screen
-  Animation currentPlayerAnimation = animations[ANIM_WARRIOR_ATTACK][gPlayer.direction];
+  Animation currentPlayerAnimation = animations[ANIM_WARRIOR_WALK][gPlayer.direction];
   int width = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].w;
   int height = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].h;
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
@@ -446,11 +454,11 @@ void update_player_animations()
   enum PLAYER_DIRECTION dir;
   for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
   {
-    int animFrames = animations[ANIM_WARRIOR_ATTACK][dir].columns;
-    animations[ANIM_WARRIOR_ATTACK][dir].currentFrame += 1;
-    if (animations[ANIM_WARRIOR_ATTACK][dir].currentFrame >= animFrames)
+    int animFrames = animations[ANIM_WARRIOR_WALK][dir].columns;
+    animations[ANIM_WARRIOR_WALK][dir].currentFrame += 1;
+    if (animations[ANIM_WARRIOR_WALK][dir].currentFrame >= animFrames)
     {
-      animations[ANIM_WARRIOR_ATTACK][dir].currentFrame = 0;
+      animations[ANIM_WARRIOR_WALK][dir].currentFrame = 0;
     }
   }
 }
@@ -477,10 +485,14 @@ void update_animations()
 
 void update_monsters()
 {
-  int id;
-  for (id = 0; id < created_monsters; id++)
+  int i;
+  for (i = 0; i < created_monsters; i++)
   {
-    update_monster(id);
+    if (monsters[i].world_x < gPlayer.world_x - CUTOFF_X * 2 || monsters[i].world_x > gPlayer.world_x + CUTOFF_X * 2 || monsters[i].world_y < gPlayer.world_y - CUTOFF_Y * 2 || monsters[i].world_y > gPlayer.world_y + CUTOFF_Y * 2)
+    {
+      continue;
+    }
+    update_monster(i);
   }
 }
 
@@ -488,7 +500,7 @@ void game_loop()
 {
   if (!gGamePaused)
   {
-    SDL_Delay(50);
+    SDL_Delay(60);
     update_input();
     update_animations();
     update_player();
@@ -542,10 +554,10 @@ bool start_game(enum GAME_START_MODE start_mode)
   create_dungeon();
   Point monster_point;
   int ms;
-  for (ms = 0; ms < 100; ms++)
+  for (ms = 0; ms < MAX_MONSTERS; ms++)
   {
-    monster_point.x = (rand() % 110) + 1;
-    monster_point.y = (rand() % 110) + 1;
+    monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
+    monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);
   }
   run_game_loop(start_mode);

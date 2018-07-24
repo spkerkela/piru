@@ -10,6 +10,9 @@
 #define TILE_HEIGHT 32
 #define TILE_WIDTH_HALF (TILE_WIDTH / 2)
 #define TILE_HEIGHT_HALF (TILE_HEIGHT / 2)
+
+#define CUTOFF_X 13
+#define CUTOFF_Y 13
 #define MAX_MONSTERS 1024
 
 #endif
