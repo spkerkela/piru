@@ -50,6 +50,7 @@ Point selectedTile;
 
 extern Player gPlayer;
 Monster monsters[MAX_MONSTERS];
+
 int created_monsters = 0;
 
 // Path finding
@@ -349,7 +350,7 @@ void draw_and_blit()
                                150,
                                150};
 
-  Animation currentPlayerAnimation = gPlayerAnimations[gPlayer.direction];
+  Animation currentPlayerAnimation = animations[0][gPlayer.direction];
 
   SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
                  &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
@@ -436,11 +437,11 @@ void update_animations()
   enum DIRECTION dir;
   for (dir = SOUTH; dir < DIRECTION_COUNT; dir++)
   {
-    int animFrames = gPlayerAnimations[dir].columns;
-    gPlayerAnimations[dir].currentFrame += 1;
-    if (gPlayerAnimations[dir].currentFrame >= animFrames)
+    int animFrames = animations[0][dir].columns;
+    animations[0][dir].currentFrame += 1;
+    if (animations[0][dir].currentFrame >= animFrames)
     {
-      gPlayerAnimations[dir].currentFrame = 0;
+      animations[0][dir].currentFrame = 0;
     }
   }
 }

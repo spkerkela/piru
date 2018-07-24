@@ -5,7 +5,7 @@
 #include "sdl2.h"
 #include "structs.h"
 
-extern Animation gPlayerAnimations[256];
+extern Animation animations[256][256];
 extern ImageAsset gImageAssets[256];
 extern TTF_Font *gFont;
 

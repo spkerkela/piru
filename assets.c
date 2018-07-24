@@ -2,7 +2,7 @@
 
 TTF_Font *gFont = NULL;
 ImageAsset gImageAssets[256];
-Animation gPlayerAnimations[256];
+Animation animations[256][256];
 
 bool load_font()
 {
@@ -42,14 +42,13 @@ ImageAsset load_image_asset(char *fileName)
     return asset;
 }
 
-bool load_animations()
+bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animationIndex)
 {
-    ImageAsset playerSpriteSheet = gImageAssets[0];
     int width;
     int height;
-    SDL_QueryTexture(playerSpriteSheet.texture, NULL, NULL, &width, &height);
-    int animationColumns = 8;
-    int animationRows = 16;
+    SDL_QueryTexture(spriteSheet.texture, NULL, NULL, &width, &height);
+    int animationColumns = columns;
+    int animationRows = rows;
     int frameWidth = width / animationColumns;
     int frameHeight = height / animationRows;
     enum DIRECTION dir;
@@ -58,15 +57,15 @@ bool load_animations()
         int x;
         for (x = 0; x < animationColumns; x++)
         {
-            gPlayerAnimations[dir].currentFrame = 0;
-            gPlayerAnimations[dir].columns = animationColumns;
-            gPlayerAnimations[dir].rows = 1;
-            gPlayerAnimations[dir].speed = 1;
-            gPlayerAnimations[dir].image = playerSpriteSheet;
-            gPlayerAnimations[dir].frames[x].x = x * frameWidth;
-            gPlayerAnimations[dir].frames[x].y = dir * frameHeight;
-            gPlayerAnimations[dir].frames[x].w = frameWidth;
-            gPlayerAnimations[dir].frames[x].h = frameHeight;
+            animations[animationIndex][dir].currentFrame = 0;
+            animations[animationIndex][dir].columns = animationColumns;
+            animations[animationIndex][dir].rows = 1;
+            animations[animationIndex][dir].speed = 1;
+            animations[animationIndex][dir].image = spriteSheet;
+            animations[animationIndex][dir].frames[x].x = x * frameWidth;
+            animations[animationIndex][dir].frames[x].y = dir * frameHeight;
+            animations[animationIndex][dir].frames[x].w = frameWidth;
+            animations[animationIndex][dir].frames[x].h = frameHeight;
         }
     }
 
@@ -81,12 +80,14 @@ bool load_assets()
     ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
     ImageAsset selectionSpriteSheet = load_image_asset("assets/iso_selection.png");
     ImageAsset cursorSword = load_image_asset("assets/sword.png");
+    ImageAsset skeletonIdleSpriteSheet = load_image_asset("assets/skeleton_idle.png");
     gImageAssets[asset_index++] = playerSpriteSheet;
     gImageAssets[asset_index++] = grovelSpriteSheet;
     gImageAssets[asset_index++] = stoneSpriteSheet;
     gImageAssets[asset_index++] = selectionSpriteSheet;
     gImageAssets[asset_index++] = cursorSword;
-    load_animations();
+    gImageAssets[asset_index++] = skeletonIdleSpriteSheet;
+    load_animations(playerSpriteSheet, 8, 16, 0);
 
     return true;
 }
