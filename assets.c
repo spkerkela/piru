@@ -59,7 +59,6 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, enum ANIMATI
             int x;
             for (x = 0; x < animationColumns; x++)
             {
-                animations[animationIndex][dir].currentFrame = 0;
                 animations[animationIndex][dir].columns = animationColumns;
                 animations[animationIndex][dir].rows = 1;
                 animations[animationIndex][dir].speed = 1;
@@ -81,7 +80,6 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, enum ANIMATI
             int x;
             for (x = 0; x < animationColumns; x++)
             {
-                animations[animationIndex][dir].currentFrame = 0;
                 animations[animationIndex][dir].columns = animationColumns;
                 animations[animationIndex][dir].rows = 1;
                 animations[animationIndex][dir].speed = 1;

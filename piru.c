@@ -108,6 +108,8 @@ bool create_monster(const Point at)
   Point monster_target = {monster.world_x, monster.world_y};
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
+  monster.animation_frame = 0;
+  monster.animation = ANIM_SKELETON_WALK;
   monsters[created_monsters++] = monster;
   return true;
 }
@@ -239,6 +241,7 @@ void init_player_position()
   gPlayer.direction = PLAYER_SOUTH;
   gPlayer.point_in_path = 0;
   gPlayer.state = PLAYER_STANDING;
+  gPlayer.animation = ANIM_WARRIOR_WALK;
 }
 
 void draw_dungeon()
@@ -336,16 +339,17 @@ void draw_monsters()
         monsters[i].world_y - offset_y};
     Point isometric_point = cartesian_to_isometric(monster_point);
 
+    int current_frame = monsters[i].animation_frame;
     Animation currentMonsterAnimation = animations[ANIM_SKELETON_WALK][monsters[i].direction];
-    int width = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].w;
-    int height = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].h;
+    int width = currentMonsterAnimation.frames[current_frame].w;
+    int height = currentMonsterAnimation.frames[current_frame].h;
     SDL_Rect monster_quad = {
         isometric_point.x + (SCREEN_WIDTH / 2) + currentMonsterAnimation.offset_x,
         isometric_point.y + (SCREEN_HEIGHT / 2) + currentMonsterAnimation.offset_y,
         width,
         height};
     SDL_RenderCopy(gRenderer, currentMonsterAnimation.image.texture,
-                   &currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame],
+                   &currentMonsterAnimation.frames[current_frame],
                    &monster_quad);
   }
 }
@@ -362,15 +366,16 @@ void draw_and_blit()
 
   //Render texture to screen
   Animation currentPlayerAnimation = animations[ANIM_WARRIOR_WALK][gPlayer.direction];
-  int width = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].w;
-  int height = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].h;
+  int current_frame = gPlayer.animation_frame;
+  int width = currentPlayerAnimation.frames[current_frame].w;
+  int height = currentPlayerAnimation.frames[current_frame].h;
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
                                (SCREEN_HEIGHT / 2) + currentPlayerAnimation.offset_y,
                                width,
                                height};
 
   SDL_RenderCopy(gRenderer, currentPlayerAnimation.image.texture,
-                 &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
+                 &currentPlayerAnimation.frames[current_frame],
                  &playerRenderQuad);
 
   draw_cursor();
@@ -451,28 +456,24 @@ void update_input()
 
 void update_player_animations()
 {
-  enum PLAYER_DIRECTION dir;
-  for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
+  int animFrames = animations[gPlayer.animation][gPlayer.direction].columns;
+  gPlayer.animation_frame++;
+  if (gPlayer.animation_frame >= animFrames)
   {
-    int animFrames = animations[ANIM_WARRIOR_WALK][dir].columns;
-    animations[ANIM_WARRIOR_WALK][dir].currentFrame += 1;
-    if (animations[ANIM_WARRIOR_WALK][dir].currentFrame >= animFrames)
-    {
-      animations[ANIM_WARRIOR_WALK][dir].currentFrame = 0;
-    }
+    gPlayer.animation_frame = 0;
   }
 }
 
 void update_monster_animations()
 {
-  enum MONSTER_DIRECTION dir;
-  for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++)
+  int id;
+  for (id = 0; id < created_monsters; id++)
   {
-    int animFrames = animations[ANIM_SKELETON_WALK][dir].columns;
-    animations[ANIM_SKELETON_WALK][dir].currentFrame += 1;
-    if (animations[ANIM_SKELETON_WALK][dir].currentFrame >= animFrames)
+    int animFrames = animations[monsters[id].animation][monsters[id].direction].columns;
+    monsters[id].animation_frame++;
+    if (monsters[id].animation_frame >= animFrames)
     {
-      animations[ANIM_SKELETON_WALK][dir].currentFrame = 0;
+      monsters[id].animation_frame = 0;
     }
   }
 }
@@ -553,6 +554,8 @@ bool start_game(enum GAME_START_MODE start_mode)
   init_player_position();
   create_dungeon();
   Point monster_point;
+  memset(monsters, 0, MAX_MONSTERS);
+  created_monsters = 0;
   int ms;
   for (ms = 0; ms < MAX_MONSTERS; ms++)
   {

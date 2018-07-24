@@ -14,10 +14,12 @@ typedef struct
 {
     Point target;
     char path[MAX_PATH_LENGTH];
+    enum ANIMATION animation;
     enum ARMOR_CLASS armor_class;
     enum CHARACTER_CLASS character_class;
     enum PLAYER_DIRECTION direction;
     enum PLAYER_STATE state;
+    int animation_frame;
     int current_game_level;
     int level;
     int point_in_path;
@@ -29,14 +31,15 @@ typedef struct
 {
     Point target;
     char path[MAX_PATH_LENGTH];
-    int id;
-    int level;
-    int world_x;
-    int world_y;
-    int animation_frame;
-    int point_in_path;
+    enum ANIMATION animation;
     enum MONSTER_DIRECTION direction;
     enum MONSTER_STATE state;
+    int animation_frame;
+    int id;
+    int level;
+    int point_in_path;
+    int world_x;
+    int world_y;
 } Monster;
 
 typedef struct
@@ -50,7 +53,6 @@ typedef struct
     SDL_Rect frames[1024];
     int columns;
     int rows;
-    int currentFrame;
     ImageAsset image;
     int speed;
     int offset_x;
