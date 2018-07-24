@@ -16,7 +16,7 @@ typedef struct
     char path[MAX_PATH_LENGTH];
     enum ARMOR_CLASS armor_class;
     enum CHARACTER_CLASS character_class;
-    enum DIRECTION direction;
+    enum PLAYER_DIRECTION direction;
     enum PLAYER_STATE state;
     int current_game_level;
     int level;
@@ -33,6 +33,7 @@ typedef struct
     int level;
     int world_x;
     int world_y;
+    enum MONSTER_DIRECTION direction;
     enum MONSTER_STATE state;
 } Monster;
 

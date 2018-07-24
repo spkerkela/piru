@@ -6,6 +6,8 @@
     "sdl2.h": "c",
     "constants.h": "c",
     "assets.h": "c",
-    "structs.h": "c"
+    "structs.h": "c",
+    "player.h": "c",
+    "ios": "c"
   }
 }

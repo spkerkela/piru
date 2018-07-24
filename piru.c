@@ -23,7 +23,7 @@ bool gGameRunning;
 bool gGamePaused;
 SDL_Rect gPlayerSprites[8 * 16];
 
-char *direction_str[DIRECTION_COUNT] = {
+char *direction_str[PLAYER_DIRECTION_COUNT] = {
     "SOUTH",
     "SOUTH_WEST_1",
     "SOUTH_WEST_2",
@@ -234,7 +234,7 @@ void init_player_position()
   gPlayer.world_x = 1;
   gPlayer.world_y = 1;
   gPlayer.current_game_level = 0;
-  gPlayer.direction = SOUTH;
+  gPlayer.direction = PLAYER_SOUTH;
   gPlayer.point_in_path = 0;
   gPlayer.state = PLAYER_STANDING;
 }
@@ -409,15 +409,15 @@ void update_input()
         break;
       case SDLK_LEFT:
         gPlayer.direction++;
-        if (gPlayer.direction >= DIRECTION_COUNT)
+        if (gPlayer.direction >= PLAYER_DIRECTION_COUNT)
         {
-          gPlayer.direction = SOUTH;
+          gPlayer.direction = PLAYER_SOUTH;
         }
         break;
       case SDLK_RIGHT:
-        if (gPlayer.direction == SOUTH)
+        if (gPlayer.direction == PLAYER_SOUTH)
         {
-          gPlayer.direction = SOUTH_EAST_3;
+          gPlayer.direction = PLAYER_SOUTH_EAST_3;
         }
         else
         {
@@ -434,8 +434,8 @@ void update_input()
 
 void update_animations()
 {
-  enum DIRECTION dir;
-  for (dir = SOUTH; dir < DIRECTION_COUNT; dir++)
+  enum PLAYER_DIRECTION dir;
+  for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
   {
     int animFrames = animations[0][dir].columns;
     animations[0][dir].currentFrame += 1;

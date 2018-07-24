@@ -51,21 +51,44 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animatio
     int animationRows = rows;
     int frameWidth = width / animationColumns;
     int frameHeight = height / animationRows;
-    enum DIRECTION dir;
-    for (dir = SOUTH; dir < DIRECTION_COUNT; dir++)
+    if (animationIndex == 0) // Player animation
     {
-        int x;
-        for (x = 0; x < animationColumns; x++)
+        enum PLAYER_DIRECTION dir;
+        for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
         {
-            animations[animationIndex][dir].currentFrame = 0;
-            animations[animationIndex][dir].columns = animationColumns;
-            animations[animationIndex][dir].rows = 1;
-            animations[animationIndex][dir].speed = 1;
-            animations[animationIndex][dir].image = spriteSheet;
-            animations[animationIndex][dir].frames[x].x = x * frameWidth;
-            animations[animationIndex][dir].frames[x].y = dir * frameHeight;
-            animations[animationIndex][dir].frames[x].w = frameWidth;
-            animations[animationIndex][dir].frames[x].h = frameHeight;
+            int x;
+            for (x = 0; x < animationColumns; x++)
+            {
+                animations[animationIndex][dir].currentFrame = 0;
+                animations[animationIndex][dir].columns = animationColumns;
+                animations[animationIndex][dir].rows = 1;
+                animations[animationIndex][dir].speed = 1;
+                animations[animationIndex][dir].image = spriteSheet;
+                animations[animationIndex][dir].frames[x].x = x * frameWidth;
+                animations[animationIndex][dir].frames[x].y = dir * frameHeight;
+                animations[animationIndex][dir].frames[x].w = frameWidth;
+                animations[animationIndex][dir].frames[x].h = frameHeight;
+            }
+        }
+    }
+    else
+    {
+        enum MONSTER_DIRECTION dir;
+        for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++)
+        {
+            int x;
+            for (x = 0; x < animationColumns; x++)
+            {
+                animations[animationIndex][dir].currentFrame = 0;
+                animations[animationIndex][dir].columns = animationColumns;
+                animations[animationIndex][dir].rows = 1;
+                animations[animationIndex][dir].speed = 1;
+                animations[animationIndex][dir].image = spriteSheet;
+                animations[animationIndex][dir].frames[x].x = x * frameWidth;
+                animations[animationIndex][dir].frames[x].y = dir * frameHeight;
+                animations[animationIndex][dir].frames[x].w = frameWidth;
+                animations[animationIndex][dir].frames[x].h = frameHeight;
+            }
         }
     }
 
@@ -88,6 +111,6 @@ bool load_assets()
     gImageAssets[asset_index++] = cursorSword;
     gImageAssets[asset_index++] = skeletonIdleSpriteSheet;
     load_animations(playerSpriteSheet, 8, 16, 0);
-
+    load_animations(skeletonIdleSpriteSheet, 8, 8, 0);
     return true;
 }

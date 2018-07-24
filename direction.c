@@ -1,36 +1,36 @@
 #include "direction.h"
-enum DIRECTION get_direction_from_path_code(enum PATH_CODE code)
+enum PLAYER_DIRECTION get_direction_from_path_code(enum PATH_CODE code)
 {
   switch (code)
   {
   case UP:
-    return NORTH_EAST_2;
+    return PLAYER_NORTH_EAST_2;
   case DOWN:
-    return SOUTH_WEST_2;
+    return PLAYER_SOUTH_WEST_2;
   case LEFT:
-    return NORTH_WEST_2;
+    return PLAYER_NORTH_WEST_2;
   case RIGHT:
-    return SOUTH_EAST_2;
+    return PLAYER_SOUTH_EAST_2;
   case UP_LEFT:
-    return NORTH;
+    return PLAYER_NORTH;
   case UP_RIGHT:
-    return EAST;
+    return PLAYER_EAST;
   case DOWN_LEFT:
-    return WEST;
+    return PLAYER_WEST;
   case DOWN_RIGHT:
-    return SOUTH;
+    return PLAYER_SOUTH;
   default:
-    return SOUTH;
+    return PLAYER_SOUTH;
   }
 }
 
-enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
+enum PLAYER_DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
 {
-  static const double step = 360.0 / DIRECTION_COUNT;
+  static const double step = 360.0 / PLAYER_DIRECTION_COUNT;
   double angle = -atan2((double)y2 - (double)y1, (double)x2 - (double)x1) * 180 / M_PI;
   if (angle >= 0)
   {
-    enum DIRECTION dir = EAST;
+    enum PLAYER_DIRECTION dir = PLAYER_EAST;
     double start = -step / 2;
     while (true)
     {
@@ -50,7 +50,7 @@ enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int
   }
   else
   {
-    enum DIRECTION dir = EAST;
+    enum PLAYER_DIRECTION dir = PLAYER_EAST;
     double start = step / 2;
     while (true)
     {
@@ -60,9 +60,9 @@ enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int
       }
       start -= step;
       dir++;
-      if (dir >= DIRECTION_COUNT)
+      if (dir >= PLAYER_DIRECTION_COUNT)
       {
-        dir = SOUTH;
+        dir = PLAYER_SOUTH;
       }
 
       if (start < -1000.0)
@@ -72,5 +72,5 @@ enum DIRECTION get_direction(const int x1, const int y1, const int x2, const int
     }
   }
 
-  return SOUTH;
+  return PLAYER_SOUTH;
 }
