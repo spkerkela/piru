@@ -540,11 +540,14 @@ bool start_game(enum GAME_START_MODE start_mode)
   load_assets();
   init_player_position();
   create_dungeon();
-  Point monster_point = {1, 1};
-  create_monster(monster_point);
-  monster_point.x = 6;
-  monster_point.y = 6;
-  create_monster(monster_point);
+  Point monster_point;
+  int ms;
+  for (ms = 0; ms < 100; ms++)
+  {
+    monster_point.x = (rand() % 110) + 1;
+    monster_point.y = (rand() % 110) + 1;
+    create_monster(monster_point);
+  }
   run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");

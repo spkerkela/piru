@@ -1,8 +1,26 @@
 #include "monster.h"
 
 extern Player gPlayer;
+
+void find_path_to_player(int id)
+{
+  memset(monsters[id].path, -1, MAX_PATH_LENGTH);
+  Point pos = {monsters[id].world_x, monsters[id].world_y};
+  Point player_pos = {gPlayer.world_x, gPlayer.world_y};
+  if (find_path(pos, player_pos, monsters[id].path))
+  {
+    monsters[id].state = MONSTER_MOVING;
+    monsters[id].point_in_path = 0;
+    monsters[id].target = player_pos;
+  }
+}
+
 void update_monster_movement(int i)
 {
+  if (gPlayer.world_x != monsters[i].target.x || gPlayer.world_y != monsters[i].target.y)
+  {
+    find_path_to_player(i);
+  }
   char raw_code = monsters[i].path[monsters[i].point_in_path];
   if (raw_code != -1)
   {
@@ -19,19 +37,7 @@ void update_monster_movement(int i)
       monsters[i].point_in_path = 0;
     }
   }
-}
-
-void find_path_to_player(int id)
-{
-  memset(monsters[id].path, -1, MAX_PATH_LENGTH);
-  Point pos = {monsters[id].world_x, monsters[id].world_y};
-  Point player_pos = {gPlayer.world_x, gPlayer.world_y};
-  if (find_path(pos, player_pos, monsters[id].path))
-  {
-    monsters[id].state = MONSTER_MOVING;
-    monsters[id].point_in_path = 0;
-    monsters[id].target = player_pos;
-  }
+  monsters[i].state = MONSTER_STANDING;
 }
 
 void update_monster(int id)
