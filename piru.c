@@ -258,11 +258,11 @@ void draw_dungeon()
 
       if (gDungeon[y][x] == 'w')
       {
-        asset = gImageAssets[2];
+        asset = gImageAssets[SPRITE_STONE];
       }
       if (gDungeon[y][x] == 'f')
       {
-        asset = gImageAssets[1];
+        asset = gImageAssets[SPRITE_GROVEL];
       }
       SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                            isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
@@ -278,7 +278,7 @@ void draw_dungeon()
   isometric_point = cartesian_to_isometric(cartesian_point);
   SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                        isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
-  SDL_RenderCopy(gRenderer, gImageAssets[3].texture,
+  SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_SELECTION].texture,
                  NULL,
                  &fillRect);
 }
@@ -300,7 +300,7 @@ void draw_debug_path()
     isometric_point = cartesian_to_isometric(draw_point);
     SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                          isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
-    SDL_RenderCopy(gRenderer, gImageAssets[3].texture,
+    SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_SELECTION].texture,
                    NULL,
                    &fillRect);
   }
@@ -311,7 +311,7 @@ void draw_cursor()
   int mx, my;
   SDL_GetMouseState(&mx, &my);
   SDL_Rect cursorQuad = {mx, my, 24, 24};
-  SDL_RenderCopy(gRenderer, gImageAssets[4].texture,
+  SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_CURSOR].texture,
                  NULL,
                  &cursorQuad);
 }
@@ -328,7 +328,7 @@ void draw_monsters()
         monsters[i].world_y - offset_y};
     Point isometric_point = cartesian_to_isometric(monster_point);
 
-    Animation currentMonsterAnimation = animations[1][monsters[i].direction];
+    Animation currentMonsterAnimation = animations[ANIM_SKELETON_IDLE][monsters[i].direction];
     int width = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].w;
     int height = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].h;
     SDL_Rect monster_quad = {
@@ -336,7 +336,7 @@ void draw_monsters()
         isometric_point.y + (SCREEN_HEIGHT / 2) + currentMonsterAnimation.offset_y,
         width,
         height};
-    SDL_RenderCopy(gRenderer, gImageAssets[5].texture,
+    SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_SKELETON_IDLE].texture,
                    &currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame],
                    &monster_quad);
   }
@@ -353,7 +353,7 @@ void draw_and_blit()
   draw_monsters();
 
   //Render texture to screen
-  Animation currentPlayerAnimation = animations[0][gPlayer.direction];
+  Animation currentPlayerAnimation = animations[ANIM_WARRIOR_WALK][gPlayer.direction];
   int width = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].w;
   int height = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].h;
   SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
@@ -361,7 +361,7 @@ void draw_and_blit()
                                width,
                                height};
 
-  SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
+  SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_WARRIOR_WALK].texture,
                  &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
                  &playerRenderQuad);
 

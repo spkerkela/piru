@@ -1,7 +1,7 @@
 #include "assets.h"
 
 TTF_Font *gFont = NULL;
-ImageAsset gImageAssets[256];
+ImageAsset gImageAssets[MAX_SPRITES];
 Animation animations[256][256];
 
 bool load_font()
@@ -42,7 +42,7 @@ ImageAsset load_image_asset(char *fileName)
     return asset;
 }
 
-bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animationIndex, int offset_x, int offset_y)
+bool load_animations(ImageAsset spriteSheet, int columns, int rows, enum ANIMATION animationIndex, int offset_x, int offset_y)
 {
     int width;
     int height;
@@ -51,7 +51,7 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animatio
     int animationRows = rows;
     int frameWidth = width / animationColumns;
     int frameHeight = height / animationRows;
-    if (animationIndex == 0) // Player animation
+    if (animationIndex == ANIM_WARRIOR_WALK) // Player animation
     {
         enum PLAYER_DIRECTION dir;
         for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++)
@@ -101,20 +101,27 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animatio
 
 bool load_assets()
 {
-    int asset_index = 0;
-    ImageAsset playerSpriteSheet = load_image_asset("assets/player2.png");
+    // load
+    ImageAsset warriorMoveSpriteSheet = load_image_asset("assets/player2.png");
     ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
     ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
     ImageAsset selectionSpriteSheet = load_image_asset("assets/iso_selection.png");
     ImageAsset cursorSword = load_image_asset("assets/sword.png");
     ImageAsset skeletonIdleSpriteSheet = load_image_asset("assets/skeleton_idle.png");
-    gImageAssets[asset_index++] = playerSpriteSheet;
-    gImageAssets[asset_index++] = grovelSpriteSheet;
-    gImageAssets[asset_index++] = stoneSpriteSheet;
-    gImageAssets[asset_index++] = selectionSpriteSheet;
-    gImageAssets[asset_index++] = cursorSword;
-    gImageAssets[asset_index++] = skeletonIdleSpriteSheet;
-    load_animations(playerSpriteSheet, 8, 16, 0, -96, -96);
-    load_animations(skeletonIdleSpriteSheet, 8, 8, 1, -80, -56);
+    ImageAsset skeletonWalkSpriteSheet = load_image_asset("assets/skeleton_walk.png");
+
+    // allocate images
+    gImageAssets[SPRITE_WARRIOR_WALK] = warriorMoveSpriteSheet;
+    gImageAssets[SPRITE_GROVEL] = grovelSpriteSheet;
+    gImageAssets[SPRITE_STONE] = stoneSpriteSheet;
+    gImageAssets[SPRITE_SELECTION] = selectionSpriteSheet;
+    gImageAssets[SPRITE_CURSOR] = cursorSword;
+    gImageAssets[SPRITE_SKELETON_IDLE] = skeletonIdleSpriteSheet;
+    gImageAssets[SPRITE_SKELETON_WALK] = skeletonWalkSpriteSheet;
+
+    // allocate animations
+    load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);
+    load_animations(skeletonIdleSpriteSheet, 8, 8, ANIM_SKELETON_IDLE, -80, -56);
+    load_animations(skeletonWalkSpriteSheet, 8, 8, ANIM_SKELETON_WALK, -80, -56);
     return true;
 }
