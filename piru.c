@@ -328,8 +328,13 @@ void draw_monsters()
     Point isometric_point = cartesian_to_isometric(monster_point);
 
     Animation currentMonsterAnimation = animations[1][monsters[i].direction];
-    SDL_Rect monster_quad = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
-                             isometric_point.y + (SCREEN_HEIGHT / 2), 120, 100};
+    int width = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].w;
+    int height = currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame].h;
+    SDL_Rect monster_quad = {
+        isometric_point.x + (SCREEN_WIDTH / 2) + currentMonsterAnimation.offset_x,
+        isometric_point.y + (SCREEN_HEIGHT / 2) + currentMonsterAnimation.offset_y,
+        width,
+        height};
     SDL_RenderCopy(gRenderer, gImageAssets[5].texture,
                    &currentMonsterAnimation.frames[currentMonsterAnimation.currentFrame],
                    &monster_quad);
@@ -347,12 +352,13 @@ void draw_and_blit()
   draw_monsters();
 
   //Render texture to screen
-  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) - 108,
-                               (SCREEN_HEIGHT / 2) - 120,
-                               150,
-                               150};
-
   Animation currentPlayerAnimation = animations[0][gPlayer.direction];
+  int width = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].w;
+  int height = currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame].h;
+  SDL_Rect playerRenderQuad = {(SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,  // 108
+                               (SCREEN_HEIGHT / 2) + currentPlayerAnimation.offset_y, //120
+                               width,
+                               height};
 
   SDL_RenderCopy(gRenderer, gImageAssets[0].texture,
                  &currentPlayerAnimation.frames[currentPlayerAnimation.currentFrame],
@@ -523,10 +529,10 @@ bool start_game(enum GAME_START_MODE start_mode)
   load_assets();
   init_player_position();
   create_dungeon();
-  Point monster_point = {9, 8};
+  Point monster_point = {1, 1};
   create_monster(monster_point);
-  monster_point.x = 11;
-  monster_point.y = 12;
+  monster_point.x = 6;
+  monster_point.y = 6;
   create_monster(monster_point);
   run_game_loop(start_mode);
   printf("Started game..\n");

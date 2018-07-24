@@ -42,7 +42,7 @@ ImageAsset load_image_asset(char *fileName)
     return asset;
 }
 
-bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animationIndex)
+bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animationIndex, int offset_x, int offset_y)
 {
     int width;
     int height;
@@ -68,6 +68,8 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animatio
                 animations[animationIndex][dir].frames[x].y = dir * frameHeight;
                 animations[animationIndex][dir].frames[x].w = frameWidth;
                 animations[animationIndex][dir].frames[x].h = frameHeight;
+                animations[animationIndex][dir].offset_x = offset_x;
+                animations[animationIndex][dir].offset_y = offset_y;
             }
         }
     }
@@ -88,6 +90,8 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows, int animatio
                 animations[animationIndex][dir].frames[x].y = dir * frameHeight;
                 animations[animationIndex][dir].frames[x].w = frameWidth;
                 animations[animationIndex][dir].frames[x].h = frameHeight;
+                animations[animationIndex][dir].offset_x = offset_x;
+                animations[animationIndex][dir].offset_y = offset_y;
             }
         }
     }
@@ -110,7 +114,7 @@ bool load_assets()
     gImageAssets[asset_index++] = selectionSpriteSheet;
     gImageAssets[asset_index++] = cursorSword;
     gImageAssets[asset_index++] = skeletonIdleSpriteSheet;
-    load_animations(playerSpriteSheet, 8, 16, 0);
-    load_animations(skeletonIdleSpriteSheet, 8, 8, 1);
+    load_animations(playerSpriteSheet, 8, 16, 0, -96, -96);
+    load_animations(skeletonIdleSpriteSheet, 8, 8, 1, -80, -56);
     return true;
 }

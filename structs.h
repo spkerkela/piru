@@ -52,6 +52,8 @@ typedef struct
     int currentFrame;
     ImageAsset image;
     int speed;
+    int offset_x;
+    int offset_y;
 } Animation;
 
 typedef struct PathNode
