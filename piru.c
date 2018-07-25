@@ -6,15 +6,16 @@
 
 #include "assets.h"
 #include "constants.h"
+#include "direction.h"
 #include "dungeon.h"
 #include "enums.h"
+#include "monster.h"
 #include "pathfinding.h"
+#include "player.h"
 #include "point.h"
 #include "sdl2.h"
 #include "structs.h"
-#include "player.h"
-#include "direction.h"
-#include "monster.h"
+#include "time.h"
 
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;
@@ -506,15 +507,14 @@ void game_loop()
 {
   if (!gGamePaused)
   {
-    SDL_Delay(60);
     update_input();
     update_animations();
     update_player();
     update_monsters();
+    printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
   }
   else
   {
-
     update_input();
   }
 }
@@ -536,10 +536,12 @@ void run_game_loop(enum GAME_START_MODE start_mode)
   gGamePaused = false;
   init_cursor();
   draw_and_blit();
+  tick();
   while (gGameRunning)
   {
     game_loop();
     draw_and_blit();
+    tick();
   }
 }
 
@@ -555,6 +557,7 @@ bool start_game(enum GAME_START_MODE start_mode)
     break;
   }
   printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
+  init_clock();
   load_assets();
   init_player_position();
   create_dungeon();

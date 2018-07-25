@@ -45,6 +45,12 @@ typedef struct
 
 typedef struct
 {
+    uint32_t last_tick_time;
+    uint32_t delta;
+} Clock;
+
+typedef struct
+{
     char *assetName;
     SDL_Texture *texture;
 } ImageAsset;
