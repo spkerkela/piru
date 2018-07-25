@@ -113,6 +113,10 @@ bool create_monster(const Point at)
   monster.walk_interval = 180;
   monster.frames_since_walk = 180;
   monster.animation = ANIM_SKELETON_IDLE;
+  monster.frames_since_animation_frame = 0;
+  monster.animation_intervals[ANIM_SKELETON_ATTACK] = 40;
+  monster.animation_intervals[ANIM_SKELETON_IDLE] = 80;
+  monster.animation_intervals[ANIM_SKELETON_WALK] = 70;
   monsters[created_monsters++] = monster;
   return true;
 }
@@ -486,16 +490,24 @@ void update_monster_animations()
   int id;
   for (id = 0; id < created_monsters; id++)
   {
-    int animFrames = animations[monsters[id].animation][monsters[id].direction].columns;
-    monsters[id].animation_frame++;
-    if (monsters[id].animation_frame >= animFrames)
+    if (monsters[id].frames_since_animation_frame >= monsters[id].animation_intervals[monsters[id].animation])
     {
-      if (monsters[id].next_state != MONSTER_NO_STATE)
+      monsters[id].frames_since_animation_frame = 0;
+      int animFrames = animations[monsters[id].animation][monsters[id].direction].columns;
+      monsters[id].animation_frame++;
+      if (monsters[id].animation_frame >= animFrames)
       {
-        monsters[id].state = monsters[id].next_state;
-        monsters[id].next_state = MONSTER_NO_STATE;
+        if (monsters[id].next_state != MONSTER_NO_STATE)
+        {
+          monsters[id].state = monsters[id].next_state;
+          monsters[id].next_state = MONSTER_NO_STATE;
+        }
+        monsters[id].animation_frame = 0;
       }
-      monsters[id].animation_frame = 0;
+    }
+    else
+    {
+      monsters[id].frames_since_animation_frame += gClock.delta;
     }
   }
 }

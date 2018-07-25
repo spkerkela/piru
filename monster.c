@@ -66,7 +66,7 @@ void update_monster(int id)
     monsters[id].animation = ANIM_SKELETON_WALK;
     break;
   case MONSTER_STANDING:
-    if (gPlayer.world_x != monsters[id].world_x && gPlayer.world_y != monsters[id].world_y)
+    if (!(gPlayer.world_x == monsters[id].world_x && gPlayer.world_y == monsters[id].world_y))
     {
       find_path_to_player(id);
     }
