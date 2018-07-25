@@ -110,6 +110,8 @@ bool create_monster(const Point at)
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
   monster.animation_frame = 0;
+  monster.walk_interval = 180;
+  monster.frames_since_walk = 180;
   monster.animation = ANIM_SKELETON_IDLE;
   monsters[created_monsters++] = monster;
   return true;
@@ -243,6 +245,12 @@ void init_player_position()
   gPlayer.point_in_path = 0;
   gPlayer.state = PLAYER_STANDING;
   gPlayer.animation = ANIM_WARRIOR_IDLE;
+  gPlayer.walk_interval = 100;
+  gPlayer.frames_since_walk = 100;
+  gPlayer.frames_since_animation_frame = 0;
+  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 100;
+  gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
+  gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
 }
 
 void draw_dungeon()
@@ -457,11 +465,19 @@ void update_input()
 
 void update_player_animations()
 {
-  int animFrames = animations[gPlayer.animation][gPlayer.direction].columns;
-  gPlayer.animation_frame++;
-  if (gPlayer.animation_frame >= animFrames)
+  if (gPlayer.frames_since_animation_frame >= gPlayer.animation_intervals[gPlayer.animation])
   {
-    gPlayer.animation_frame = 0;
+    gPlayer.frames_since_animation_frame = 0;
+    int animFrames = animations[gPlayer.animation][gPlayer.direction].columns;
+    gPlayer.animation_frame++;
+    if (gPlayer.animation_frame >= animFrames)
+    {
+      gPlayer.animation_frame = 0;
+    }
+  }
+  else
+  {
+    gPlayer.frames_since_animation_frame += gClock.delta;
   }
 }
 

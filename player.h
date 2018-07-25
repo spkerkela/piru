@@ -4,6 +4,7 @@
 #include "enums.h"
 #include "point.h"
 #include "direction.h"
+#include "time.h"
 
 extern Player gPlayer;
 void update_player();

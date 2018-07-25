@@ -15,12 +15,8 @@ void find_path_to_player(int id)
   }
 }
 
-void update_monster_movement(int i)
+void monster_do_walk(int i)
 {
-  if (gPlayer.world_x != monsters[i].target.x || gPlayer.world_y != monsters[i].target.y)
-  {
-    find_path_to_player(i);
-  }
   char raw_code = monsters[i].path[monsters[i].point_in_path];
   if (raw_code != -1)
   {
@@ -41,6 +37,23 @@ void update_monster_movement(int i)
   else
   {
     monsters[i].state = MONSTER_STANDING;
+  }
+}
+
+void update_monster_movement(int i)
+{
+  if (gPlayer.world_x != monsters[i].target.x || gPlayer.world_y != monsters[i].target.y)
+  {
+    find_path_to_player(i);
+  }
+  if (monsters[i].frames_since_walk >= monsters[i].walk_interval)
+  {
+    monsters[i].frames_since_walk = 0;
+    monster_do_walk(i);
+  }
+  else
+  {
+    monsters[i].frames_since_walk += gClock.delta;
   }
 }
 

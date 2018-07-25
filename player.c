@@ -2,7 +2,7 @@
 
 Player gPlayer;
 
-void update_player_movement()
+void player_do_walk()
 {
   char raw_code = gPlayer.path[gPlayer.point_in_path];
   if (raw_code != -1)
@@ -19,6 +19,19 @@ void update_player_movement()
       gPlayer.state = PLAYER_STANDING;
       gPlayer.point_in_path = 0;
     }
+  }
+}
+
+void update_player_movement()
+{
+  if (gPlayer.frames_since_walk >= gPlayer.walk_interval)
+  {
+    gPlayer.frames_since_walk = 0;
+    player_do_walk();
+  }
+  else
+  {
+    gPlayer.frames_since_walk += gClock.delta;
   }
 }
 

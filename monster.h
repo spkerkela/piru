@@ -6,6 +6,7 @@
 #include "point.h"
 #include "direction.h"
 #include "pathfinding.h"
+#include "time.h"
 
 extern Monster monsters[];
 void update_monster(int id);

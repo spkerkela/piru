@@ -25,6 +25,10 @@ typedef struct
     int point_in_path;
     int world_x;
     int world_y;
+    int walk_interval;
+    int frames_since_walk;
+    int frames_since_animation_frame;
+    int animation_intervals[MAX_ANIMATIONS];
 } Player;
 
 typedef struct
@@ -41,6 +45,10 @@ typedef struct
     int point_in_path;
     int world_x;
     int world_y;
+    int walk_interval;
+    int frames_since_walk;
+    int frames_since_animation_frame;
+    int animation_intervals[MAX_ANIMATIONS];
 } Monster;
 
 typedef struct
