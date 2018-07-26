@@ -88,41 +88,6 @@ bool load_file_exists()
   return false;
 }
 
-bool create_monster(const Point at)
-{
-  if (gDungeonBlockTable[at.y][at.x])
-  {
-    return false;
-  }
-  if (created_monsters >= MAX_MONSTERS)
-  {
-    return false;
-  }
-  gDungeonMonsterTable[at.y][at.x] = true;
-  Monster monster;
-  monster.world_x = at.x;
-  monster.world_y = at.y;
-  monster.id = created_monsters;
-  monster.level = 1;
-  monster.state = MONSTER_STANDING;
-  monster.next_state = MONSTER_NO_STATE;
-  monster.direction = rand() % MONSTER_DIRECTION_COUNT;
-  Point monster_target = {monster.world_x, monster.world_y};
-  monster.attack_radius = 2.0;
-  monster.target = monster_target;
-  memset(monster.path, -1, MAX_PATH_LENGTH);
-  monster.animation_frame = 0;
-  monster.walk_interval = 180;
-  monster.frames_since_walk = 180;
-  monster.animation = ANIM_SKELETON_IDLE;
-  monster.frames_since_animation_frame = 0;
-  monster.animation_intervals[ANIM_SKELETON_ATTACK] = 40;
-  monster.animation_intervals[ANIM_SKELETON_IDLE] = 80;
-  monster.animation_intervals[ANIM_SKELETON_WALK] = 70;
-  monsters[created_monsters++] = monster;
-  return true;
-}
-
 void create_new_character()
 {
   printf("Create a new character\n");

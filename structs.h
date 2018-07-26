@@ -51,6 +51,7 @@ typedef struct
     int frames_since_animation_frame;
     int animation_intervals[MAX_ANIMATIONS];
     double attack_radius;
+    double aggro_radius;
 } Monster;
 
 typedef struct

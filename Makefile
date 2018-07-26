@@ -6,12 +6,12 @@ obj=$(src:.c=.o)
 dep = $(obj:.o=.d)
 -include $(dep)   # include all dep files in the makefile
 CC=gcc
-C_FLAGS=-g -Wall -std=c99
+C_FLAGS=-g -Wall -std=c99 
 ifeq ($(UNAME), Darwin)
 FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf
 
 piru: $(src)
-	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS)
+	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS) -lprofiler
 
 %.d: %.c
 	@$(CPP) $(C_FLAGS) $< -MM -MT $(@:.d=.o) >$@	
@@ -19,6 +19,11 @@ piru: $(src)
 .PHONY: all
 
 .PHONY: clean
+
+profile: piru
+	CPUPROFILE=piru.prof DYLD_INSERT_LIBRARIES=/usr/local/lib/libprofiler.dylib ./piru
+	pprof --pdf piru piru.prof > piru.pdf
+	echo "Profiling results: piru.pdf"
 clean:
 	rm -rf $(obj) $(dep) piru piru.dSYM
 endif
