@@ -211,15 +211,18 @@ void init_player_position()
 {
   gPlayer.world_x = 1;
   gPlayer.world_y = 1;
+  gPlayer.attack_radius = 2.0;
   gPlayer.current_game_level = 0;
   gPlayer.direction = PLAYER_SOUTH;
   gPlayer.point_in_path = 0;
   gPlayer.state = PLAYER_STANDING;
+  gPlayer.next_state = PLAYER_NO_STATE;
+  gPlayer.destination_action = PLAYER_DESTINATION_NONE;
   gPlayer.animation = ANIM_WARRIOR_IDLE;
   gPlayer.walk_interval = 100;
   gPlayer.frames_since_walk = 100;
   gPlayer.frames_since_animation_frame = 0;
-  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 100;
+  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 40;
   gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
   gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
 }
@@ -379,10 +382,30 @@ void update_input()
       mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
       mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
       selectedTile = isometric_to_cartesian(mouse_point);
+      bool monster_clicked = false;
 
       if (mouse_was_pressed)
       {
         memset(gPlayer.path, -1, MAX_PATH_LENGTH);
+        monster_clicked = gDungeonMonsterTable[selectedTile.y][selectedTile.x];
+        if (monster_clicked)
+        {
+          if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_position, selectedTile) <= gPlayer.attack_radius)
+          {
+            gPlayer.state = PLAYER_ATTACKING;
+            gPlayer.next_state = PLAYER_STANDING;
+            gPlayer.animation_frame = 0;
+            gPlayer.direction = player_get_direction8(gPlayer.world_x, gPlayer.world_y, selectedTile.x, selectedTile.y);
+          }
+          else
+          {
+            gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
+          }
+        }
+        else
+        {
+          gPlayer.destination_action = PLAYER_DESTINATION_STAND;
+        }
       }
       if (mouse_was_pressed && !(player_position.x == selectedTile.x && player_position.y == selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
       {
@@ -444,6 +467,11 @@ void update_player_animations()
     if (gPlayer.animation_frame >= animFrames)
     {
       gPlayer.animation_frame = 0;
+      if (gPlayer.next_state != PLAYER_NO_STATE)
+      {
+        gPlayer.state = gPlayer.next_state;
+        gPlayer.next_state = PLAYER_NO_STATE;
+      }
     }
   }
   else

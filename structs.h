@@ -19,6 +19,8 @@ typedef struct
     enum CHARACTER_CLASS character_class;
     enum PLAYER_DIRECTION direction;
     enum PLAYER_STATE state;
+    enum PLAYER_STATE next_state;
+    enum PLAYER_DESTINATION_ACTION destination_action;
     int animation_frame;
     int current_game_level;
     int level;

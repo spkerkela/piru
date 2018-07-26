@@ -2,6 +2,26 @@
 
 Player gPlayer;
 
+void player_do_destination_action()
+{
+  switch (gPlayer.destination_action)
+  {
+  case PLAYER_DESTINATION_ATTACK:
+    gPlayer.state = PLAYER_ATTACKING;
+    gPlayer.next_state = PLAYER_STANDING;
+    break;
+  case PLAYER_DESTINATION_STAND:
+    gPlayer.state = PLAYER_STANDING;
+    gPlayer.animation = ANIM_WARRIOR_IDLE;
+    break;
+  case PLAYER_DESTINATION_INTERACT_OBJECT:
+    break;
+  case PLAYER_DESTINATION_PICK_ITEM:
+    break;
+  default:
+    break;
+  }
+}
 void player_do_walk()
 {
   char raw_code = gPlayer.path[gPlayer.point_in_path];
@@ -16,8 +36,9 @@ void player_do_walk()
     gPlayer.world_y += direction.y;
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
     {
-      gPlayer.state = PLAYER_STANDING;
       gPlayer.point_in_path = 0;
+      memset(gPlayer.path, -1, MAX_PATH_LENGTH);
+      player_do_destination_action();
     }
   }
 }
@@ -45,6 +66,9 @@ void update_player()
     break;
   case PLAYER_STANDING:
     gPlayer.animation = ANIM_WARRIOR_IDLE;
+    break;
+  case PLAYER_ATTACKING:
+    gPlayer.animation = ANIM_WARRIOR_ATTACK;
     break;
   default:
     break;
