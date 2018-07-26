@@ -24,6 +24,11 @@ Point get_tile_coordinates(const Point cartesian_point)
     return tile_coordinates;
 }
 
+double get_distance(Point a, Point b)
+{
+    return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
 Point get_direction_from_path(enum PATH_CODE code)
 {
     Point point;

@@ -7,6 +7,7 @@
 #include "direction.h"
 #include "pathfinding.h"
 #include "time.h"
+#include "dungeon.h"
 
 extern Monster monsters[];
 void update_monster(int id);

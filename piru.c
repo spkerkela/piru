@@ -98,6 +98,7 @@ bool create_monster(const Point at)
   {
     return false;
   }
+  gDungeonMonsterTable[at.y][at.x] = true;
   Monster monster;
   monster.world_x = at.x;
   monster.world_y = at.y;
@@ -107,6 +108,7 @@ bool create_monster(const Point at)
   monster.next_state = MONSTER_NO_STATE;
   monster.direction = rand() % MONSTER_DIRECTION_COUNT;
   Point monster_target = {monster.world_x, monster.world_y};
+  monster.attack_radius = 2.0;
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
   monster.animation_frame = 0;
@@ -539,7 +541,7 @@ void game_loop()
     update_animations();
     update_player();
     update_monsters();
-    printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
+    //printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
   }
   else
   {

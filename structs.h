@@ -29,6 +29,7 @@ typedef struct
     int frames_since_walk;
     int frames_since_animation_frame;
     int animation_intervals[MAX_ANIMATIONS];
+    double attack_radius;
 } Player;
 
 typedef struct
@@ -49,6 +50,7 @@ typedef struct
     int frames_since_walk;
     int frames_since_animation_frame;
     int animation_intervals[MAX_ANIMATIONS];
+    double attack_radius;
 } Monster;
 
 typedef struct

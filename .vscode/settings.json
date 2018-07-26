@@ -8,6 +8,9 @@
     "assets.h": "c",
     "structs.h": "c",
     "player.h": "c",
-    "ios": "c"
+    "ios": "c",
+    "monster.h": "c",
+    "point.h": "c",
+    "system_error": "c"
   }
 }

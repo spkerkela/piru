@@ -17,22 +17,30 @@ void find_path_to_player(int id)
 
 void monster_do_walk(int i)
 {
+
+  Point monster_point = {monsters[i].world_x, monsters[i].world_y};
+  Point player_point = {gPlayer.world_x, gPlayer.world_y};
+  double distance = get_distance(monster_point, player_point);
+  if (distance <= monsters[i].attack_radius)
+  {
+    monsters[i].state = MONSTER_ATTACKING;
+    monsters[i].point_in_path = 0;
+    monsters[i].animation_frame = 0;
+    return;
+  }
   char raw_code = monsters[i].path[monsters[i].point_in_path];
   if (raw_code != -1)
   {
+
     enum PATH_CODE code = (enum PATH_CODE)raw_code;
     monsters[i].point_in_path++;
     Point direction = get_direction_from_path(code);
 
     monsters[i].direction = monster_get_direction_from_path_code(code);
+    gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = false;
     monsters[i].world_x += direction.x;
     monsters[i].world_y += direction.y;
-    if (monsters[i].path[monsters[i].point_in_path + 1] == -1)
-    {
-      monsters[i].state = MONSTER_ATTACKING;
-      monsters[i].point_in_path = 0;
-      monsters[i].animation_frame = 0;
-    }
+    gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = true;
   }
   else
   {
