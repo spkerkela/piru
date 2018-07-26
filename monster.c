@@ -113,8 +113,12 @@ void update_monster_movement(int i)
 
 void update_monster(int id)
 {
+  printf("hp: %d,id: %d\n", monsters[id].hp, id);
   switch (monsters[id].state)
   {
+  case MONSTER_DEAD:
+    printf("dead: %d\n", id);
+    break;
   case MONSTER_MOVING:
     update_monster_movement(id);
     break;

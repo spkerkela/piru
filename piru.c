@@ -362,7 +362,7 @@ void update_input()
       mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
       mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
       selectedTile = isometric_to_cartesian(mouse_point);
-      bool monster_clicked = false;
+      int monster_clicked = -1;
 
       if (mouse_was_pressed)
       {
@@ -473,7 +473,7 @@ void update_monster_animations()
       monsters[id].animation_frame++;
       if (monsters[id].animation_frame >= animFrames)
       {
-        if (monsters[id].next_state != MONSTER_NO_STATE)
+        if (monsters[id].state != MONSTER_DEAD && monsters[id].next_state != MONSTER_NO_STATE)
         {
           monsters[id].state = monsters[id].next_state;
           monsters[id].next_state = MONSTER_NO_STATE;
@@ -569,7 +569,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 40; ms++)
+  for (ms = 0; ms < 0; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
