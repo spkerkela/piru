@@ -1,5 +1,6 @@
 #ifndef _POINT_H
 #define _POINT_H
+#include <math.h>
 #include "constants.h"
 #include "enums.h"
 #include "structs.h"

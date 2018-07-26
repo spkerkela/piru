@@ -21,6 +21,11 @@ typedef struct
     enum PLAYER_STATE state;
     enum PLAYER_STATE next_state;
     enum PLAYER_DESTINATION_ACTION destination_action;
+    int damage;
+    int hp;
+    int max_hp;
+    int mana;
+    int max_mana;
     int animation_frame;
     int current_game_level;
     int level;
@@ -42,6 +47,9 @@ typedef struct
     enum MONSTER_DIRECTION direction;
     enum MONSTER_STATE state;
     enum MONSTER_STATE next_state;
+    int damage;
+    int hp;
+    int max_hp;
     int animation_frame;
     int id;
     int level;

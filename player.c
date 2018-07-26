@@ -2,6 +2,26 @@
 
 Player gPlayer;
 
+void init_player()
+{
+  gPlayer.world_x = 1;
+  gPlayer.world_y = 1;
+  gPlayer.attack_radius = 2.0;
+  gPlayer.current_game_level = 0;
+  gPlayer.direction = PLAYER_SOUTH;
+  gPlayer.point_in_path = 0;
+  gPlayer.state = PLAYER_STANDING;
+  gPlayer.next_state = PLAYER_NO_STATE;
+  gPlayer.destination_action = PLAYER_DESTINATION_NONE;
+  gPlayer.animation = ANIM_WARRIOR_IDLE;
+  gPlayer.walk_interval = 100;
+  gPlayer.frames_since_walk = 100;
+  gPlayer.frames_since_animation_frame = 0;
+  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 40;
+  gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
+  gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
+}
+
 void player_do_destination_action()
 {
   switch (gPlayer.destination_action)

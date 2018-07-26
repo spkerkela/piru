@@ -207,26 +207,6 @@ void select_character_menu()
   }
 }
 
-void init_player_position()
-{
-  gPlayer.world_x = 1;
-  gPlayer.world_y = 1;
-  gPlayer.attack_radius = 2.0;
-  gPlayer.current_game_level = 0;
-  gPlayer.direction = PLAYER_SOUTH;
-  gPlayer.point_in_path = 0;
-  gPlayer.state = PLAYER_STANDING;
-  gPlayer.next_state = PLAYER_NO_STATE;
-  gPlayer.destination_action = PLAYER_DESTINATION_NONE;
-  gPlayer.animation = ANIM_WARRIOR_IDLE;
-  gPlayer.walk_interval = 100;
-  gPlayer.frames_since_walk = 100;
-  gPlayer.frames_since_animation_frame = 0;
-  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 40;
-  gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
-  gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
-}
-
 void draw_dungeon()
 {
   int x, y;
@@ -582,7 +562,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
   init_clock();
   load_assets();
-  init_player_position();
+  init_player();
   create_dungeon();
   Point monster_point;
   memset(monsters, 0, MAX_MONSTERS);
