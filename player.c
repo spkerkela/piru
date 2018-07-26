@@ -87,12 +87,15 @@ void update_player_attack()
 {
   if (gPlayer.animation_frame == 8)
   {
-    if (gPlayer.target_monster_id >= 0)
+    int target_id = gPlayer.target_monster_id;
+    if (target_id >= 0)
     {
-      monsters[gPlayer.target_monster_id].hp -= gPlayer.damage;
-      if (monsters[gPlayer.target_monster_id].hp <= 0)
+      monsters[target_id].hp -= gPlayer.damage;
+      if (monsters[target_id].hp <= 0)
       {
-        monsters[gPlayer.target_monster_id].state = MONSTER_DEAD;
+        monsters[target_id].state = MONSTER_DEAD;
+        monsters[target_id].animation_frame = 0;
+        gDungeonMonsterTable[monsters[target_id].world_y][monsters[target_id].world_x] = -1;
       }
     }
     gPlayer.target_monster_id = -1;

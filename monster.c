@@ -12,7 +12,6 @@ bool create_monster(const Point at)
   {
     return false;
   }
-  gDungeonMonsterTable[at.y][at.x] = true;
   Monster monster;
   monster.world_x = at.x;
   monster.world_y = at.y;
@@ -38,6 +37,7 @@ bool create_monster(const Point at)
   monster.animation_intervals[ANIM_SKELETON_ATTACK] = 40;
   monster.animation_intervals[ANIM_SKELETON_IDLE] = 80;
   monster.animation_intervals[ANIM_SKELETON_WALK] = 70;
+  gDungeonMonsterTable[at.y][at.x] = created_monsters;
   monsters[created_monsters++] = monster;
   return true;
 }
@@ -113,11 +113,10 @@ void update_monster_movement(int i)
 
 void update_monster(int id)
 {
-  printf("hp: %d,id: %d\n", monsters[id].hp, id);
   switch (monsters[id].state)
   {
   case MONSTER_DEAD:
-    printf("dead: %d\n", id);
+    monsters[id].animation = ANIM_SKELETON_DEAD;
     break;
   case MONSTER_MOVING:
     update_monster_movement(id);

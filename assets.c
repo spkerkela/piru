@@ -110,6 +110,7 @@ bool load_assets()
     ImageAsset skeletonIdleSpriteSheet = load_image_asset("assets/skeleton_idle.png");
     ImageAsset skeletonWalkSpriteSheet = load_image_asset("assets/skeleton_walk.png");
     ImageAsset skeletonAttackSpriteSheet = load_image_asset("assets/skeleton_attack.png");
+    ImageAsset skeletonDeadSpriteSheet = load_image_asset("assets/skeleton_dead.png");
 
     // allocate images
     gImageAssets[SPRITE_WARRIOR_WALK] = warriorMoveSpriteSheet;
@@ -122,6 +123,7 @@ bool load_assets()
     gImageAssets[SPRITE_SKELETON_IDLE] = skeletonIdleSpriteSheet;
     gImageAssets[SPRITE_SKELETON_WALK] = skeletonWalkSpriteSheet;
     gImageAssets[SPRITE_SKELETON_ATTACK] = skeletonAttackSpriteSheet;
+    gImageAssets[SPRITE_SKELETON_DEAD] = skeletonDeadSpriteSheet;
 
     // allocate animations
     load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);
@@ -130,5 +132,6 @@ bool load_assets()
     load_animations(skeletonIdleSpriteSheet, 8, 8, ANIM_SKELETON_IDLE, -80, -56);
     load_animations(skeletonWalkSpriteSheet, 8, 8, ANIM_SKELETON_WALK, -80, -56);
     load_animations(skeletonAttackSpriteSheet, 16, 8, ANIM_SKELETON_ATTACK, -118, -80);
+    load_animations(skeletonDeadSpriteSheet, 1, 8, ANIM_SKELETON_DEAD, -80, 0);
     return true;
 }
