@@ -44,12 +44,12 @@ bool create_monster(const Point at)
 void find_path_to_player(int id)
 {
   memset(monsters[id].path, -1, MAX_PATH_LENGTH);
+  monsters[id].point_in_path = 0;
   Point pos = {monsters[id].world_x, monsters[id].world_y};
   Point player_pos = {gPlayer.world_x, gPlayer.world_y};
   if (find_path(pos, player_pos, monsters[id].path))
   {
     monsters[id].state = MONSTER_MOVING;
-    monsters[id].point_in_path = 0;
     monsters[id].target = player_pos;
   }
 }
@@ -77,13 +77,19 @@ void monster_do_walk(int i)
   {
 
     enum PATH_CODE code = (enum PATH_CODE)raw_code;
-    monsters[i].point_in_path++;
     Point direction = get_direction_from_path(code);
+    Point check = {direction.x + monsters[i].world_x, direction.y + monsters[i].world_y};
+    if (tile_is_blocked(check))
+    {
+      find_path_to_player(i);
+      return;
+    }
 
     monsters[i].direction = monster_get_direction_from_path_code(code);
     gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = -1;
     monsters[i].world_x += direction.x;
     monsters[i].world_y += direction.y;
+    monsters[i].point_in_path++;
     gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = i;
     monsters[i].animation = ANIM_SKELETON_WALK;
   }
