@@ -25,7 +25,7 @@ bool create_monster(const Point at)
   monster.aggro_radius = 10;
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
-  monster.max_hp = 20;
+  monster.max_hp = 10;
   monster.hp = monster.max_hp;
   monster.damage = 5;
 
