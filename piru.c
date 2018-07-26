@@ -368,7 +368,7 @@ void update_input()
       {
         memset(gPlayer.path, -1, MAX_PATH_LENGTH);
         monster_clicked = gDungeonMonsterTable[selectedTile.y][selectedTile.x];
-        if (monster_clicked)
+        if (monster_clicked >= 0)
         {
           if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_position, selectedTile) <= gPlayer.attack_radius)
           {
@@ -376,6 +376,7 @@ void update_input()
             gPlayer.next_state = PLAYER_STANDING;
             gPlayer.animation_frame = 0;
             gPlayer.direction = player_get_direction8(gPlayer.world_x, gPlayer.world_y, selectedTile.x, selectedTile.y);
+            gPlayer.target_monster_id = monster_clicked;
           }
           else
           {

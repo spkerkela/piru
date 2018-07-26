@@ -6,6 +6,7 @@
 #include "point.h"
 #include "direction.h"
 #include "time.h"
+#include "monster.h"
 
 extern Player gPlayer;
 void init_player();

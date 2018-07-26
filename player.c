@@ -13,6 +13,13 @@ void init_player()
   gPlayer.state = PLAYER_STANDING;
   gPlayer.next_state = PLAYER_NO_STATE;
   gPlayer.destination_action = PLAYER_DESTINATION_NONE;
+  gPlayer.max_hp = 100;
+  gPlayer.hp = gPlayer.max_hp;
+  gPlayer.max_mana = 50;
+  gPlayer.mana = gPlayer.max_mana;
+  gPlayer.damage = 10;
+
+  gPlayer.target_monster_id = -1;
   gPlayer.animation = ANIM_WARRIOR_IDLE;
   gPlayer.walk_interval = 100;
   gPlayer.frames_since_walk = 100;
@@ -76,6 +83,22 @@ void update_player_movement()
   }
 }
 
+void update_player_attack()
+{
+  if (gPlayer.animation_frame == 8)
+  {
+    if (gPlayer.target_monster_id >= 0)
+    {
+      monsters[gPlayer.target_monster_id].hp -= gPlayer.damage;
+      if (monsters[gPlayer.target_monster_id].hp <= 0)
+      {
+        monsters[gPlayer.target_monster_id].state = MONSTER_DEAD;
+      }
+    }
+    gPlayer.target_monster_id = -1;
+  }
+}
+
 void update_player()
 {
   switch (gPlayer.state)
@@ -88,6 +111,7 @@ void update_player()
     gPlayer.animation = ANIM_WARRIOR_IDLE;
     break;
   case PLAYER_ATTACKING:
+    update_player_attack();
     gPlayer.animation = ANIM_WARRIOR_ATTACK;
     break;
   default:

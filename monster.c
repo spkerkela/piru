@@ -26,6 +26,10 @@ bool create_monster(const Point at)
   monster.aggro_radius = 10;
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
+  monster.max_hp = 20;
+  monster.hp = monster.max_hp;
+  monster.damage = 5;
+
   monster.animation_frame = 0;
   monster.walk_interval = 180;
   monster.frames_since_walk = 180;
@@ -77,10 +81,10 @@ void monster_do_walk(int i)
     Point direction = get_direction_from_path(code);
 
     monsters[i].direction = monster_get_direction_from_path_code(code);
-    gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = false;
+    gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = -1;
     monsters[i].world_x += direction.x;
     monsters[i].world_y += direction.y;
-    gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = true;
+    gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = i;
     monsters[i].animation = ANIM_SKELETON_WALK;
   }
   else
