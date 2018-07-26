@@ -100,9 +100,8 @@ enum PLAYER_DIRECTION get_direction(const int x1, const int y1, const int x2, co
   return PLAYER_SOUTH;
 }
 
-enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1, const int x2, const int y2)
+int get_segment(const int x1, const int y1, const int x2, const int y2)
 {
-
   int x, y;
   x = x2 - x1;
   y = y2 - y1;
@@ -111,10 +110,12 @@ enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1, const in
   int s2 = y * 414 + x * 1000 > 0 ? 0 : 1;
   int s3 = y * 414 - x * 1000 < 0 ? 0 : 1;
   int s4 = x * 414 - y * 1000 > 0 ? 0 : 1;
+  return 4 * s4 + 2 * (s2 ^ s4) + (s1 ^ s2 ^ s3 ^ s4);
+}
 
-  int segment = 4 * s4 + 2 * (s2 ^ s4) + (s1 ^ s2 ^ s3 ^ s4);
-  printf("%d segment\n", segment);
-  switch (segment)
+enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1, const int x2, const int y2)
+{
+  switch (get_segment(x1, y1, x2, y2))
   {
   case 0:
     return PLAYER_SOUTH_EAST_2;
@@ -136,4 +137,30 @@ enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1, const in
     break;
   }
   return PLAYER_SOUTH;
+}
+
+enum MONSTER_DIRECTION monster_get_direction8(const int x1, const int y1, const int x2, const int y2)
+{
+  switch (get_segment(x1, y1, x2, y2))
+  {
+  case 0:
+    return MONSTER_SOUTH_EAST;
+  case 1:
+    return MONSTER_EAST;
+  case 2:
+    return MONSTER_NORTH_EAST;
+  case 3:
+    return MONSTER_NORTH;
+  case 4:
+    return MONSTER_NORTH_WEST;
+  case 5:
+    return MONSTER_WEST;
+  case 6:
+    return MONSTER_SOUTH_WEST;
+  case 7:
+    return MONSTER_SOUTH;
+  default:
+    break;
+  }
+  return MONSTER_SOUTH;
 }

@@ -61,6 +61,7 @@ void monster_do_walk(int i)
 {
   if (get_distance_to_player(i) <= monsters[i].attack_radius)
   {
+    monsters[i].direction = monster_get_direction8(monsters[i].world_x, monsters[i].world_y, gPlayer.world_x, gPlayer.world_y);
     monsters[i].state = MONSTER_ATTACKING;
     monsters[i].animation = ANIM_SKELETON_ATTACK;
     monsters[i].point_in_path = 0;
