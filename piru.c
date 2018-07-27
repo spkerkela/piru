@@ -520,7 +520,7 @@ void game_loop()
     update_player();
     update_monsters();
     //printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
-    gGameRunning = gPlayer.hp > 0;
+    gGameRunning = gGameRunning && gPlayer.hp > 0;
   }
   else
   {
