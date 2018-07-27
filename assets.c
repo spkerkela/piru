@@ -39,6 +39,7 @@ ImageAsset load_image_asset(char *fileName)
     ImageAsset asset;
     asset.assetName = fileName;
     asset.texture = texture;
+    SDL_QueryTexture(NULL, NULL, NULL, &asset.width, &asset.height);
     return asset;
 }
 
@@ -112,6 +113,10 @@ bool load_assets()
     ImageAsset skeletonAttackSpriteSheet = load_image_asset("assets/skeleton_attack.png");
     ImageAsset skeletonDeadSpriteSheet = load_image_asset("assets/skeleton_dead.png");
 
+    ImageAsset orbEmpty = load_image_asset("assets/orbs_0.png");
+    ImageAsset orbHealth = load_image_asset("assets/orbs_1.png");
+    ImageAsset orbMana = load_image_asset("assets/orbs_2.png");
+
     // allocate images
     gImageAssets[SPRITE_WARRIOR_WALK] = warriorMoveSpriteSheet;
     gImageAssets[SPRITE_WARRIOR_ATTACK] = warriorAttackSpriteSheet;
@@ -124,6 +129,9 @@ bool load_assets()
     gImageAssets[SPRITE_SKELETON_WALK] = skeletonWalkSpriteSheet;
     gImageAssets[SPRITE_SKELETON_ATTACK] = skeletonAttackSpriteSheet;
     gImageAssets[SPRITE_SKELETON_DEAD] = skeletonDeadSpriteSheet;
+    gImageAssets[ORB_EMPTY] = orbEmpty;
+    gImageAssets[ORB_HEALTH] = orbHealth;
+    gImageAssets[ORB_MANA] = orbMana;
 
     // allocate animations
     load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);

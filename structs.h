@@ -81,6 +81,8 @@ typedef struct
 {
     char *assetName;
     SDL_Texture *texture;
+    int width;
+    int height;
 } ImageAsset;
 
 typedef struct

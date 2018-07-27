@@ -316,6 +316,61 @@ void draw_monsters()
                    &monster_quad);
   }
 }
+
+void draw_health_and_mana()
+{
+  SDL_Rect orbRect = {
+      0,
+      SCREEN_HEIGHT - 128,
+      128,
+      128};
+  SDL_RenderCopy(gRenderer, gImageAssets[ORB_EMPTY].texture, NULL, &orbRect);
+
+  int max_hp = gPlayer.max_hp;
+  int current_hp = gPlayer.hp;
+
+  if (current_hp < 0)
+  {
+    current_hp = 0;
+  }
+
+  double percentage = (double)current_hp / (double)max_hp;
+  int pixels = (int)(128 * percentage);
+  int y_offset = 128 - pixels;
+  SDL_Rect healthOrb = {
+      0, y_offset,
+      128, pixels};
+  orbRect.h = pixels;
+  orbRect.y += y_offset;
+  SDL_RenderCopy(gRenderer, gImageAssets[ORB_HEALTH].texture, &healthOrb, &orbRect);
+
+  int max_mana = gPlayer.max_mana;
+  int current_mana = gPlayer.mana;
+  if (current_mana < 0)
+  {
+    current_mana = 0;
+  }
+  orbRect.h = 128;
+  orbRect.x = SCREEN_WIDTH - 128;
+  orbRect.y = SCREEN_HEIGHT - 128;
+  SDL_RenderCopy(gRenderer, gImageAssets[ORB_EMPTY].texture, NULL, &orbRect);
+  percentage = (double)current_mana / (double)max_mana;
+  pixels = (int)(128 * percentage);
+  y_offset = 128 - pixels;
+  SDL_Rect manaOrb = {
+      0, y_offset,
+      128, pixels};
+  orbRect.h = pixels;
+  orbRect.y += y_offset;
+
+  SDL_RenderCopy(gRenderer, gImageAssets[ORB_MANA].texture, &manaOrb, &orbRect);
+}
+
+void draw_ui()
+{
+  draw_health_and_mana();
+}
+
 void draw_and_blit()
 {
   //Clear screen
@@ -341,6 +396,7 @@ void draw_and_blit()
                  &currentPlayerAnimation.frames[current_frame],
                  &playerRenderQuad);
 
+  draw_ui();
   draw_cursor();
   //Update screen
   SDL_RenderPresent(gRenderer);

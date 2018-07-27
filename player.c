@@ -15,10 +15,10 @@ void init_player()
   gPlayer.state = PLAYER_STANDING;
   gPlayer.next_state = PLAYER_NO_STATE;
   gPlayer.destination_action = PLAYER_DESTINATION_NONE;
-  gPlayer.max_hp = 100;
+  gPlayer.max_hp = 1000;
   gPlayer.hp = gPlayer.max_hp;
   gPlayer.max_mana = 50;
-  gPlayer.mana = gPlayer.max_mana;
+  gPlayer.mana = 22;
   gPlayer.damage = 10;
 
   gPlayer.target_monster_id = -1;

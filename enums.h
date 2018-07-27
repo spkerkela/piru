@@ -127,6 +127,10 @@ enum SPRITE
     // misc
     SPRITE_CURSOR,
     SPRITE_SELECTION,
+    ORB_EMPTY,
+    ORB_HEALTH,
+    ORB_MANA,
+
     MAX_SPRITES
 };
 
