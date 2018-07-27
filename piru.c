@@ -234,8 +234,8 @@ void draw_dungeon()
       {
         asset = gImageAssets[SPRITE_GROVEL];
       }
-      SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
-                           isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
+      SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2) - gPlayer.pixel_x,
+                           isometric_point.y + (SCREEN_HEIGHT / 2) - gPlayer.pixel_y, TILE_WIDTH, TILE_HEIGHT};
       SDL_RenderCopy(gRenderer, asset.texture,
                      NULL,
                      &fillRect);
@@ -307,8 +307,8 @@ void draw_monsters()
     int width = currentMonsterAnimation.frames[current_frame].w;
     int height = currentMonsterAnimation.frames[current_frame].h;
     SDL_Rect monster_quad = {
-        isometric_point.x + (SCREEN_WIDTH / 2) + currentMonsterAnimation.offset_x,
-        isometric_point.y + (SCREEN_HEIGHT / 2) + currentMonsterAnimation.offset_y,
+        isometric_point.x + (SCREEN_WIDTH / 2) + currentMonsterAnimation.offset_x + monsters[i].pixel_x - gPlayer.pixel_x,
+        isometric_point.y + (SCREEN_HEIGHT / 2) + currentMonsterAnimation.offset_y + monsters[i].pixel_y - gPlayer.pixel_y,
         width,
         height};
     SDL_RenderCopy(gRenderer, currentMonsterAnimation.image.texture,
@@ -390,12 +390,14 @@ void update_input()
       }
       if (mouse_was_pressed && !(player_position.x == selectedTile.x && player_position.y == selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
       {
-        if (e.type == SDL_MOUSEBUTTONDOWN)
-        {
-          gPlayer.state = PLAYER_MOVING;
-          gPlayer.point_in_path = 0;
-          gPlayer.target = selectedTile;
-        }
+        gPlayer.state = PLAYER_MOVING;
+        gPlayer.point_in_path = 0;
+        gPlayer.target = selectedTile;
+      }
+      else if (mouse_was_pressed && gPlayer.state != PLAYER_ATTACKING)
+      {
+        gPlayer.state = PLAYER_STANDING;
+        gPlayer.point_in_path = 0;
       }
     }
     if (e.type == SDL_QUIT)
@@ -575,8 +577,8 @@ bool start_game(enum GAME_START_MODE start_mode)
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);
   }
-  monster_point.x = 1;
-  monster_point.y = 1;
+  monster_point.x = 6;
+  monster_point.y = 6;
   create_monster(monster_point);
   run_game_loop(start_mode);
   printf("Started game..\n");

@@ -15,6 +15,8 @@ bool create_monster(const Point at)
   Monster monster;
   monster.world_x = at.x;
   monster.world_y = at.y;
+  monster.pixel_x = 0;
+  monster.pixel_y = 0;
   monster.id = created_monsters;
   monster.level = 1;
   monster.state = MONSTER_STANDING;
@@ -61,15 +63,20 @@ double get_distance_to_player(int i)
   return get_distance(monster_point, player_point);
 }
 
+void monster_do_attack(int i)
+{
+  monsters[i].direction = monster_get_direction8(monsters[i].world_x, monsters[i].world_y, gPlayer.world_x, gPlayer.world_y);
+  monsters[i].state = MONSTER_ATTACKING;
+  monsters[i].animation = ANIM_SKELETON_ATTACK;
+  monsters[i].point_in_path = 0;
+  monsters[i].animation_frame = 0;
+}
+
 void monster_do_walk(int i)
 {
   if (get_distance_to_player(i) <= monsters[i].attack_radius)
   {
-    monsters[i].direction = monster_get_direction8(monsters[i].world_x, monsters[i].world_y, gPlayer.world_x, gPlayer.world_y);
-    monsters[i].state = MONSTER_ATTACKING;
-    monsters[i].animation = ANIM_SKELETON_ATTACK;
-    monsters[i].point_in_path = 0;
-    monsters[i].animation_frame = 0;
+    monster_do_attack(i);
     return;
   }
   char raw_code = monsters[i].path[monsters[i].point_in_path];
@@ -85,7 +92,6 @@ void monster_do_walk(int i)
       return;
     }
 
-    monsters[i].direction = monster_get_direction_from_path_code(code);
     gDungeonMonsterTable[monsters[i].world_y][monsters[i].world_x] = -1;
     monsters[i].world_x += direction.x;
     monsters[i].world_y += direction.y;
@@ -110,15 +116,34 @@ void update_monster_movement(int i)
   {
     monsters[i].frames_since_walk = 0;
     monster_do_walk(i);
+    monsters[i].pixel_x = 0;
+    monsters[i].pixel_y = 0;
   }
   else
   {
     monsters[i].frames_since_walk += gClock.delta;
+    double percentage_walked = (double)monsters[i].frames_since_walk / (double)monsters[i].walk_interval;
+    if (percentage_walked >= 1.0)
+    {
+      percentage_walked = 1.0;
+    }
+    char raw_code = monsters[i].path[monsters[i].point_in_path];
+
+    enum PATH_CODE code = (enum PATH_CODE)raw_code;
+    monsters[i].direction = monster_get_direction_from_path_code(code);
+    Point direction = get_direction_from_path(code);
+    Point isometric = cartesian_to_isometric(direction);
+    int off_x, off_y;
+    off_x = (int)(isometric.x * percentage_walked);
+    off_y = (int)(isometric.y * percentage_walked);
+    monsters[i].pixel_x = off_x;
+    monsters[i].pixel_y = off_y;
   }
 }
 
 void update_monster(int id)
 {
+  double distance = get_distance_to_player(id);
   switch (monsters[id].state)
   {
   case MONSTER_DEAD:
@@ -128,7 +153,11 @@ void update_monster(int id)
     update_monster_movement(id);
     break;
   case MONSTER_STANDING:
-    if (get_distance_to_player(id) < monsters[id].aggro_radius)
+    if (distance <= monsters[id].attack_radius)
+    {
+      monster_do_attack(id);
+    }
+    else if (distance <= monsters[id].aggro_radius)
     {
       find_path_to_player(id);
     }

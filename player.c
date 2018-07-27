@@ -6,6 +6,8 @@ void init_player()
 {
   gPlayer.world_x = 1;
   gPlayer.world_y = 1;
+  gPlayer.pixel_x = 0;
+  gPlayer.pixel_y = 0;
   gPlayer.attack_radius = 2.0;
   gPlayer.current_game_level = 0;
   gPlayer.direction = PLAYER_SOUTH;
@@ -21,7 +23,7 @@ void init_player()
 
   gPlayer.target_monster_id = -1;
   gPlayer.animation = ANIM_WARRIOR_IDLE;
-  gPlayer.walk_interval = 100;
+  gPlayer.walk_interval = 70;
   gPlayer.frames_since_walk = 100;
   gPlayer.frames_since_animation_frame = 0;
   gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 40;
@@ -58,7 +60,6 @@ void player_do_walk()
     gPlayer.point_in_path++;
     Point direction = get_direction_from_path(code);
 
-    gPlayer.direction = player_get_direction_from_path_code(code);
     gPlayer.world_x += direction.x;
     gPlayer.world_y += direction.y;
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
@@ -76,10 +77,27 @@ void update_player_movement()
   {
     gPlayer.frames_since_walk = 0;
     player_do_walk();
+    gPlayer.pixel_x = 0;
+    gPlayer.pixel_y = 0;
   }
   else
   {
     gPlayer.frames_since_walk += gClock.delta;
+    double percentage_walked = (double)gPlayer.frames_since_walk / (double)gPlayer.walk_interval;
+    if (percentage_walked >= 1.0)
+    {
+      percentage_walked = 1.0;
+    }
+    char raw_code = gPlayer.path[gPlayer.point_in_path];
+    enum PATH_CODE code = (enum PATH_CODE)raw_code;
+    gPlayer.direction = player_get_direction_from_path_code(code);
+    Point direction = get_direction_from_path(code);
+    Point isometric = cartesian_to_isometric(direction);
+    int off_x, off_y;
+    off_x = (int)(isometric.x * percentage_walked);
+    off_y = (int)(isometric.y * percentage_walked);
+    gPlayer.pixel_x = off_x;
+    gPlayer.pixel_y = off_y;
   }
 }
 
