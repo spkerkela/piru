@@ -290,7 +290,7 @@ bool path_get_path(PathNode *path, const Point from)
     return true;
 }
 
-bool find_path(const Point source, const Point destination, Path out_path)
+int find_path(const Point source, const Point destination, Path out_path)
 {
     PathNode *path_start;
     char initial_heuristic;
@@ -304,7 +304,7 @@ bool find_path(const Point source, const Point destination, Path out_path)
     char step;
     if (destination.x < 0 || destination.y < 0)
     {
-        return false;
+        return 0;
     }
 
     path_nodes_in_use = 0;
@@ -328,7 +328,7 @@ bool find_path(const Point source, const Point destination, Path out_path)
         if (!next_node)
         {
             printf("Failed to get node\n");
-            return false;
+            return 0;
         }
         if (next_node->x == destination.x && next_node->y == destination.y)
         {
@@ -336,7 +336,7 @@ bool find_path(const Point source, const Point destination, Path out_path)
         }
         if (!path_get_path(next_node, destination))
         {
-            return false;
+            return 0;
         }
     }
     current_node = next_node;
@@ -361,7 +361,9 @@ bool find_path(const Point source, const Point destination, Path out_path)
             }
         }
         if (path_is_full)
-            return false;
+        {
+            return 0;
+        }
     }
     result = 0;
     if (path_length > 0)
@@ -375,5 +377,5 @@ bool find_path(const Point source, const Point destination, Path out_path)
         } while (result < path_length);
     }
 
-    return true;
+    return path_length;
 }

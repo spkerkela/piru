@@ -43,16 +43,35 @@ bool create_monster(const Point at)
   monsters[created_monsters++] = monster;
   return true;
 }
+
+void monster_do_attack(int i)
+{
+  monsters[i].direction = monster_get_direction8(monsters[i].world_x, monsters[i].world_y, gPlayer.world_x, gPlayer.world_y);
+  monsters[i].state = MONSTER_ATTACKING;
+  monsters[i].animation = ANIM_SKELETON_ATTACK;
+  memset(monsters[i].path, -1, MAX_PATH_LENGTH);
+  monsters[i].point_in_path = 0;
+  monsters[i].animation_frame = 0;
+}
+
 void find_path_to_player(int id)
 {
   memset(monsters[id].path, -1, MAX_PATH_LENGTH);
   monsters[id].point_in_path = 0;
   Point pos = {monsters[id].world_x, monsters[id].world_y};
   Point player_pos = {gPlayer.world_x, gPlayer.world_y};
-  if (find_path(pos, player_pos, monsters[id].path))
+  int path_length;
+  if ((path_length = find_path(pos, player_pos, monsters[id].path)))
   {
-    monsters[id].state = MONSTER_MOVING;
-    monsters[id].target = player_pos;
+    if (path_length == 1)
+    {
+      monster_do_attack(id);
+    }
+    else
+    {
+      monsters[id].state = MONSTER_MOVING;
+      monsters[id].target = player_pos;
+    }
   }
 }
 
@@ -61,15 +80,6 @@ double get_distance_to_player(int i)
   Point monster_point = {monsters[i].world_x, monsters[i].world_y};
   Point player_point = {gPlayer.world_x, gPlayer.world_y};
   return get_distance(monster_point, player_point);
-}
-
-void monster_do_attack(int i)
-{
-  monsters[i].direction = monster_get_direction8(monsters[i].world_x, monsters[i].world_y, gPlayer.world_x, gPlayer.world_y);
-  monsters[i].state = MONSTER_ATTACKING;
-  monsters[i].animation = ANIM_SKELETON_ATTACK;
-  monsters[i].point_in_path = 0;
-  monsters[i].animation_frame = 0;
 }
 
 void monster_do_walk(int i)
