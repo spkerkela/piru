@@ -116,6 +116,18 @@ void monster_do_walk(int i)
   }
 }
 
+void update_monster_attack(int i)
+{
+  if (monsters[i].animation_frame == 8 && monsters[i].previous_animation_frame != 8)
+  {
+    if (get_distance_to_player(i) <= monsters[i].attack_radius)
+    {
+      gPlayer.hp -= monsters[i].damage;
+      printf("%d\n", gPlayer.hp);
+    }
+  }
+}
+
 void update_monster_movement(int i)
 {
   if (gPlayer.world_x != monsters[i].target.x || gPlayer.world_y != monsters[i].target.y)
@@ -177,6 +189,7 @@ void update_monster(int id)
     }
     break;
   case MONSTER_ATTACKING:
+    update_monster_attack(id);
     monsters[id].next_state = MONSTER_STANDING;
     break;
   default:

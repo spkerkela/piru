@@ -442,6 +442,7 @@ void update_input()
 
 void update_player_animations()
 {
+  gPlayer.previous_animation_frame = gPlayer.animation_frame;
   if (gPlayer.frames_since_animation_frame >= gPlayer.animation_intervals[gPlayer.animation])
   {
     gPlayer.frames_since_animation_frame = 0;
@@ -468,6 +469,7 @@ void update_monster_animations()
   int id;
   for (id = 0; id < created_monsters; id++)
   {
+    monsters[id].previous_animation_frame = monsters[id].animation_frame;
     if (monsters[id].frames_since_animation_frame >= monsters[id].animation_intervals[monsters[id].animation])
     {
       monsters[id].frames_since_animation_frame = 0;
@@ -518,6 +520,7 @@ void game_loop()
     update_player();
     update_monsters();
     //printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
+    gGameRunning = gPlayer.hp > 0;
   }
   else
   {

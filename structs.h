@@ -28,6 +28,7 @@ typedef struct
     int mana;
     int max_mana;
     int animation_frame;
+    int previous_animation_frame;
     int current_game_level;
     int level;
     int point_in_path;
@@ -54,6 +55,7 @@ typedef struct
     int hp;
     int max_hp;
     int animation_frame;
+    int previous_animation_frame;
     int id;
     int level;
     int point_in_path;

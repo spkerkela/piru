@@ -103,7 +103,7 @@ void update_player_movement()
 
 void update_player_attack()
 {
-  if (gPlayer.animation_frame == 8)
+  if (gPlayer.animation_frame == 8 && gPlayer.previous_animation_frame != 8)
   {
     int target_id = gPlayer.target_monster_id;
     if (target_id >= 0)
