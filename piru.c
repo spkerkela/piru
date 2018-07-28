@@ -428,11 +428,29 @@ void update_input()
         y = selectedTile.y;
         monster_clicked = gDungeonMonsterTable[y][x];
         printf("%d\n", monster_clicked);
+        int directions_checked = 0;
         // check one tile below as well
-        if (monster_clicked == -1)
+        while (monster_clicked < 0 && directions_checked < 3)
         {
-          monster_clicked = gDungeonMonsterTable[++y][++x];
+          switch (directions_checked)
+          {
+          case 0:
+            x = selectedTile.x + 1;
+            y = selectedTile.y + 1;
+            break;
+          case 1:
+            x = selectedTile.x;
+            y = selectedTile.y + 1;
+            break;
+          case 2:
+            x = selectedTile.x + 1;
+            y = selectedTile.y;
+            break;
+          }
+          monster_clicked = gDungeonMonsterTable[y][x];
+          directions_checked++;
         }
+
         if (monster_clicked >= 0)
         {
           selectedTile.x = x;
