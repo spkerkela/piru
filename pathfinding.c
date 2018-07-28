@@ -163,7 +163,7 @@ void path_set_coords(PathNode *path)
     }
 }
 
-bool path_parent_path(PathNode *path, const Point next_destination, const Point from)
+bool path_parent_path(PathNode *path, const Point next_destination, const Point destination)
 {
     int next_g_movement_cost;
     char dxdy_heuristic;
@@ -245,7 +245,7 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
 
             new_node->parent = path;
             new_node->g_movement_cost = next_g_movement_cost;
-            new_heuristic = get_heuristic_cost(next_destination, from);
+            new_heuristic = get_heuristic_cost(next_destination, destination);
             new_node->heuristic = new_heuristic;
             new_node->f_score = next_g_movement_cost + new_heuristic;
             new_node->x = next_destination.x;
@@ -268,7 +268,7 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
     return true;
 }
 
-bool path_get_path(PathNode *path, const Point from)
+bool path_get_path(PathNode *path, const Point destination)
 {
     int i;
     Point next_destination;
@@ -281,7 +281,7 @@ bool path_get_path(PathNode *path, const Point from)
         {
             continue;
         }
-        path_parent_path(path, next_destination, from);
+        path_parent_path(path, next_destination, destination);
         if (path_nodes_in_use >= MAX_NODES)
         {
             return false;

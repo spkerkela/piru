@@ -32,8 +32,8 @@ bool create_monster(const Point at)
   monster.damage = 5;
 
   monster.animation_frame = 0;
-  monster.walk_interval = 180;
-  monster.frames_since_walk = 180;
+  monster.walk_interval = 300;
+  monster.frames_since_walk = monster.walk_interval;
   monster.animation = ANIM_SKELETON_IDLE;
   monster.frames_since_animation_frame = 0;
   monster.animation_intervals[ANIM_SKELETON_ATTACK] = 40;
@@ -52,6 +52,8 @@ void monster_do_attack(int i)
   memset(monsters[i].path, -1, MAX_PATH_LENGTH);
   monsters[i].point_in_path = 0;
   monsters[i].animation_frame = 0;
+  monsters[i].pixel_x = 0;
+  monsters[i].pixel_y = 0;
 }
 
 void find_path_to_player(int id)
@@ -123,7 +125,6 @@ void update_monster_attack(int i)
     if (get_distance_to_player(i) <= monsters[i].attack_radius)
     {
       gPlayer.hp -= monsters[i].damage;
-      printf("%d\n", gPlayer.hp);
     }
   }
 }
@@ -172,7 +173,14 @@ void update_monster(int id)
     monsters[id].animation = ANIM_SKELETON_DEAD;
     break;
   case MONSTER_MOVING:
-    update_monster_movement(id);
+    if (distance <= monsters[id].attack_radius)
+    {
+      monster_do_attack(id);
+    }
+    else
+    {
+      update_monster_movement(id);
+    }
     break;
   case MONSTER_STANDING:
     if (distance <= monsters[id].attack_radius)

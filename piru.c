@@ -647,7 +647,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 1000; ms++)
+  for (ms = 0; ms < 1; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
