@@ -11,8 +11,12 @@ Point cartesian_to_isometric(const Point cartesian_point)
 Point isometric_to_cartesian(const Point isometric_point)
 {
     Point cartesian_point;
-    cartesian_point.x = ((isometric_point.x / TILE_WIDTH_HALF) + (isometric_point.y / TILE_HEIGHT_HALF)) / 2;
-    cartesian_point.y = ((isometric_point.y / TILE_HEIGHT_HALF) - (isometric_point.x / TILE_WIDTH_HALF)) / 2;
+    double xx;
+    double yy;
+    xx = (((double)isometric_point.x / TILE_WIDTH_HALF) + ((double)isometric_point.y / TILE_HEIGHT_HALF)) / 2.0;
+    yy = (((double)isometric_point.y / TILE_HEIGHT_HALF) - ((double)isometric_point.x / TILE_WIDTH_HALF)) / 2.0;
+    cartesian_point.x = (int)xx;
+    cartesian_point.y = (int)yy;
     return cartesian_point;
 }
 
