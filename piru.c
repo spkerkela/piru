@@ -243,8 +243,8 @@ void draw_dungeon()
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
     }
   }
-  cartesian_point.x = selectedTile.x;
-  cartesian_point.y = selectedTile.y;
+  cartesian_point.x = selectedTile.x - gPlayer.world_x;
+  cartesian_point.y = selectedTile.y - gPlayer.world_y;
   isometric_point = cartesian_to_isometric(cartesian_point);
   SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                        isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
@@ -471,23 +471,11 @@ void update_input()
       case SDLK_ESCAPE:
         gGamePaused = !gGamePaused;
         break;
-      case SDLK_LEFT:
-        gPlayer.direction++;
-        if (gPlayer.direction >= PLAYER_DIRECTION_COUNT)
-        {
-          gPlayer.direction = PLAYER_SOUTH;
-        }
+      case SDLK_1:
+        gPlayer.hp = gPlayer.max_hp;
         break;
-      case SDLK_RIGHT:
-        if (gPlayer.direction == PLAYER_SOUTH)
-        {
-          gPlayer.direction = PLAYER_SOUTH_EAST_3;
-        }
-        else
-        {
-          gPlayer.direction--;
-        }
-
+      case SDLK_2:
+        gPlayer.mana = gPlayer.max_mana;
         break;
       default:
         break;
@@ -630,15 +618,12 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < MAX_MONSTERS; ms++)
+  for (ms = 0; ms < 0; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);
   }
-  monster_point.x = 6;
-  monster_point.y = 6;
-  create_monster(monster_point);
   run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
