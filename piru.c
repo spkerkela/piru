@@ -402,14 +402,24 @@ void draw_and_blit()
   SDL_RenderPresent(gRenderer);
 }
 
+bool gMouseIsDown = false;
+
 void update_input()
 {
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0)
   {
-    if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEMOTION)
+    if (e.type == SDL_MOUSEBUTTONUP)
     {
-      bool mouse_was_pressed = e.type == SDL_MOUSEBUTTONDOWN;
+      gMouseIsDown = false;
+    }
+    if (e.type == SDL_MOUSEBUTTONDOWN)
+    {
+      gMouseIsDown = true;
+    }
+    if (e.type == SDL_MOUSEMOTION)
+    {
+      bool mouse_was_pressed = gMouseIsDown;
       int mx, my;
       Point player_position = {gPlayer.world_x, gPlayer.world_y};
       SDL_GetMouseState(&mx, &my);
@@ -676,7 +686,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 1; ms++)
+  for (ms = 0; ms < MAX_MONSTERS; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
