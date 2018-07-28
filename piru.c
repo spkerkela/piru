@@ -423,9 +423,20 @@ void update_input()
       if (mouse_was_pressed)
       {
         memset(gPlayer.path, -1, MAX_PATH_LENGTH);
-        monster_clicked = gDungeonMonsterTable[selectedTile.y][selectedTile.x];
+        int x, y;
+        x = selectedTile.x;
+        y = selectedTile.y;
+        monster_clicked = gDungeonMonsterTable[y][x];
+        printf("%d\n", monster_clicked);
+        // check one tile below as well
+        if (monster_clicked == -1)
+        {
+          monster_clicked = gDungeonMonsterTable[++y][++x];
+        }
         if (monster_clicked >= 0)
         {
+          selectedTile.x = x;
+          selectedTile.y = y;
           if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_position, selectedTile) <= gPlayer.attack_radius)
           {
             gPlayer.state = PLAYER_ATTACKING;
@@ -618,7 +629,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 0; ms++)
+  for (ms = 0; ms < 1000; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
