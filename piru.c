@@ -417,7 +417,7 @@ void update_input()
     {
       gMouseIsDown = true;
     }
-    if (e.type == SDL_MOUSEMOTION)
+    if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN)
     {
       bool mouse_was_pressed = gMouseIsDown;
       int mx, my;
