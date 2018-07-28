@@ -427,7 +427,6 @@ void update_input()
         x = selectedTile.x;
         y = selectedTile.y;
         monster_clicked = gDungeonMonsterTable[y][x];
-        printf("%d\n", monster_clicked);
         int directions_checked = 0;
         // check one tile below as well
         while (monster_clicked < 0 && directions_checked < 3)
@@ -465,7 +464,37 @@ void update_input()
           }
           else
           {
-            gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
+            // Find nearest free node to monster
+            int i;
+            Monster monster = monsters[monster_clicked];
+            Point player_point = {gPlayer.world_x,
+                                  gPlayer.world_y};
+            Point monster_point = {monster.world_x, monster.world_y};
+            Point lookup;
+            double smallest_distance = 1000.0;
+            int dir = -1;
+            for (i = 0; i < 8; i++)
+            {
+              lookup.x = monster_point.x + movement_directions_x[i];
+              lookup.y = monster_point.y + movement_directions_y[i];
+              double distance = get_distance(player_point, lookup);
+              if (distance < smallest_distance && !tile_is_blocked(lookup))
+              {
+                smallest_distance = distance;
+                dir = i;
+              }
+            }
+
+            lookup.x = monster_point.x + movement_directions_x[dir];
+            lookup.y = monster_point.y + movement_directions_y[dir];
+            if (find_path(player_position, lookup, gPlayer.path))
+            {
+              gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
+              gPlayer.state = PLAYER_MOVING;
+              gPlayer.point_in_path = 0;
+              gPlayer.target = lookup;
+              gPlayer.target_monster_id = monster_clicked;
+            }
           }
         }
         else
@@ -473,13 +502,13 @@ void update_input()
           gPlayer.destination_action = PLAYER_DESTINATION_STAND;
         }
       }
-      if (mouse_was_pressed && !(player_position.x == selectedTile.x && player_position.y == selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
+      if (mouse_was_pressed && SDL_BUTTON(SDL_BUTTON_LEFT) && !(player_position.x == selectedTile.x && player_position.y == selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
       {
         gPlayer.state = PLAYER_MOVING;
         gPlayer.point_in_path = 0;
         gPlayer.target = selectedTile;
       }
-      else if (mouse_was_pressed && gPlayer.state != PLAYER_ATTACKING)
+      else if (mouse_was_pressed && gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
       {
         gPlayer.state = PLAYER_STANDING;
         gPlayer.point_in_path = 0;
