@@ -65,8 +65,22 @@ void player_do_walk()
     gPlayer.point_in_path++;
     Point direction = get_direction_from_path(code);
 
-    gPlayer.world_x += direction.x;
-    gPlayer.world_y += direction.y;
+    int new_x = gPlayer.world_x + direction.x;
+    int new_y = gPlayer.world_y + direction.y;
+
+    Point check = {new_x, new_y};
+    if (tile_is_blocked(check))
+    {
+      gPlayer.point_in_path = 0;
+      memset(gPlayer.path, -1, MAX_PATH_LENGTH);
+      gPlayer.animation = ANIM_WARRIOR_IDLE;
+      gPlayer.state = PLAYER_STANDING;
+    }
+    else
+    {
+      gPlayer.world_x = new_x;
+      gPlayer.world_y = new_y;
+    }
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
     {
       gPlayer.point_in_path = 0;
