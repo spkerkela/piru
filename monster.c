@@ -4,7 +4,7 @@ extern Player gPlayer;
 extern int created_monsters;
 bool create_monster(const Point at)
 {
-  if (gDungeonBlockTable[at.y][at.x])
+  if (gDungeonBlockTable[at.y][at.x] || gDungeonMonsterTable[at.y][at.x] >= 0)
   {
     return false;
   }

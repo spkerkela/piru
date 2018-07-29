@@ -28,10 +28,10 @@ void init_player()
 
   gPlayer.target_monster_id = -1;
   gPlayer.animation = ANIM_WARRIOR_IDLE;
-  gPlayer.walk_interval = 300;
+  gPlayer.walk_interval = 100;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
-  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 40;
+  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 20;
   gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
   gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
 }
@@ -41,10 +41,13 @@ void player_do_destination_action()
   switch (gPlayer.destination_action)
   {
   case PLAYER_DESTINATION_ATTACK:
+    gPlayer.animation_frame = 0;
     gPlayer.state = PLAYER_ATTACKING;
     gPlayer.next_state = PLAYER_STANDING;
+
     break;
   case PLAYER_DESTINATION_STAND:
+    gPlayer.animation_frame = 0;
     gPlayer.state = PLAYER_STANDING;
     gPlayer.animation = ANIM_WARRIOR_IDLE;
     break;
@@ -106,13 +109,14 @@ void update_player_movement()
       {
         gPlayer.state = PLAYER_MOVING;
         gPlayer.point_in_path = 0;
-        gPlayer.target = gPlayer.new_target;
       }
       else if (gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
       {
         gPlayer.state = PLAYER_STANDING;
         gPlayer.point_in_path = 0;
       }
+
+      gPlayer.target = gPlayer.new_target;
     }
   }
   else
