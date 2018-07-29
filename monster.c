@@ -33,7 +33,7 @@ bool create_monster(const Point at)
 
   monster.animation_frame = 0;
   monster.walk_interval = 300;
-  monster.frames_since_walk = monster.walk_interval;
+  monster.frames_since_walk = 0;
   monster.animation = ANIM_SKELETON_IDLE;
   monster.frames_since_animation_frame = 0;
   monster.animation_intervals[ANIM_SKELETON_ATTACK] = 40;

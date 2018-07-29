@@ -307,6 +307,7 @@ int find_path(const Point source, const Point destination, Path out_path)
         return 0;
     }
 
+    memset(out_path, -1, MAX_PATH_LENGTH);
     path_nodes_in_use = 0;
     distance_sorted_frontier_list = get_new_node();
     search_stack_size = 0;

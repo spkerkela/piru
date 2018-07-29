@@ -13,6 +13,8 @@ Point get_tile_coordinates(const Point cartesian_point);
 
 Point get_direction_from_path(enum PATH_CODE code);
 
-double get_distance(Point a, Point b);
+double get_distance(const Point a, const Point b);
+
+bool point_equal(const Point a, const Point b);
 
 #endif

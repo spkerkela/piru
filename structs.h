@@ -13,6 +13,7 @@ typedef struct
 typedef struct
 {
     Point target;
+    Point new_target;
     char path[MAX_PATH_LENGTH];
     enum ANIMATION animation;
     enum ARMOR_CLASS armor_class;

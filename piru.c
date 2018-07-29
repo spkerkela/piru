@@ -432,7 +432,6 @@ void update_input()
 
       if (mouse_was_pressed)
       {
-        memset(gPlayer.path, -1, MAX_PATH_LENGTH);
         int x, y;
         x = selectedTile.x;
         y = selectedTile.y;
@@ -512,16 +511,24 @@ void update_input()
           gPlayer.destination_action = PLAYER_DESTINATION_STAND;
         }
       }
-      if (mouse_was_pressed && SDL_BUTTON(SDL_BUTTON_LEFT) && !(player_position.x == selectedTile.x && player_position.y == selectedTile.y) && find_path(player_position, selectedTile, gPlayer.path))
+      if (gPlayer.pixel_x == 0 && gPlayer.pixel_y == 0 && mouse_was_pressed)
       {
-        gPlayer.state = PLAYER_MOVING;
-        gPlayer.point_in_path = 0;
-        gPlayer.target = selectedTile;
+        if (!point_equal(player_position, selectedTile) && find_path(player_position, selectedTile, gPlayer.path))
+        {
+          gPlayer.state = PLAYER_MOVING;
+          gPlayer.point_in_path = 0;
+          gPlayer.target = selectedTile;
+          gPlayer.new_target = selectedTile;
+        }
+        else if (gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
+        {
+          gPlayer.state = PLAYER_STANDING;
+          gPlayer.point_in_path = 0;
+        }
       }
-      else if (mouse_was_pressed && gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
+      else if (mouse_was_pressed)
       {
-        gPlayer.state = PLAYER_STANDING;
-        gPlayer.point_in_path = 0;
+        gPlayer.new_target = selectedTile;
       }
     }
     if (e.type == SDL_QUIT)
@@ -686,7 +693,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < MAX_MONSTERS; ms++)
+  for (ms = 0; ms < 0; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
