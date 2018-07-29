@@ -25,6 +25,27 @@ bool gGameRunning;
 bool gGamePaused;
 SDL_Rect gPlayerSprites[8 * 16];
 
+typedef struct DamageText
+{
+  char *text;
+  int x, y;
+} DamageText;
+
+DamageText damage_text[200];
+int damage_text_count;
+DamageText pop_damage_text()
+{
+  return damage_text[--damage_text_count];
+}
+
+void push_damage_text(DamageText damage)
+{
+  if (damage_text_count < 200)
+  {
+    damage_text[damage_text_count++] = damage;
+  }
+}
+
 char *direction_str[PLAYER_DIRECTION_COUNT] = {
     "SOUTH",
     "SOUTH_WEST_1",
@@ -366,9 +387,22 @@ void draw_health_and_mana()
   SDL_RenderCopy(gRenderer, gImageAssets[ORB_MANA].texture, &manaOrb, &orbRect);
 }
 
+void draw_damage_text()
+{
+  int i;
+
+  for (i = 0; i < damage_text_count; i++)
+  {
+    SDL_Color color = {255, 255, 255};
+    SDL_Rect rect = {damage_text[i].x, damage_text[i].y, 30, 30};
+    draw_text(damage_text[i].text, color, NULL, &rect);
+  }
+}
+
 void draw_ui()
 {
   draw_health_and_mana();
+  draw_damage_text();
 }
 
 void draw_and_blit()
@@ -408,6 +442,8 @@ void handle_monster_clicked(int monster_clicked)
 {
   Point player_point = {gPlayer.world_x,
                         gPlayer.world_y};
+  DamageText dt = {"10", 10, 20};
+  push_damage_text(dt);
   if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_point, selectedTile) <= gPlayer.attack_radius)
   {
     gPlayer.state = PLAYER_ATTACKING;
