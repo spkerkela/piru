@@ -49,7 +49,7 @@ char *character_class_str[CHARACTER_CLASS_COUNT] = {
     "Rogue",
     "Warrior"};
 
-Point selectedTile;
+Point gSelectedTile;
 
 extern Player gPlayer;
 Monster monsters[MAX_MONSTERS];
@@ -244,8 +244,8 @@ void draw_dungeon()
       SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
     }
   }
-  cartesian_point.x = selectedTile.x - gPlayer.world_x;
-  cartesian_point.y = selectedTile.y - gPlayer.world_y;
+  cartesian_point.x = gSelectedTile.x - gPlayer.world_x;
+  cartesian_point.y = gSelectedTile.y - gPlayer.world_y;
   isometric_point = cartesian_to_isometric(cartesian_point);
   SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF + (SCREEN_WIDTH / 2),
                        isometric_point.y + (SCREEN_HEIGHT / 2), TILE_WIDTH, TILE_HEIGHT};
@@ -434,11 +434,11 @@ void handle_monster_clicked(int monster_clicked)
 {
   Point player_point = {gPlayer.world_x,
                         gPlayer.world_y};
-  if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_point, selectedTile) <= gPlayer.attack_radius)
+  if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_point, gSelectedTile) <= gPlayer.attack_radius)
   {
     switch_state(PLAYER_ATTACKING);
     gPlayer.next_state = PLAYER_STANDING;
-    gPlayer.direction = player_get_direction8(gPlayer.world_x, gPlayer.world_y, selectedTile.x, selectedTile.y);
+    gPlayer.direction = player_get_direction8(gPlayer.world_x, gPlayer.world_y, gSelectedTile.x, gSelectedTile.y);
     gPlayer.target_monster_id = monster_clicked;
   }
   else if (gPlayer.state != PLAYER_ATTACKING)
@@ -473,6 +473,10 @@ void handle_monster_clicked(int monster_clicked)
       gPlayer.new_target = lookup;
       gPlayer.target_monster_id = monster_clicked;
     }
+    else
+    {
+      switch_state(PLAYER_STANDING);
+    }
   }
 }
 
@@ -499,15 +503,15 @@ void update_input()
       Point offset = cartesian_to_isometric(player_position);
       mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
       mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
-      selectedTile = isometric_to_cartesian(mouse_point);
+      gSelectedTile = isometric_to_cartesian(mouse_point);
       int monster_clicked = -1;
-      if (selectedTile.x >= 0 && selectedTile.y >= 0)
+      if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0)
       {
-        if (gPlayer.pixel_x == 0 && gPlayer.pixel_y == 0 && mouse_was_pressed)
+        if (!gPlayer.moving_between_points && gMouseIsDown)
         {
           int x, y;
-          x = selectedTile.x;
-          y = selectedTile.y;
+          x = gSelectedTile.x;
+          y = gSelectedTile.y;
           monster_clicked = gDungeonMonsterTable[y][x];
           int directions_checked = 0;
           // check one tile below as well
@@ -516,16 +520,16 @@ void update_input()
             switch (directions_checked)
             {
             case 0:
-              x = selectedTile.x + 1;
-              y = selectedTile.y + 1;
+              x = gSelectedTile.x + 1;
+              y = gSelectedTile.y + 1;
               break;
             case 1:
-              x = selectedTile.x;
-              y = selectedTile.y + 1;
+              x = gSelectedTile.x;
+              y = gSelectedTile.y + 1;
               break;
             case 2:
-              x = selectedTile.x + 1;
-              y = selectedTile.y;
+              x = gSelectedTile.x + 1;
+              y = gSelectedTile.y;
               break;
             }
             monster_clicked = gDungeonMonsterTable[y][x];
@@ -534,8 +538,8 @@ void update_input()
 
           if (monster_clicked >= 0)
           {
-            selectedTile.x = x;
-            selectedTile.y = y;
+            gSelectedTile.x = x;
+            gSelectedTile.y = y;
             handle_monster_clicked(monster_clicked);
           }
           else
@@ -543,11 +547,11 @@ void update_input()
             gPlayer.destination_action = PLAYER_DESTINATION_STAND;
           }
 
-          if (gPlayer.target_monster_id < 0 && !point_equal(player_position, selectedTile) && find_path(player_position, selectedTile, gPlayer.path, &tile_is_blocked))
+          if (gPlayer.target_monster_id < 0 && !point_equal(player_position, gSelectedTile) && find_path(player_position, gSelectedTile, gPlayer.path, &tile_is_blocked))
           {
             switch_state(PLAYER_MOVING);
-            gPlayer.target = selectedTile;
-            gPlayer.new_target = selectedTile;
+            gPlayer.target = gSelectedTile;
+            gPlayer.new_target = gSelectedTile;
           }
           else if (gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
           {
@@ -556,7 +560,7 @@ void update_input()
         }
         else if (mouse_was_pressed)
         {
-          gPlayer.new_target = selectedTile;
+          gPlayer.new_target = gSelectedTile;
         }
       }
     }
@@ -732,7 +736,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < MAX_MONSTERS; ms++)
+  for (ms = 0; ms < 500; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;

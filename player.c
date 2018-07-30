@@ -14,7 +14,7 @@ void init_player()
   gPlayer.current_game_level = 0;
   gPlayer.direction = PLAYER_SOUTH;
   gPlayer.point_in_path = 0;
-  gPlayer.state = PLAYER_STANDING;
+  switch_state(PLAYER_STANDING);
   gPlayer.next_state = PLAYER_NO_STATE;
   gPlayer.destination_action = PLAYER_DESTINATION_NONE;
   gPlayer.max_hp = 1000;
@@ -29,8 +29,8 @@ void init_player()
   gPlayer.new_target = new_target;
 
   gPlayer.target_monster_id = -1;
-  gPlayer.animation = ANIM_WARRIOR_IDLE;
-  gPlayer.walk_interval = 300;
+  gPlayer.moving_between_points = false;
+  gPlayer.walk_interval = 1000;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
   gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 20;
@@ -48,7 +48,6 @@ void player_do_destination_action()
     break;
   case PLAYER_DESTINATION_STAND:
     switch_state(PLAYER_STANDING);
-    gPlayer.animation = ANIM_WARRIOR_IDLE;
     break;
   case PLAYER_DESTINATION_INTERACT_OBJECT:
     break;
@@ -61,10 +60,15 @@ void player_do_destination_action()
 
 void switch_state(enum PLAYER_STATE new_state)
 {
+  if (gPlayer.state == new_state)
+  {
+    return;
+  }
+  gPlayer.animation_frame = 0;
+  gPlayer.frames_since_animation_frame = 0;
   switch (new_state)
   {
   case PLAYER_STANDING:
-    gPlayer.animation_frame = 0;
     memset(gPlayer.path, -1, MAX_PATH_LENGTH);
     gPlayer.point_in_path = 0;
     gPlayer.animation = ANIM_WARRIOR_IDLE;
@@ -76,7 +80,6 @@ void switch_state(enum PLAYER_STATE new_state)
     gPlayer.state = new_state;
     break;
   case PLAYER_ATTACKING:
-    gPlayer.animation_frame = 0;
     gPlayer.animation = ANIM_WARRIOR_ATTACK;
     gPlayer.state = new_state;
     break;
@@ -91,7 +94,6 @@ void player_do_walk()
   if (raw_code != -1)
   {
     enum PATH_CODE code = (enum PATH_CODE)raw_code;
-    gPlayer.point_in_path++;
     Point direction = get_direction_from_path(code);
 
     int new_x = gPlayer.world_x + direction.x;
@@ -100,13 +102,13 @@ void player_do_walk()
     Point check = {new_x, new_y};
     if (tile_is_blocked(check))
     {
-      memset(gPlayer.path, -1, MAX_PATH_LENGTH);
       switch_state(PLAYER_STANDING);
     }
     else
     {
       gPlayer.world_x = new_x;
       gPlayer.world_y = new_y;
+      gPlayer.point_in_path++;
     }
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
     {
@@ -119,6 +121,7 @@ void update_player_movement()
 {
   if (gPlayer.frames_since_walk >= gPlayer.walk_interval)
   {
+    gPlayer.moving_between_points = false;
     gPlayer.frames_since_walk = 0;
     gPlayer.pixel_x = 0;
     gPlayer.pixel_y = 0;
@@ -129,7 +132,12 @@ void update_player_movement()
     if (!point_equal(gPlayer.target, gPlayer.new_target))
     {
       Point player_position = {gPlayer.world_x, gPlayer.world_y};
-      if (!point_equal(player_position, gPlayer.new_target) && find_path(player_position, gPlayer.new_target, gPlayer.path, &tile_is_blocked))
+
+      if (point_equal(player_position, gPlayer.new_target))
+      {
+        switch_state(PLAYER_STANDING);
+      }
+      else if (find_path(player_position, gPlayer.new_target, gPlayer.path, &tile_is_blocked))
       {
         switch_state(PLAYER_MOVING);
       }
@@ -143,6 +151,7 @@ void update_player_movement()
   }
   else
   {
+    gPlayer.moving_between_points = true;
     gPlayer.frames_since_walk += gClock.delta;
     double percentage_walked = (double)gPlayer.frames_since_walk / (double)gPlayer.walk_interval;
     if (percentage_walked >= 1.0)
@@ -150,6 +159,10 @@ void update_player_movement()
       percentage_walked = 1.0;
     }
     char raw_code = gPlayer.path[gPlayer.point_in_path];
+    if (raw_code == -1)
+    {
+      printf("FAILRE MODE ACTIVATED\n");
+    }
     enum PATH_CODE code = (enum PATH_CODE)raw_code;
     gPlayer.direction = player_get_direction_from_path_code(code);
     Point direction = get_direction_from_path(code);
