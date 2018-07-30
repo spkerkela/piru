@@ -30,7 +30,7 @@ void init_player()
 
   gPlayer.target_monster_id = -1;
   gPlayer.animation = ANIM_WARRIOR_IDLE;
-  gPlayer.walk_interval = 100;
+  gPlayer.walk_interval = 300;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
   gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 20;
@@ -43,14 +43,11 @@ void player_do_destination_action()
   switch (gPlayer.destination_action)
   {
   case PLAYER_DESTINATION_ATTACK:
-    gPlayer.animation_frame = 0;
-    gPlayer.state = PLAYER_ATTACKING;
+    switch_state(PLAYER_ATTACKING);
     gPlayer.next_state = PLAYER_STANDING;
-
     break;
   case PLAYER_DESTINATION_STAND:
-    gPlayer.animation_frame = 0;
-    gPlayer.state = PLAYER_STANDING;
+    switch_state(PLAYER_STANDING);
     gPlayer.animation = ANIM_WARRIOR_IDLE;
     break;
   case PLAYER_DESTINATION_INTERACT_OBJECT:
@@ -61,6 +58,33 @@ void player_do_destination_action()
     break;
   }
 }
+
+void switch_state(enum PLAYER_STATE new_state)
+{
+  switch (new_state)
+  {
+  case PLAYER_STANDING:
+    gPlayer.animation_frame = 0;
+    memset(gPlayer.path, -1, MAX_PATH_LENGTH);
+    gPlayer.point_in_path = 0;
+    gPlayer.animation = ANIM_WARRIOR_IDLE;
+    gPlayer.state = new_state;
+    break;
+  case PLAYER_MOVING:
+    gPlayer.point_in_path = 0;
+    gPlayer.animation = ANIM_WARRIOR_WALK;
+    gPlayer.state = new_state;
+    break;
+  case PLAYER_ATTACKING:
+    gPlayer.animation_frame = 0;
+    gPlayer.animation = ANIM_WARRIOR_ATTACK;
+    gPlayer.state = new_state;
+    break;
+  default:
+    break;
+  }
+}
+
 void player_do_walk()
 {
   char raw_code = gPlayer.path[gPlayer.point_in_path];
@@ -76,10 +100,8 @@ void player_do_walk()
     Point check = {new_x, new_y};
     if (tile_is_blocked(check))
     {
-      gPlayer.point_in_path = 0;
       memset(gPlayer.path, -1, MAX_PATH_LENGTH);
-      gPlayer.animation = ANIM_WARRIOR_IDLE;
-      gPlayer.state = PLAYER_STANDING;
+      switch_state(PLAYER_STANDING);
     }
     else
     {
@@ -88,8 +110,6 @@ void player_do_walk()
     }
     if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
     {
-      gPlayer.point_in_path = 0;
-      memset(gPlayer.path, -1, MAX_PATH_LENGTH);
       player_do_destination_action();
     }
   }
@@ -111,13 +131,11 @@ void update_player_movement()
       Point player_position = {gPlayer.world_x, gPlayer.world_y};
       if (!point_equal(player_position, gPlayer.new_target) && find_path(player_position, gPlayer.new_target, gPlayer.path, &tile_is_blocked))
       {
-        gPlayer.state = PLAYER_MOVING;
-        gPlayer.point_in_path = 0;
+        switch_state(PLAYER_MOVING);
       }
       else if (gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
       {
-        gPlayer.state = PLAYER_STANDING;
-        gPlayer.point_in_path = 0;
+        switch_state(PLAYER_STANDING);
       }
 
       gPlayer.target = gPlayer.new_target;
@@ -183,14 +201,11 @@ void update_player()
   {
   case PLAYER_MOVING:
     update_player_movement();
-    gPlayer.animation = ANIM_WARRIOR_WALK;
     break;
   case PLAYER_STANDING:
-    gPlayer.animation = ANIM_WARRIOR_IDLE;
     break;
   case PLAYER_ATTACKING:
     update_player_attack();
-    gPlayer.animation = ANIM_WARRIOR_ATTACK;
     break;
   default:
     break;

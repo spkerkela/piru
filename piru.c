@@ -436,9 +436,8 @@ void handle_monster_clicked(int monster_clicked)
                         gPlayer.world_y};
   if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_point, selectedTile) <= gPlayer.attack_radius)
   {
-    gPlayer.state = PLAYER_ATTACKING;
+    switch_state(PLAYER_ATTACKING);
     gPlayer.next_state = PLAYER_STANDING;
-    gPlayer.animation_frame = 0;
     gPlayer.direction = player_get_direction8(gPlayer.world_x, gPlayer.world_y, selectedTile.x, selectedTile.y);
     gPlayer.target_monster_id = monster_clicked;
   }
@@ -469,8 +468,7 @@ void handle_monster_clicked(int monster_clicked)
     if (find_path(player_point, lookup, gPlayer.path, &tile_is_blocked))
     {
       gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
-      gPlayer.state = PLAYER_MOVING;
-      gPlayer.point_in_path = 0;
+      switch_state(PLAYER_MOVING);
       gPlayer.target = lookup;
       gPlayer.new_target = lookup;
       gPlayer.target_monster_id = monster_clicked;
@@ -547,15 +545,13 @@ void update_input()
 
           if (gPlayer.target_monster_id < 0 && !point_equal(player_position, selectedTile) && find_path(player_position, selectedTile, gPlayer.path, &tile_is_blocked))
           {
-            gPlayer.state = PLAYER_MOVING;
-            gPlayer.point_in_path = 0;
+            switch_state(PLAYER_MOVING);
             gPlayer.target = selectedTile;
             gPlayer.new_target = selectedTile;
           }
           else if (gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
           {
-            gPlayer.state = PLAYER_STANDING;
-            gPlayer.point_in_path = 0;
+            switch_state(PLAYER_STANDING);
           }
         }
         else if (mouse_was_pressed)
@@ -605,7 +601,7 @@ void update_player_animations()
       gPlayer.animation_frame = 0;
       if (gPlayer.next_state != PLAYER_NO_STATE && gPlayer.state != PLAYER_MOVING)
       {
-        gPlayer.state = gPlayer.next_state;
+        switch_state(gPlayer.next_state);
         gPlayer.next_state = PLAYER_NO_STATE;
       }
     }

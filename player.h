@@ -12,5 +12,6 @@
 extern Player gPlayer;
 void init_player();
 void update_player();
+void switch_state(enum PLAYER_STATE new_state);
 
 #endif
