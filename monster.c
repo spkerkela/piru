@@ -124,6 +124,16 @@ void update_monster_attack(int i)
   {
     if (get_distance_to_player(i) <= monsters[i].attack_radius)
     {
+      char *str = calloc(10, sizeof(char));
+      sprintf(str, "%d", monsters[i].damage);
+      DamageText dt;
+      dt.text = str;
+      dt.x = gPlayer.world_x;
+      dt.y = gPlayer.world_y;
+      dt.r = 255;
+      dt.g = 0;
+      dt.b = 0;
+      push_damage_text(dt);
       gPlayer.hp -= monsters[i].damage;
     }
   }

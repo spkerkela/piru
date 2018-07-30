@@ -370,7 +370,7 @@ void draw_health_and_mana()
 void draw_damage_text()
 {
   int i;
-  static const SDL_Color color = {255, 255, 255};
+  SDL_Color color = {255, 255, 255};
   SDL_Rect rect = {0, 0, 30, 30};
   Point p;
   Point screen_point;
@@ -380,6 +380,9 @@ void draw_damage_text()
     {
       p.x = damage_text[i].x - gPlayer.world_x;
       p.y = damage_text[i].y - gPlayer.world_y;
+      color.r = damage_text[i].r;
+      color.g = damage_text[i].g;
+      color.b = damage_text[i].b;
       screen_point = cartesian_to_isometric(p);
       rect.x = (screen_point.x + SCREEN_WIDTH / 2) - gPlayer.pixel_x;
       rect.y = (screen_point.y + SCREEN_HEIGHT / 2) - gPlayer.pixel_y + damage_text[i].y_offset;

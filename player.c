@@ -160,6 +160,9 @@ void update_player_attack()
           str,
           monster_point.x,
           monster_point.y};
+      dt.r = 255;
+      dt.g = 255;
+      dt.b = 0;
 
       push_damage_text(dt);
       monsters[target_id].hp -= gPlayer.damage;

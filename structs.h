@@ -128,6 +128,9 @@ typedef struct DamageText
     bool alive;
     int y_offset;
     int frames_alive;
+    int r;
+    int g;
+    int b;
 } DamageText;
 
 #endif
