@@ -147,6 +147,15 @@ void update_player_attack()
     int target_id = gPlayer.target_monster_id;
     if (target_id >= 0)
     {
+      char *str = calloc(10, sizeof(char));
+      sprintf(str, "%d", gPlayer.damage);
+      Point monster_point = {monsters[target_id].world_x, monsters[target_id].world_y};
+      DamageText dt = {
+          str,
+          monster_point.x,
+          monster_point.y};
+
+      push_damage_text(dt);
       monsters[target_id].hp -= gPlayer.damage;
       if (monsters[target_id].hp <= 0)
       {

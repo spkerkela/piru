@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "constants.h"
 #include "structs.h"
+#include "player.h"
 
 extern char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 extern bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];

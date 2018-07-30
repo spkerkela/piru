@@ -6,6 +6,7 @@
 #define DUNGEON_SIZE 112
 #define MAX_NODES 300
 #define MAX_PATH_LENGTH 25
+#define MAX_DAMAGE_TEXT 50
 #define TILE_WIDTH 64
 #define TILE_HEIGHT 32
 #define TILE_WIDTH_HALF (TILE_WIDTH / 2)

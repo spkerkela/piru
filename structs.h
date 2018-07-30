@@ -119,4 +119,13 @@ typedef struct
     int player_id;
 } MouseCursor;
 
+typedef struct DamageText
+{
+    char *text;
+    int x, y;
+    bool alive;
+    int y_offset;
+    int frames_alive;
+} DamageText;
+
 #endif

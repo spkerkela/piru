@@ -6,6 +6,7 @@
 
 #include "assets.h"
 #include "constants.h"
+#include "damage_text.h"
 #include "direction.h"
 #include "dungeon.h"
 #include "enums.h"
@@ -24,27 +25,6 @@ extern TTF_Font *gFont;
 bool gGameRunning;
 bool gGamePaused;
 SDL_Rect gPlayerSprites[8 * 16];
-
-typedef struct DamageText
-{
-  char *text;
-  int x, y;
-} DamageText;
-
-DamageText damage_text[200];
-int damage_text_count;
-DamageText pop_damage_text()
-{
-  return damage_text[--damage_text_count];
-}
-
-void push_damage_text(DamageText damage)
-{
-  if (damage_text_count < 200)
-  {
-    damage_text[damage_text_count++] = damage;
-  }
-}
 
 char *direction_str[PLAYER_DIRECTION_COUNT] = {
     "SOUTH",
@@ -390,12 +370,21 @@ void draw_health_and_mana()
 void draw_damage_text()
 {
   int i;
-
+  static const SDL_Color color = {255, 255, 255};
+  SDL_Rect rect = {0, 0, 30, 30};
+  Point p;
+  Point screen_point;
   for (i = 0; i < damage_text_count; i++)
   {
-    SDL_Color color = {255, 255, 255};
-    SDL_Rect rect = {damage_text[i].x, damage_text[i].y, 30, 30};
-    draw_text(damage_text[i].text, color, NULL, &rect);
+    if (damage_text[i].alive)
+    {
+      p.x = damage_text[i].x - gPlayer.world_x;
+      p.y = damage_text[i].y - gPlayer.world_y;
+      screen_point = cartesian_to_isometric(p);
+      rect.x = (screen_point.x + SCREEN_WIDTH / 2) - gPlayer.pixel_x;
+      rect.y = (screen_point.y + SCREEN_HEIGHT / 2) - gPlayer.pixel_y + damage_text[i].y_offset;
+      draw_text(damage_text[i].text, color, NULL, &rect);
+    }
   }
 }
 
@@ -442,8 +431,6 @@ void handle_monster_clicked(int monster_clicked)
 {
   Point player_point = {gPlayer.world_x,
                         gPlayer.world_y};
-  DamageText dt = {"10", 10, 20};
-  push_damage_text(dt);
   if (gPlayer.state != PLAYER_ATTACKING && get_distance(player_point, selectedTile) <= gPlayer.attack_radius)
   {
     gPlayer.state = PLAYER_ATTACKING;
@@ -673,6 +660,15 @@ void update_monsters()
   }
 }
 
+void update_damage_texts()
+{
+  int i;
+  for (i = 0; i < MAX_DAMAGE_TEXT; i++)
+  {
+    update_damage_text(i);
+  }
+}
+
 void game_loop()
 {
   if (!gGamePaused)
@@ -681,6 +677,7 @@ void game_loop()
     update_animations();
     update_player();
     update_monsters();
+    update_damage_texts();
     //printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
     gGameRunning = gGameRunning && gPlayer.hp > 0;
   }
@@ -742,6 +739,7 @@ bool start_game(enum GAME_START_MODE start_mode)
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);
   }
+  init_damage_text();
   run_game_loop(start_mode);
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");

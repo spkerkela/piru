@@ -12,6 +12,8 @@
     "monster.h": "c",
     "point.h": "c",
     "system_error": "c",
-    "locale": "c"
+    "locale": "c",
+    "damage_text.h": "c",
+    "dungeon.h": "c"
   }
 }
