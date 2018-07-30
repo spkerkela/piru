@@ -8,6 +8,7 @@
 #include "point.h"
 #include "structs.h"
 #include "time.h"
+#include "assets.h"
 
 extern Player gPlayer;
 void init_player();

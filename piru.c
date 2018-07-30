@@ -603,11 +603,6 @@ void update_player_animations()
     if (gPlayer.animation_frame >= animFrames)
     {
       gPlayer.animation_frame = 0;
-      if (gPlayer.next_state != PLAYER_NO_STATE && gPlayer.state != PLAYER_MOVING)
-      {
-        switch_state(gPlayer.next_state);
-        gPlayer.next_state = PLAYER_NO_STATE;
-      }
     }
   }
   else
@@ -736,7 +731,7 @@ bool start_game(enum GAME_START_MODE start_mode)
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 500; ms++)
+  for (ms = 0; ms < 0; ms++)
   {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;

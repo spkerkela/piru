@@ -2,8 +2,26 @@
 
 Player gPlayer;
 
+player_state_fn stand, move, move_offset, attack;
+
+void stand(Player *player)
+{
+  player->animation = ANIM_WARRIOR_IDLE;
+  player->state = PLAYER_STANDING;
+  player->point_in_path = 0;
+  if (player->path[player->point_in_path] != -1)
+  {
+    player->next_state_fn = move_offset;
+  }
+  else if (player->target_monster_id >= 0)
+  {
+    player->next_state_fn = attack;
+  }
+}
+
 void init_player()
 {
+  gPlayer.next_state_fn = stand;
   gPlayer.world_x = 1;
   gPlayer.world_y = 1;
   gPlayer.next_x = -1;
@@ -88,7 +106,7 @@ void switch_state(enum PLAYER_STATE new_state)
   }
 }
 
-void player_do_walk()
+void player_do_walk(Player *player)
 {
   char raw_code = gPlayer.path[gPlayer.point_in_path];
   if (raw_code != -1)
@@ -102,7 +120,7 @@ void player_do_walk()
     Point check = {new_x, new_y};
     if (tile_is_blocked(check))
     {
-      switch_state(PLAYER_STANDING);
+      player->next_state_fn = stand;
     }
     else
     {
@@ -110,117 +128,130 @@ void player_do_walk()
       gPlayer.world_y = new_y;
       gPlayer.point_in_path++;
     }
-    if (gPlayer.world_x == gPlayer.target.x && gPlayer.world_y == gPlayer.target.y)
+    if (gPlayer.world_x == gPlayer.target.x &&
+        gPlayer.world_y == gPlayer.target.y)
     {
-      player_do_destination_action();
-    }
-  }
-}
-
-void update_player_movement()
-{
-  if (gPlayer.frames_since_walk >= gPlayer.walk_interval)
-  {
-    gPlayer.moving_between_points = false;
-    gPlayer.frames_since_walk = 0;
-    gPlayer.pixel_x = 0;
-    gPlayer.pixel_y = 0;
-    gPlayer.next_x = -1;
-    gPlayer.next_y = -1;
-
-    player_do_walk();
-    if (!point_equal(gPlayer.target, gPlayer.new_target))
-    {
-      Point player_position = {gPlayer.world_x, gPlayer.world_y};
-
-      if (point_equal(player_position, gPlayer.new_target))
-      {
-        switch_state(PLAYER_STANDING);
-      }
-      else if (find_path(player_position, gPlayer.new_target, gPlayer.path, &tile_is_blocked))
-      {
-        switch_state(PLAYER_MOVING);
-      }
-      else if (gPlayer.state != PLAYER_ATTACKING && gPlayer.target_monster_id == -1)
-      {
-        switch_state(PLAYER_STANDING);
-      }
-
-      gPlayer.target = gPlayer.new_target;
+      printf("AT DESTINATION\n");
+      player->next_state_fn = stand;
     }
   }
   else
   {
-    gPlayer.moving_between_points = true;
-    gPlayer.frames_since_walk += gClock.delta;
-    double percentage_walked = (double)gPlayer.frames_since_walk / (double)gPlayer.walk_interval;
-    if (percentage_walked >= 1.0)
-    {
-      percentage_walked = 1.0;
-    }
-    char raw_code = gPlayer.path[gPlayer.point_in_path];
-    if (raw_code == -1)
-    {
-      printf("FAILRE MODE ACTIVATED\n");
-    }
-    enum PATH_CODE code = (enum PATH_CODE)raw_code;
-    gPlayer.direction = player_get_direction_from_path_code(code);
-    Point direction = get_direction_from_path(code);
-    Point isometric = cartesian_to_isometric(direction);
-    int off_x, off_y;
-    off_x = (int)(isometric.x * percentage_walked);
-    off_y = (int)(isometric.y * percentage_walked);
-    gPlayer.pixel_x = off_x;
-    gPlayer.pixel_y = off_y;
-    gPlayer.next_x = direction.x + gPlayer.world_x;
-    gPlayer.next_y = direction.y + gPlayer.world_y;
+    player->next_state_fn = stand;
   }
 }
 
-void update_player_attack()
+void move_offset(Player *player)
 {
-  if (gPlayer.animation_frame == 8 && gPlayer.previous_animation_frame != 8)
+  printf("MOVE OFFSET STATE\n");
+  player->animation = ANIM_WARRIOR_WALK;
+  player->state = PLAYER_MOVING;
+  gPlayer.frames_since_walk += gClock.delta;
+  double percentage_walked =
+      (double)gPlayer.frames_since_walk / (double)gPlayer.walk_interval;
+  if (percentage_walked >= 1.0)
   {
-    int target_id = gPlayer.target_monster_id;
+    percentage_walked = 1.0;
+  }
+  char raw_code = gPlayer.path[gPlayer.point_in_path];
+  if (raw_code == -1)
+  {
+    printf("FAILRE MODE ACTIVATED\n");
+    printf("%d %d\n", gPlayer.target.x, gPlayer.target.y);
+  }
+  enum PATH_CODE code = (enum PATH_CODE)raw_code;
+  gPlayer.direction = player_get_direction_from_path_code(code);
+  Point direction = get_direction_from_path(code);
+  Point isometric = cartesian_to_isometric(direction);
+  int off_x, off_y;
+  off_x = (int)(isometric.x * percentage_walked);
+  off_y = (int)(isometric.y * percentage_walked);
+  gPlayer.pixel_x = off_x;
+  gPlayer.pixel_y = off_y;
+  gPlayer.next_x = direction.x + gPlayer.world_x;
+  gPlayer.next_y = direction.y + gPlayer.world_y;
+  if (player->frames_since_walk >= player->walk_interval)
+  {
+    player->next_state_fn = move;
+  }
+}
+
+void move(Player *player)
+{
+  printf("MOVE STATE\n");
+  player->animation = ANIM_WARRIOR_WALK;
+  player->state = PLAYER_MOVING;
+
+  player->next_state_fn = move_offset;
+
+  if (player->frames_since_walk >= player->walk_interval)
+  {
+    player->frames_since_walk = 0;
+    player->pixel_x = 0;
+    player->pixel_y = 0;
+    player->next_x = -1;
+    player->next_y = -1;
+
+    player_do_walk(player);
+    if (!point_equal(player->target, player->new_target))
+    {
+      Point player_position = {player->world_x, player->world_y};
+
+      if (point_equal(player_position, gPlayer.new_target) ||
+          !find_path(player_position, player->new_target, player->path,
+                     &tile_is_blocked))
+      {
+        player->next_state_fn = stand;
+      }
+
+      player->target = player->new_target;
+    }
+  }
+}
+
+void attack(Player *player)
+{
+  player->animation = ANIM_WARRIOR_ATTACK;
+  player->state = PLAYER_ATTACKING;
+  printf("ATTACK STATE\n");
+  if (player->animation_frame == 8 && player->previous_animation_frame != 8)
+  {
+    int target_id = player->target_monster_id;
     if (target_id >= 0)
     {
       char *str = calloc(10, sizeof(char));
-      sprintf(str, "%d", gPlayer.damage);
-      Point monster_point = {monsters[target_id].world_x, monsters[target_id].world_y};
-      DamageText dt = {
-          str,
-          monster_point.x,
-          monster_point.y};
+      sprintf(str, "%d", player->damage);
+      Point monster_point = {monsters[target_id].world_x,
+                             monsters[target_id].world_y};
+      DamageText dt = {str, monster_point.x, monster_point.y};
       dt.r = 255;
       dt.g = 255;
       dt.b = 0;
 
       push_damage_text(dt);
-      monsters[target_id].hp -= gPlayer.damage;
+      monsters[target_id].hp -= player->damage;
       if (monsters[target_id].hp <= 0)
       {
         monsters[target_id].state = MONSTER_DEAD;
         monsters[target_id].animation_frame = 0;
-        gDungeonMonsterTable[monsters[target_id].world_y][monsters[target_id].world_x] = -1;
+        gDungeonMonsterTable[monsters[target_id].world_y]
+                            [monsters[target_id].world_x] = -1;
       }
     }
-    gPlayer.target_monster_id = -1;
+    player->target_monster_id = -1;
+  }
+
+  int animFrames = animations[player->animation][player->direction].columns;
+  if (player->animation_frame >= animFrames - 1)
+  {
+    player->next_state_fn = stand;
   }
 }
 
 void update_player()
 {
-  switch (gPlayer.state)
+  if (gPlayer.next_state_fn)
   {
-  case PLAYER_MOVING:
-    update_player_movement();
-    break;
-  case PLAYER_STANDING:
-    break;
-  case PLAYER_ATTACKING:
-    update_player_attack();
-    break;
-  default:
-    break;
+    gPlayer.next_state_fn(&gPlayer);
   }
 }

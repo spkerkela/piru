@@ -17,6 +17,9 @@
     "dungeon.h": "c",
     "__string": "c",
     "string": "c",
-    "string_view": "c"
+    "string_view": "c",
+    "__bit_reference": "c",
+    "memory": "c",
+    "type_traits": "c"
   }
 }
