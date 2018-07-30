@@ -35,6 +35,8 @@ typedef struct
     int point_in_path;
     int world_x;
     int world_y;
+    int next_x;
+    int next_y;
     int pixel_x;
     int pixel_y;
     int walk_interval;

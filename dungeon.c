@@ -11,9 +11,7 @@ bool tile_is_blocked(const Point p)
 
 bool tile_is_blocked_for_monster(const Point p)
 {
-    bool point_is_player_target = (p.x == gPlayer.target.x && p.y == gPlayer.target.y);
-    bool player_target_is_not_player_position = (gPlayer.target.x != gPlayer.world_x && gPlayer.target.y != gPlayer.world_y);
-    return tile_is_blocked(p) || (point_is_player_target && player_target_is_not_player_position);
+    return tile_is_blocked(p) || (gPlayer.next_x == p.x && gPlayer.next_y == p.y);
 }
 
 void init_monster_table()

@@ -6,6 +6,8 @@ void init_player()
 {
   gPlayer.world_x = 1;
   gPlayer.world_y = 1;
+  gPlayer.next_x = -1;
+  gPlayer.next_y = -1;
   gPlayer.pixel_x = 0;
   gPlayer.pixel_y = 0;
   gPlayer.attack_radius = 2.0;
@@ -100,6 +102,8 @@ void update_player_movement()
     gPlayer.frames_since_walk = 0;
     gPlayer.pixel_x = 0;
     gPlayer.pixel_y = 0;
+    gPlayer.next_x = -1;
+    gPlayer.next_y = -1;
 
     player_do_walk();
     if (!point_equal(gPlayer.target, gPlayer.new_target))
@@ -137,6 +141,8 @@ void update_player_movement()
     off_y = (int)(isometric.y * percentage_walked);
     gPlayer.pixel_x = off_x;
     gPlayer.pixel_y = off_y;
+    gPlayer.next_x = direction.x + gPlayer.world_x;
+    gPlayer.next_y = direction.y + gPlayer.world_y;
   }
 }
 
