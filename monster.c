@@ -63,7 +63,7 @@ void find_path_to_player(int id)
   Point pos = {monsters[id].world_x, monsters[id].world_y};
   Point player_pos = {gPlayer.world_x, gPlayer.world_y};
   int path_length;
-  if ((path_length = find_path(pos, player_pos, monsters[id].path)))
+  if ((path_length = find_path(pos, player_pos, monsters[id].path, &tile_is_blocked_for_monster)))
   {
     if (path_length == 1)
     {

@@ -463,7 +463,7 @@ void handle_monster_clicked(int monster_clicked)
 
     lookup.x = monster_point.x + movement_directions_x[dir];
     lookup.y = monster_point.y + movement_directions_y[dir];
-    if (find_path(player_point, lookup, gPlayer.path))
+    if (find_path(player_point, lookup, gPlayer.path, &tile_is_blocked))
     {
       gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
       gPlayer.state = PLAYER_MOVING;
@@ -542,7 +542,7 @@ void update_input()
             gPlayer.destination_action = PLAYER_DESTINATION_STAND;
           }
 
-          if (gPlayer.target_monster_id < 0 && !point_equal(player_position, selectedTile) && find_path(player_position, selectedTile, gPlayer.path))
+          if (gPlayer.target_monster_id < 0 && !point_equal(player_position, selectedTile) && find_path(player_position, selectedTile, gPlayer.path, &tile_is_blocked))
           {
             gPlayer.state = PLAYER_MOVING;
             gPlayer.point_in_path = 0;

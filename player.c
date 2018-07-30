@@ -105,7 +105,7 @@ void update_player_movement()
     if (!point_equal(gPlayer.target, gPlayer.new_target))
     {
       Point player_position = {gPlayer.world_x, gPlayer.world_y};
-      if (!point_equal(player_position, gPlayer.new_target) && find_path(player_position, gPlayer.new_target, gPlayer.path))
+      if (!point_equal(player_position, gPlayer.new_target) && find_path(player_position, gPlayer.new_target, gPlayer.path, &tile_is_blocked))
       {
         gPlayer.state = PLAYER_MOVING;
         gPlayer.point_in_path = 0;

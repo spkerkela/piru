@@ -268,7 +268,7 @@ bool path_parent_path(PathNode *path, const Point next_destination, const Point 
     return true;
 }
 
-bool path_get_path(PathNode *path, const Point destination)
+bool path_get_path(PathNode *path, const Point destination, bool (*path_check)(const Point))
 {
     int i;
     Point next_destination;
@@ -277,7 +277,7 @@ bool path_get_path(PathNode *path, const Point destination)
     {
         next_destination.x = path->x + movement_directions_x[i];
         next_destination.y = path->y + movement_directions_y[i];
-        if (tile_is_blocked(next_destination))
+        if (path_check(next_destination))
         {
             continue;
         }
@@ -290,7 +290,7 @@ bool path_get_path(PathNode *path, const Point destination)
     return true;
 }
 
-int find_path(const Point source, const Point destination, Path out_path)
+int find_path(const Point source, const Point destination, Path out_path, bool (*path_check)(const Point))
 {
     PathNode *path_start;
     char initial_heuristic;
@@ -335,7 +335,7 @@ int find_path(const Point source, const Point destination, Path out_path)
         {
             break;
         }
-        if (!path_get_path(next_node, destination))
+        if (!path_get_path(next_node, destination, path_check))
         {
             return 0;
         }
