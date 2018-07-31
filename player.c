@@ -17,7 +17,6 @@ void try_attack(Player *player) {
   } else if (find_path(player_point,
                        find_nearest_node_to_monster(player->target_monster_id),
                        player->path, &tile_is_blocked)) {
-    printf("found new path\n");
     player->point_in_path = 0;
     player->next_state_fn = move_offset;
   } else {
@@ -54,7 +53,6 @@ void init_player() {
   gPlayer.current_game_level = 0;
   gPlayer.direction = PLAYER_SOUTH;
   gPlayer.point_in_path = 0;
-  switch_state(PLAYER_STANDING);
   gPlayer.next_state = PLAYER_NO_STATE;
   gPlayer.destination_action = PLAYER_DESTINATION_NONE;
   gPlayer.max_hp = 1000;
@@ -70,57 +68,12 @@ void init_player() {
 
   gPlayer.target_monster_id = -1;
   gPlayer.moving_between_points = false;
-  gPlayer.walk_interval = 1000;
+  gPlayer.walk_interval = 200;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
   gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 20;
   gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
   gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
-}
-
-void player_do_destination_action() {
-  switch (gPlayer.destination_action) {
-  case PLAYER_DESTINATION_ATTACK:
-    switch_state(PLAYER_ATTACKING);
-    gPlayer.next_state = PLAYER_STANDING;
-    break;
-  case PLAYER_DESTINATION_STAND:
-    switch_state(PLAYER_STANDING);
-    break;
-  case PLAYER_DESTINATION_INTERACT_OBJECT:
-    break;
-  case PLAYER_DESTINATION_PICK_ITEM:
-    break;
-  default:
-    break;
-  }
-}
-
-void switch_state(enum PLAYER_STATE new_state) {
-  if (gPlayer.state == new_state) {
-    return;
-  }
-  gPlayer.animation_frame = 0;
-  gPlayer.frames_since_animation_frame = 0;
-  switch (new_state) {
-  case PLAYER_STANDING:
-    memset(gPlayer.path, -1, MAX_PATH_LENGTH);
-    gPlayer.point_in_path = 0;
-    gPlayer.animation = ANIM_WARRIOR_IDLE;
-    gPlayer.state = new_state;
-    break;
-  case PLAYER_MOVING:
-    gPlayer.point_in_path = 0;
-    gPlayer.animation = ANIM_WARRIOR_WALK;
-    gPlayer.state = new_state;
-    break;
-  case PLAYER_ATTACKING:
-    gPlayer.animation = ANIM_WARRIOR_ATTACK;
-    gPlayer.state = new_state;
-    break;
-  default:
-    break;
-  }
 }
 
 void player_do_walk(Player *player) {
@@ -243,6 +196,7 @@ void attack(Player *player) {
 
   int animFrames = animations[player->animation][player->direction].columns;
   if (player->animation_frame >= animFrames - 1) {
+    player->animation_frame = 0;
     player->next_state_fn = stand;
   }
 }
