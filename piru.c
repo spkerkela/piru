@@ -371,6 +371,54 @@ void draw_and_blit() {
 
 bool gMouseIsDown = false;
 
+void handle_cursor() {
+  int mx, my;
+  Point player_position = {gPlayer.world_x, gPlayer.world_y};
+  SDL_GetMouseState(&mx, &my);
+  Point mouse_point;
+  Point offset = cartesian_to_isometric(player_position);
+  mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
+  mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
+  gSelectedTile = isometric_to_cartesian(mouse_point);
+  int monster_clicked = -1;
+  if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0) {
+    if (gMouseIsDown) {
+      int x, y;
+      x = gSelectedTile.x;
+      y = gSelectedTile.y;
+      monster_clicked = gDungeonMonsterTable[y][x];
+      int directions_checked = 0;
+      // check one tile below as well
+      while (monster_clicked < 0 && directions_checked < 3) {
+        switch (directions_checked) {
+        case 0:
+          x = gSelectedTile.x + 1;
+          y = gSelectedTile.y + 1;
+          break;
+        case 1:
+          x = gSelectedTile.x;
+          y = gSelectedTile.y + 1;
+          break;
+        case 2:
+          x = gSelectedTile.x + 1;
+          y = gSelectedTile.y;
+          break;
+        }
+        monster_clicked = gDungeonMonsterTable[y][x];
+        directions_checked++;
+      }
+
+      if (monster_clicked >= 0) {
+        gSelectedTile = find_nearest_node_to_monster(monster_clicked);
+        if (gPlayer.state != PLAYER_ATTACKING) {
+          gPlayer.target_monster_id = monster_clicked;
+        }
+      }
+      gPlayer.new_target = gSelectedTile;
+    }
+  }
+}
+
 void update_input() {
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0) {
@@ -379,53 +427,6 @@ void update_input() {
     }
     if (e.type == SDL_MOUSEBUTTONDOWN) {
       gMouseIsDown = true;
-    }
-    if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
-      int mx, my;
-      Point player_position = {gPlayer.world_x, gPlayer.world_y};
-      SDL_GetMouseState(&mx, &my);
-      Point mouse_point;
-      Point offset = cartesian_to_isometric(player_position);
-      mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
-      mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
-      gSelectedTile = isometric_to_cartesian(mouse_point);
-      int monster_clicked = -1;
-      if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0) {
-        if (gMouseIsDown) {
-          int x, y;
-          x = gSelectedTile.x;
-          y = gSelectedTile.y;
-          monster_clicked = gDungeonMonsterTable[y][x];
-          int directions_checked = 0;
-          // check one tile below as well
-          while (monster_clicked < 0 && directions_checked < 3) {
-            switch (directions_checked) {
-            case 0:
-              x = gSelectedTile.x + 1;
-              y = gSelectedTile.y + 1;
-              break;
-            case 1:
-              x = gSelectedTile.x;
-              y = gSelectedTile.y + 1;
-              break;
-            case 2:
-              x = gSelectedTile.x + 1;
-              y = gSelectedTile.y;
-              break;
-            }
-            monster_clicked = gDungeonMonsterTable[y][x];
-            directions_checked++;
-          }
-
-          if (monster_clicked >= 0) {
-            gSelectedTile = find_nearest_node_to_monster(monster_clicked);
-            if (gPlayer.state != PLAYER_ATTACKING) {
-              gPlayer.target_monster_id = monster_clicked;
-            }
-          }
-          gPlayer.new_target = gSelectedTile;
-        }
-      }
     }
     if (e.type == SDL_QUIT) {
       gGameRunning = false;
@@ -450,6 +451,7 @@ void update_input() {
       }
     }
   }
+  handle_cursor();
 }
 
 void update_player_animations() {
