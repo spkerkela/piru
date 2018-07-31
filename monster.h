@@ -13,5 +13,6 @@
 extern Monster monsters[];
 void update_monster(int id);
 bool create_monster(const Point at);
+Point find_nearest_node_to_monster(int monster_clicked);
 
 #endif

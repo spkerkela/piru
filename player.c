@@ -5,6 +5,7 @@ Player gPlayer;
 player_state_fn stand, move, move_offset, try_attack, attack;
 
 void try_attack(Player *player) {
+  printf("try attack\n");
   Point player_point = {player->world_x, player->world_y};
   Monster monster = monsters[player->target_monster_id];
   Point monster_point = {monster.world_x, monster.world_y};
@@ -13,14 +14,15 @@ void try_attack(Player *player) {
                                               monster.world_x, monster.world_y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
-  } else if (find_path(player_point, monster_point, player->path,
-                       &tile_is_blocked)) {
+  } else if (find_path(player_point,
+                       find_nearest_node_to_monster(player->target_monster_id),
+                       player->path, &tile_is_blocked)) {
+    printf("found new path\n");
+    player->point_in_path = 0;
     player->next_state_fn = move_offset;
-    player->target = monster_point;
-    player->new_target = monster_point;
   } else {
-    player->target_monster_id = -1;
     player->next_state_fn = stand;
+    player->target_monster_id = -1;
   }
 }
 
@@ -140,7 +142,11 @@ void player_do_walk(Player *player) {
     }
     if (player->world_x == player->target.x &&
         player->world_y == player->target.y) {
-      player->next_state_fn = stand;
+      if (player->target_monster_id >= 0) {
+        player->next_state_fn = try_attack;
+      } else {
+        player->next_state_fn = stand;
+      }
     }
   } else {
     player->next_state_fn = stand;
@@ -190,11 +196,11 @@ void move(Player *player) {
     player->next_x = -1;
     player->next_y = -1;
 
+    player_do_walk(player);
     if (player->target_monster_id >= 0) {
       player->next_state_fn = try_attack;
       return;
     }
-    player_do_walk(player);
     if (!point_equal(player->target, player->new_target)) {
       Point player_position = {player->world_x, player->world_y};
       player->target = player->new_target;

@@ -2,6 +2,30 @@
 
 extern Player gPlayer;
 extern int created_monsters;
+Point find_nearest_node_to_monster(int monster_clicked) {
+  Point player_point = {gPlayer.world_x, gPlayer.world_y};
+  // Find nearest free node to monster
+  int i;
+  Monster monster = monsters[monster_clicked];
+
+  Point monster_point = {monster.world_x, monster.world_y};
+  Point lookup;
+  double smallest_distance = 1000.0;
+  int dir = -1;
+  for (i = 0; i < 8; i++) {
+    lookup.x = monster_point.x + movement_directions_x[i];
+    lookup.y = monster_point.y + movement_directions_y[i];
+    double distance = get_distance(player_point, lookup);
+    if (distance < smallest_distance && !tile_is_blocked(lookup)) {
+      smallest_distance = distance;
+      dir = i;
+    }
+  }
+
+  lookup.x = monster_point.x + movement_directions_x[dir];
+  lookup.y = monster_point.y + movement_directions_y[dir];
+  return lookup;
+}
 bool create_monster(const Point at) {
   if (gDungeonBlockTable[at.y][at.x] || gDungeonMonsterTable[at.y][at.x] >= 0) {
     return false;
