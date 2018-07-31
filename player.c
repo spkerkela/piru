@@ -159,7 +159,7 @@ void move(Player *player) {
 
   player_do_walk(player);
   if (player->target_monster_id >= 0) {
-    player->next_state_fn = try_attack;
+    try_attack(player);
     return;
   }
   if (!point_equal(player->target, player->new_target)) {
