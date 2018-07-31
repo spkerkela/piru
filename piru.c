@@ -444,6 +444,7 @@ void update_input() {
 
           if (monster_clicked >= 0) {
             gSelectedTile = find_nearest_node_to_monster(monster_clicked);
+            gPlayer.target_monster_id = monster_clicked;
           }
           gPlayer.new_target = gSelectedTile;
         }
@@ -593,7 +594,7 @@ bool start_game(enum GAME_START_MODE start_mode) {
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 0; ms++) {
+  for (ms = 0; ms < 500; ms++) {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);

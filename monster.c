@@ -21,7 +21,7 @@ bool create_monster(const Point at) {
   monster.direction = rand() % MONSTER_DIRECTION_COUNT;
   Point monster_target = {monster.world_x, monster.world_y};
   monster.attack_radius = 2.0;
-  monster.aggro_radius = 10;
+  monster.aggro_radius = 0.5;
   monster.target = monster_target;
   memset(monster.path, -1, MAX_PATH_LENGTH);
   monster.max_hp = 10;

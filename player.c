@@ -6,13 +6,18 @@ player_state_fn stand, move, move_offset, try_attack, attack;
 
 void try_attack(Player *player) {
   Point player_point = {player->world_x, player->world_y};
-  if (get_distance(player_point, player->target) <= player->attack_radius) {
-    player->direction = player_get_direction8(
-        player->world_x, player->world_y, player->target.x, player->target.y);
+  Monster monster = monsters[player->target_monster_id];
+  Point monster_point = {monster.world_x, monster.world_y};
+  if (get_distance(player_point, monster_point) <= player->attack_radius) {
+    player->direction = player_get_direction8(player->world_x, player->world_y,
+                                              monster.world_x, monster.world_y);
+    player->animation_frame = 0;
     player->next_state_fn = attack;
-  } else if (find_path(player_point, player->new_target, player->path,
+  } else if (find_path(player_point, monster_point, player->path,
                        &tile_is_blocked)) {
     player->next_state_fn = move_offset;
+    player->target = monster_point;
+    player->new_target = monster_point;
   } else {
     player->target_monster_id = -1;
     player->next_state_fn = stand;
@@ -185,6 +190,10 @@ void move(Player *player) {
     player->next_x = -1;
     player->next_y = -1;
 
+    if (player->target_monster_id >= 0) {
+      player->next_state_fn = try_attack;
+      return;
+    }
     player_do_walk(player);
     if (!point_equal(player->target, player->new_target)) {
       Point player_position = {player->world_x, player->world_y};
