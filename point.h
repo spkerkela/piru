@@ -1,9 +1,9 @@
 #ifndef _POINT_H
 #define _POINT_H
-#include <math.h>
 #include "constants.h"
 #include "enums.h"
 #include "structs.h"
+#include <math.h>
 
 Point cartesian_to_isometric(const Point cartesian_point);
 
