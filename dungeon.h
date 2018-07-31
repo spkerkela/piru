@@ -1,11 +1,11 @@
 #ifndef _DUNGEON_H
 #define _DUNGEON_H
 
+#include "constants.h"
+#include "player.h"
+#include "structs.h"
 #include <stdbool.h>
 #include <stdlib.h>
-#include "constants.h"
-#include "structs.h"
-#include "player.h"
 
 extern char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 extern bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];

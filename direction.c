@@ -1,8 +1,6 @@
 #include "direction.h"
-enum PLAYER_DIRECTION player_get_direction_from_path_code(enum PATH_CODE code)
-{
-  switch (code)
-  {
+enum PLAYER_DIRECTION player_get_direction_from_path_code(enum PATH_CODE code) {
+  switch (code) {
   case UP:
     return PLAYER_NORTH_EAST_2;
   case DOWN:
@@ -24,10 +22,9 @@ enum PLAYER_DIRECTION player_get_direction_from_path_code(enum PATH_CODE code)
   }
 }
 
-enum MONSTER_DIRECTION monster_get_direction_from_path_code(enum PATH_CODE code)
-{
-  switch (code)
-  {
+enum MONSTER_DIRECTION
+monster_get_direction_from_path_code(enum PATH_CODE code) {
+  switch (code) {
   case UP:
     return MONSTER_NORTH_EAST;
   case DOWN:
@@ -49,49 +46,40 @@ enum MONSTER_DIRECTION monster_get_direction_from_path_code(enum PATH_CODE code)
   }
 }
 
-enum PLAYER_DIRECTION get_direction(const int x1, const int y1, const int x2, const int y2)
-{
+enum PLAYER_DIRECTION get_direction(const int x1, const int y1, const int x2,
+                                    const int y2) {
   static const double step = 360.0 / PLAYER_DIRECTION_COUNT;
-  double angle = -atan2((double)y2 - (double)y1, (double)x2 - (double)x1) * 180 / M_PI;
-  if (angle >= 0)
-  {
+  double angle =
+      -atan2((double)y2 - (double)y1, (double)x2 - (double)x1) * 180 / M_PI;
+  if (angle >= 0) {
     enum PLAYER_DIRECTION dir = PLAYER_EAST;
     double start = -step / 2;
-    while (true)
-    {
+    while (true) {
 
-      if (angle < step + start)
-      {
+      if (angle < step + start) {
         return dir;
       }
       start += step;
       --dir;
 
-      if (start > 1000.0)
-      {
+      if (start > 1000.0) {
         break;
       }
     }
-  }
-  else
-  {
+  } else {
     enum PLAYER_DIRECTION dir = PLAYER_EAST;
     double start = step / 2;
-    while (true)
-    {
-      if (angle > (start - step))
-      {
+    while (true) {
+      if (angle > (start - step)) {
         return dir;
       }
       start -= step;
       dir++;
-      if (dir >= PLAYER_DIRECTION_COUNT)
-      {
+      if (dir >= PLAYER_DIRECTION_COUNT) {
         dir = PLAYER_SOUTH;
       }
 
-      if (start < -1000.0)
-      {
+      if (start < -1000.0) {
         break;
       }
     }
@@ -100,8 +88,7 @@ enum PLAYER_DIRECTION get_direction(const int x1, const int y1, const int x2, co
   return PLAYER_SOUTH;
 }
 
-int get_segment(const int x1, const int y1, const int x2, const int y2)
-{
+int get_segment(const int x1, const int y1, const int x2, const int y2) {
   int x, y;
   x = x2 - x1;
   y = y2 - y1;
@@ -113,10 +100,9 @@ int get_segment(const int x1, const int y1, const int x2, const int y2)
   return 4 * s4 + 2 * (s2 ^ s4) + (s1 ^ s2 ^ s3 ^ s4);
 }
 
-enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1, const int x2, const int y2)
-{
-  switch (get_segment(x1, y1, x2, y2))
-  {
+enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1,
+                                            const int x2, const int y2) {
+  switch (get_segment(x1, y1, x2, y2)) {
   case 0:
     return PLAYER_SOUTH_EAST_2;
   case 1:
@@ -139,10 +125,9 @@ enum PLAYER_DIRECTION player_get_direction8(const int x1, const int y1, const in
   return PLAYER_SOUTH;
 }
 
-enum MONSTER_DIRECTION monster_get_direction8(const int x1, const int y1, const int x2, const int y2)
-{
-  switch (get_segment(x1, y1, x2, y2))
-  {
+enum MONSTER_DIRECTION monster_get_direction8(const int x1, const int y1,
+                                              const int x2, const int y2) {
+  switch (get_segment(x1, y1, x2, y2)) {
   case 0:
     return MONSTER_SOUTH_EAST;
   case 1:

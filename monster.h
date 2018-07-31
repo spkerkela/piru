@@ -1,14 +1,14 @@
 #ifndef _MONSTER_H
 #define _MONSTER_H
-#include <stdlib.h>
-#include "structs.h"
-#include "enums.h"
-#include "point.h"
-#include "direction.h"
-#include "pathfinding.h"
-#include "time.h"
-#include "dungeon.h"
 #include "damage_text.h"
+#include "direction.h"
+#include "dungeon.h"
+#include "enums.h"
+#include "pathfinding.h"
+#include "point.h"
+#include "structs.h"
+#include "time.h"
+#include <stdlib.h>
 
 extern Monster monsters[];
 void update_monster(int id);

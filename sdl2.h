@@ -11,9 +11,9 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
 #endif
+#include "constants.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "constants.h"
 
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;

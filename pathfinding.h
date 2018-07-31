@@ -1,17 +1,17 @@
 #ifndef _PATHFINDING_H
 #define _PATHFINDING_H
 
-#include <stdbool.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
-#include "dungeon.h"
 #include "constants.h"
-#include "structs.h"
+#include "dungeon.h"
 #include "enums.h"
+#include "structs.h"
 
 typedef char *Path;
 
@@ -33,9 +33,12 @@ PathNode *get_next_path_node();
 PathNode *get_visited_node(const Point point);
 PathNode *path_pop_active_step();
 
-int find_path(const Point source, const Point destination, Path out_path, bool (*path_check)(const Point));
-bool path_get_path(PathNode *path, const Point from, bool (*path_check)(const Point));
-bool path_parent_path(PathNode *path, const Point next_destination, const Point from);
+int find_path(const Point source, const Point destination, Path out_path,
+              bool (*path_check)(const Point));
+bool path_get_path(PathNode *path, const Point from,
+                   bool (*path_check)(const Point));
+bool path_parent_path(PathNode *path, const Point next_destination,
+                      const Point from);
 bool path_solid_pieces(PathNode *path, int a, int b);
 
 char get_heuristic_cost(const Point source, const Point destination);

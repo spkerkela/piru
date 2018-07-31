@@ -1,4 +1,5 @@
 {
+  "C_Cpp.clang_format_style": "llvm",
   "editor.formatOnSave": true,
   "files.associations": {
     "sdl.h": "c",
