@@ -371,48 +371,6 @@ void draw_and_blit() {
 
 bool gMouseIsDown = false;
 
-void handle_monster_clicked(int monster_clicked) {
-  Point player_point = {gPlayer.world_x, gPlayer.world_y};
-  if (gPlayer.state != PLAYER_ATTACKING &&
-      get_distance(player_point, gSelectedTile) <= gPlayer.attack_radius) {
-    switch_state(PLAYER_ATTACKING);
-    gPlayer.next_state = PLAYER_STANDING;
-    gPlayer.direction = player_get_direction8(gPlayer.world_x, gPlayer.world_y,
-                                              gSelectedTile.x, gSelectedTile.y);
-    gPlayer.target_monster_id = monster_clicked;
-  } else if (gPlayer.state != PLAYER_ATTACKING) {
-    // Find nearest free node to monster
-    int i;
-    Monster monster = monsters[monster_clicked];
-
-    Point monster_point = {monster.world_x, monster.world_y};
-    Point lookup;
-    double smallest_distance = 1000.0;
-    int dir = -1;
-    for (i = 0; i < 8; i++) {
-      lookup.x = monster_point.x + movement_directions_x[i];
-      lookup.y = monster_point.y + movement_directions_y[i];
-      double distance = get_distance(player_point, lookup);
-      if (distance < smallest_distance && !tile_is_blocked(lookup)) {
-        smallest_distance = distance;
-        dir = i;
-      }
-    }
-
-    lookup.x = monster_point.x + movement_directions_x[dir];
-    lookup.y = monster_point.y + movement_directions_y[dir];
-    if (find_path(player_point, lookup, gPlayer.path, &tile_is_blocked)) {
-      gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
-      switch_state(PLAYER_MOVING);
-      gPlayer.target = lookup;
-      gPlayer.new_target = lookup;
-      gPlayer.target_monster_id = monster_clicked;
-    } else {
-      switch_state(PLAYER_STANDING);
-    }
-  }
-}
-
 void update_input() {
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0) {
@@ -423,7 +381,6 @@ void update_input() {
       gMouseIsDown = true;
     }
     if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
-      bool mouse_was_pressed = gMouseIsDown;
       int mx, my;
       Point player_position = {gPlayer.world_x, gPlayer.world_y};
       SDL_GetMouseState(&mx, &my);
@@ -434,7 +391,7 @@ void update_input() {
       gSelectedTile = isometric_to_cartesian(mouse_point);
       int monster_clicked = -1;
       if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0) {
-        if (!gPlayer.moving_between_points && gMouseIsDown) {
+        if (gMouseIsDown) {
           int x, y;
           x = gSelectedTile.x;
           y = gSelectedTile.y;
@@ -463,24 +420,12 @@ void update_input() {
           if (monster_clicked >= 0) {
             gSelectedTile.x = x;
             gSelectedTile.y = y;
-            handle_monster_clicked(monster_clicked);
+            gPlayer.new_target.x = x;
+            gPlayer.new_target.y = y;
           } else {
-            gPlayer.destination_action = PLAYER_DESTINATION_STAND;
+            gPlayer.new_target.x = gSelectedTile.x;
+            gPlayer.new_target.y = gSelectedTile.y;
           }
-
-          if (gPlayer.target_monster_id < 0 &&
-              !point_equal(player_position, gSelectedTile) &&
-              find_path(player_position, gSelectedTile, gPlayer.path,
-                        &tile_is_blocked)) {
-            switch_state(PLAYER_MOVING);
-            gPlayer.target = gSelectedTile;
-            gPlayer.new_target = gSelectedTile;
-          } else if (gPlayer.state != PLAYER_ATTACKING &&
-                     gPlayer.target_monster_id == -1) {
-            switch_state(PLAYER_STANDING);
-          }
-        } else if (mouse_was_pressed) {
-          gPlayer.new_target = gSelectedTile;
         }
       }
     }
