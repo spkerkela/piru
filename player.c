@@ -10,7 +10,7 @@ void try_attack(Player *player) {
     player->direction = player_get_direction8(
         player->world_x, player->world_y, player->target.x, player->target.y);
     player->next_state_fn = attack;
-  } else if (find_path(player_point, player->target, player->path,
+  } else if (find_path(player_point, player->new_target, player->path,
                        &tile_is_blocked)) {
     player->next_state_fn = move_offset;
   } else {
@@ -22,12 +22,16 @@ void try_attack(Player *player) {
 void stand(Player *player) {
   player->animation = ANIM_WARRIOR_IDLE;
   player->state = PLAYER_STANDING;
-  printf("%d %d\n", player->target.x, player->target.y);
-  printf("%d %d\n", player->new_target.x, player->new_target.y);
   if (player->target_monster_id >= 0) {
     player->next_state_fn = try_attack;
-  } else if (player->path[player->point_in_path] != -1) {
-    player->next_state_fn = move_offset;
+  } else if (!point_equal(player->target, player->new_target)) {
+    Point player_point = {player->world_x, player->world_y};
+    player->target = player->new_target;
+    if (find_path(player_point, player->target, player->path,
+                  &tile_is_blocked)) {
+      player->point_in_path = 0;
+      player->next_state_fn = move_offset;
+    }
   }
 }
 
@@ -169,7 +173,6 @@ void move_offset(Player *player) {
 }
 
 void move(Player *player) {
-  printf("MOVE STATE\n");
   player->animation = ANIM_WARRIOR_WALK;
   player->state = PLAYER_MOVING;
 
@@ -185,14 +188,13 @@ void move(Player *player) {
     player_do_walk(player);
     if (!point_equal(player->target, player->new_target)) {
       Point player_position = {player->world_x, player->world_y};
-
-      if (point_equal(player_position, gPlayer.new_target) ||
-          !find_path(player_position, player->new_target, player->path,
+      player->target = player->new_target;
+      if (!find_path(player_position, player->target, player->path,
                      &tile_is_blocked)) {
         player->next_state_fn = stand;
+      } else {
+        player->point_in_path = 0;
       }
-
-      player->target = player->new_target;
     }
   }
 }
@@ -200,7 +202,6 @@ void move(Player *player) {
 void attack(Player *player) {
   player->animation = ANIM_WARRIOR_ATTACK;
   player->state = PLAYER_ATTACKING;
-  printf("ATTACK STATE\n");
   if (player->animation_frame == 8 && player->previous_animation_frame != 8) {
     int target_id = player->target_monster_id;
     if (target_id >= 0) {
@@ -228,48 +229,6 @@ void attack(Player *player) {
   int animFrames = animations[player->animation][player->direction].columns;
   if (player->animation_frame >= animFrames - 1) {
     player->next_state_fn = stand;
-  }
-}
-
-void handle_monster_clicked(int monster_clicked) {
-  Point player_point = {gPlayer.world_x, gPlayer.world_y};
-  if (gPlayer.state != PLAYER_ATTACKING &&
-      get_distance(player_point, gPlayer.target) <= gPlayer.attack_radius) {
-    switch_state(PLAYER_ATTACKING);
-    gPlayer.next_state = PLAYER_STANDING;
-    gPlayer.direction = player_get_direction8(
-        gPlayer.world_x, gPlayer.world_y, gPlayer.target.x, gPlayer.target.y);
-    gPlayer.target_monster_id = monster_clicked;
-  } else if (gPlayer.state != PLAYER_ATTACKING) {
-    // Find nearest free node to monster
-    int i;
-    Monster monster = monsters[monster_clicked];
-
-    Point monster_point = {monster.world_x, monster.world_y};
-    Point lookup;
-    double smallest_distance = 1000.0;
-    int dir = -1;
-    for (i = 0; i < 8; i++) {
-      lookup.x = monster_point.x + movement_directions_x[i];
-      lookup.y = monster_point.y + movement_directions_y[i];
-      double distance = get_distance(player_point, lookup);
-      if (distance < smallest_distance && !tile_is_blocked(lookup)) {
-        smallest_distance = distance;
-        dir = i;
-      }
-    }
-
-    lookup.x = monster_point.x + movement_directions_x[dir];
-    lookup.y = monster_point.y + movement_directions_y[dir];
-    if (find_path(player_point, lookup, gPlayer.path, &tile_is_blocked)) {
-      gPlayer.destination_action = PLAYER_DESTINATION_ATTACK;
-      switch_state(PLAYER_MOVING);
-      gPlayer.target = lookup;
-      gPlayer.new_target = lookup;
-      gPlayer.target_monster_id = monster_clicked;
-    } else {
-      switch_state(PLAYER_STANDING);
-    }
   }
 }
 

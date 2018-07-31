@@ -371,6 +371,31 @@ void draw_and_blit() {
 
 bool gMouseIsDown = false;
 
+Point find_nearest_node_to_monster(int monster_clicked) {
+  Point player_point = {gPlayer.world_x, gPlayer.world_y};
+  // Find nearest free node to monster
+  int i;
+  Monster monster = monsters[monster_clicked];
+
+  Point monster_point = {monster.world_x, monster.world_y};
+  Point lookup;
+  double smallest_distance = 1000.0;
+  int dir = -1;
+  for (i = 0; i < 8; i++) {
+    lookup.x = monster_point.x + movement_directions_x[i];
+    lookup.y = monster_point.y + movement_directions_y[i];
+    double distance = get_distance(player_point, lookup);
+    if (distance < smallest_distance && !tile_is_blocked(lookup)) {
+      smallest_distance = distance;
+      dir = i;
+    }
+  }
+
+  lookup.x = monster_point.x + movement_directions_x[dir];
+  lookup.y = monster_point.y + movement_directions_y[dir];
+  return lookup;
+}
+
 void update_input() {
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0) {
@@ -418,14 +443,9 @@ void update_input() {
           }
 
           if (monster_clicked >= 0) {
-            gSelectedTile.x = x;
-            gSelectedTile.y = y;
-            gPlayer.new_target.x = x;
-            gPlayer.new_target.y = y;
-          } else {
-            gPlayer.new_target.x = gSelectedTile.x;
-            gPlayer.new_target.y = gSelectedTile.y;
+            gSelectedTile = find_nearest_node_to_monster(monster_clicked);
           }
+          gPlayer.new_target = gSelectedTile;
         }
       }
     }
