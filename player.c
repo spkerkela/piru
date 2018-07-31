@@ -80,7 +80,7 @@ void init_player() {
   gPlayer.walk_interval = 200;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
-  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 20;
+  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 1;
   gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
   gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
 }
@@ -183,7 +183,8 @@ void attack(Player *player) {
     Point player_point = get_player_point(player);
     if (get_distance(player_point, monster_point) <= player->attack_radius) {
       char *str = calloc(10, sizeof(char));
-      sprintf(str, "%d", player->damage);
+      int damage = rand() % 100 < 20 ? player->damage * 2 : player->damage;
+      sprintf(str, "%d", damage);
       Point monster_point = get_monster_point(target_id);
       DamageText dt = {str, monster_point.x, monster_point.y};
       dt.r = 255;
@@ -191,7 +192,7 @@ void attack(Player *player) {
       dt.b = 0;
 
       push_damage_text(dt);
-      monsters[target_id].hp -= player->damage;
+      monsters[target_id].hp -= damage;
     }
     player->target_monster_id = -1;
   }
