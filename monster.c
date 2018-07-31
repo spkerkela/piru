@@ -2,13 +2,20 @@
 
 extern Player gPlayer;
 extern int created_monsters;
+
+Point get_monster_point(int id) {
+
+  Monster monster = monsters[id];
+  Point monster_point = {monster.world_x, monster.world_y};
+  return monster_point;
+}
+
 Point find_nearest_node_to_monster(int monster_clicked) {
-  Point player_point = {gPlayer.world_x, gPlayer.world_y};
+  Point player_point = get_player_point(&gPlayer);
   // Find nearest free node to monster
   int i;
-  Monster monster = monsters[monster_clicked];
 
-  Point monster_point = {monster.world_x, monster.world_y};
+  Point monster_point = get_monster_point(monster_clicked);
   Point lookup;
   double smallest_distance = 1000.0;
   int dir = -1;

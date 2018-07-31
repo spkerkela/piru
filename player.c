@@ -17,11 +17,10 @@ void clear_player_path(Player *player) {
 
 void try_attack(Player *player) {
   Point player_point = get_player_point(player);
-  Monster monster = monsters[player->target_monster_id];
-  Point monster_point = {monster.world_x, monster.world_y};
+  Point monster_point = get_monster_point(player->target_monster_id);
   if (get_distance(player_point, monster_point) <= player->attack_radius) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
-                                              monster.world_x, monster.world_y);
+                                              monster_point.x, monster_point.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
   } else if (find_path(player_point,
@@ -119,28 +118,28 @@ void player_do_walk(Player *player) {
 void move_offset(Player *player) {
   player->animation = ANIM_WARRIOR_WALK;
   player->state = PLAYER_MOVING;
-  gPlayer.frames_since_walk += gClock.delta;
+  player->frames_since_walk += gClock.delta;
   double percentage_walked =
-      (double)gPlayer.frames_since_walk / (double)gPlayer.walk_interval;
+      (double)player->frames_since_walk / (double)player->walk_interval;
   if (percentage_walked >= 1.0) {
     percentage_walked = 1.0;
   }
-  char raw_code = gPlayer.path[gPlayer.point_in_path];
+  char raw_code = player->path[gPlayer.point_in_path];
   if (raw_code == -1) {
     printf("FAILRE MODE ACTIVATED\n");
-    printf("%d %d\n", gPlayer.target.x, gPlayer.target.y);
+    printf("%d %d\n", player->target.x, player->target.y);
   }
   enum PATH_CODE code = (enum PATH_CODE)raw_code;
-  gPlayer.direction = player_get_direction_from_path_code(code);
+  player->direction = player_get_direction_from_path_code(code);
   Point direction = get_direction_from_path(code);
   Point isometric = cartesian_to_isometric(direction);
   int off_x, off_y;
   off_x = (int)(isometric.x * percentage_walked);
   off_y = (int)(isometric.y * percentage_walked);
-  gPlayer.pixel_x = off_x;
-  gPlayer.pixel_y = off_y;
-  gPlayer.next_x = direction.x + gPlayer.world_x;
-  gPlayer.next_y = direction.y + gPlayer.world_y;
+  player->pixel_x = off_x;
+  player->pixel_y = off_y;
+  player->next_x = direction.x + player->world_x;
+  player->next_y = direction.y + player->world_y;
   if (player->frames_since_walk >= player->walk_interval) {
     player->next_state_fn = move;
   }
@@ -185,8 +184,7 @@ void attack(Player *player) {
     if (target_id >= 0) {
       char *str = calloc(10, sizeof(char));
       sprintf(str, "%d", player->damage);
-      Point monster_point = {monsters[target_id].world_x,
-                             monsters[target_id].world_y};
+      Point monster_point = get_monster_point(target_id);
       DamageText dt = {str, monster_point.x, monster_point.y};
       dt.r = 255;
       dt.g = 255;
