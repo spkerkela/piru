@@ -4,9 +4,19 @@ Player gPlayer;
 
 player_state_fn stand, move, move_offset, try_attack, attack;
 
+Point get_player_point(Player *player) {
+  Point p = {player->world_x, player->world_y};
+  return p;
+}
+
+void clear_player_path(Player *player) {
+  player->point_in_path = 0;
+  player->target = get_player_point(player);
+  player->new_target = player->target;
+}
+
 void try_attack(Player *player) {
-  printf("try attack\n");
-  Point player_point = {player->world_x, player->world_y};
+  Point player_point = get_player_point(player);
   Monster monster = monsters[player->target_monster_id];
   Point monster_point = {monster.world_x, monster.world_y};
   if (get_distance(player_point, monster_point) <= player->attack_radius) {
@@ -31,7 +41,7 @@ void stand(Player *player) {
   if (player->target_monster_id >= 0) {
     player->next_state_fn = try_attack;
   } else if (!point_equal(player->target, player->new_target)) {
-    Point player_point = {player->world_x, player->world_y};
+    Point player_point = get_player_point(player);
     player->target = player->new_target;
     if (find_path(player_point, player->target, player->path,
                   &tile_is_blocked)) {
@@ -155,7 +165,7 @@ void move(Player *player) {
       return;
     }
     if (!point_equal(player->target, player->new_target)) {
-      Point player_position = {player->world_x, player->world_y};
+      Point player_position = get_player_point(player);
       player->target = player->new_target;
       if (!find_path(player_position, player->target, player->path,
                      &tile_is_blocked)) {
@@ -198,6 +208,7 @@ void attack(Player *player) {
   if (player->animation_frame >= animFrames - 1) {
     player->animation_frame = 0;
     player->next_state_fn = stand;
+    clear_player_path(player);
   }
 }
 
