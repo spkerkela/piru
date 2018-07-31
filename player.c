@@ -151,27 +151,25 @@ void move(Player *player) {
 
   player->next_state_fn = move_offset;
 
-  if (player->frames_since_walk >= player->walk_interval) {
-    player->frames_since_walk = 0;
-    player->pixel_x = 0;
-    player->pixel_y = 0;
-    player->next_x = -1;
-    player->next_y = -1;
+  player->frames_since_walk = 0;
+  player->pixel_x = 0;
+  player->pixel_y = 0;
+  player->next_x = -1;
+  player->next_y = -1;
 
-    player_do_walk(player);
-    if (player->target_monster_id >= 0) {
-      player->next_state_fn = try_attack;
-      return;
-    }
-    if (!point_equal(player->target, player->new_target)) {
-      Point player_position = get_player_point(player);
-      player->target = player->new_target;
-      if (!find_path(player_position, player->target, player->path,
-                     &tile_is_blocked)) {
-        player->next_state_fn = stand;
-      } else {
-        player->point_in_path = 0;
-      }
+  player_do_walk(player);
+  if (player->target_monster_id >= 0) {
+    player->next_state_fn = try_attack;
+    return;
+  }
+  if (!point_equal(player->target, player->new_target)) {
+    Point player_position = get_player_point(player);
+    player->target = player->new_target;
+    if (!find_path(player_position, player->target, player->path,
+                   &tile_is_blocked)) {
+      player->next_state_fn = stand;
+    } else {
+      player->point_in_path = 0;
     }
   }
 }
@@ -181,7 +179,9 @@ void attack(Player *player) {
   player->state = PLAYER_ATTACKING;
   if (player->animation_frame == 8 && player->previous_animation_frame != 8) {
     int target_id = player->target_monster_id;
-    if (target_id >= 0) {
+    Point monster_point = get_monster_point(target_id);
+    Point player_point = get_player_point(player);
+    if (get_distance(player_point, monster_point) <= player->attack_radius) {
       char *str = calloc(10, sizeof(char));
       sprintf(str, "%d", player->damage);
       Point monster_point = get_monster_point(target_id);
@@ -192,12 +192,6 @@ void attack(Player *player) {
 
       push_damage_text(dt);
       monsters[target_id].hp -= player->damage;
-      if (monsters[target_id].hp <= 0) {
-        monsters[target_id].state = MONSTER_DEAD;
-        monsters[target_id].animation_frame = 0;
-        gDungeonMonsterTable[monsters[target_id].world_y]
-                            [monsters[target_id].world_x] = -1;
-      }
     }
     player->target_monster_id = -1;
   }

@@ -7,6 +7,7 @@
 // https://stackoverflow.com/questions/1371460/state-machines-tutorials
 struct Player;
 typedef void player_state_fn(struct Player *);
+typedef void monster_state_fn(int monster_id);
 
 typedef struct {
   int x;
@@ -52,6 +53,7 @@ typedef struct Player {
 
 typedef struct {
   Point target;
+  monster_state_fn *next_state_fn;
   char path[MAX_PATH_LENGTH];
   enum ANIMATION animation;
   enum MONSTER_DIRECTION direction;

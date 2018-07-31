@@ -419,7 +419,9 @@ void update_input() {
 
           if (monster_clicked >= 0) {
             gSelectedTile = find_nearest_node_to_monster(monster_clicked);
-            gPlayer.target_monster_id = monster_clicked;
+            if (gPlayer.state != PLAYER_ATTACKING) {
+              gPlayer.target_monster_id = monster_clicked;
+            }
           }
           gPlayer.new_target = gSelectedTile;
         }

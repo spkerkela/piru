@@ -1,5 +1,6 @@
 #ifndef _MONSTER_H
 #define _MONSTER_H
+#include "assets.h"
 #include "damage_text.h"
 #include "direction.h"
 #include "dungeon.h"
