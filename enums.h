@@ -100,6 +100,11 @@ enum SPRITE {
   // land tiles
   SPRITE_GROVEL,
   SPRITE_STONE,
+
+  // wall tiles
+  WALL_1_EAST,
+  WALL_1_NORTH,
+
   // misc
   SPRITE_CURSOR,
   SPRITE_SELECTION,

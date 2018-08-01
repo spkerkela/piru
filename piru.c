@@ -169,7 +169,42 @@ void select_character_menu() {
   }
 }
 
-void draw_dungeon() {
+void draw_walls() {
+  int x, y;
+  Point isometric_point, cartesian_point;
+  ImageAsset asset;
+  asset = gImageAssets[WALL_1_NORTH];
+  for (y = 1; y < DUNGEON_SIZE - 1; y++) {
+    for (x = 1; x < DUNGEON_SIZE - 1; x++) {
+      if (x < gPlayer.world_x - CUTOFF_X || x > gPlayer.world_x + CUTOFF_X ||
+          y < gPlayer.world_y - CUTOFF_Y || y > gPlayer.world_y + CUTOFF_Y) {
+        continue;
+      }
+      if (x == y) {
+        continue;
+      }
+      cartesian_point.x = x - gPlayer.world_x;
+      cartesian_point.y = y - gPlayer.world_y;
+      isometric_point = cartesian_to_isometric(cartesian_point);
+      SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
+      if (x == 1) {
+      } else if (y == 1) {
+        flip = SDL_FLIP_NONE;
+      } else {
+        continue;
+      }
+      SDL_Rect fillRect = {isometric_point.x - WALL_WIDTH_HALF +
+                               (SCREEN_WIDTH / 2) - gPlayer.pixel_x,
+                           isometric_point.y + (SCREEN_HEIGHT / 2) -
+                               gPlayer.pixel_y - WALL_HEIGHT,
+                           WALL_WIDTH, WALL_HEIGHT};
+      SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                       flip);
+    }
+  }
+}
+
+void draw_floor() {
   int x, y;
   Point isometric_point, cartesian_point;
   ImageAsset asset;
@@ -344,7 +379,8 @@ void draw_and_blit() {
   SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
   SDL_RenderClear(gRenderer);
 
-  draw_dungeon();
+  draw_floor();
+  draw_walls();
   // draw_debug_path();
 
   draw_monsters();

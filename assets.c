@@ -91,15 +91,23 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows,
 }
 
 bool load_assets() {
-  // load
+  // player
   ImageAsset warriorMoveSpriteSheet =
       load_image_asset("assets/player_walk.png");
   ImageAsset warriorIdleSpriteSheet =
       load_image_asset("assets/player_idle.png");
   ImageAsset warriorAttackSpriteSheet =
       load_image_asset("assets/player_attack.png");
+
+  // tiles
   ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
   ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
+
+  // walls
+  ImageAsset wall1East = load_image_asset("assets/wall_1_east.png");
+  ImageAsset wall1North = load_image_asset("assets/wall_1_north.png");
+
+  // enemies
   ImageAsset selectionSpriteSheet =
       load_image_asset("assets/iso_selection.png");
   ImageAsset cursorSword = load_image_asset("assets/sword.png");
@@ -131,6 +139,8 @@ bool load_assets() {
   gImageAssets[ORB_EMPTY] = orbEmpty;
   gImageAssets[ORB_HEALTH] = orbHealth;
   gImageAssets[ORB_MANA] = orbMana;
+  gImageAssets[WALL_1_EAST] = wall1East;
+  gImageAssets[WALL_1_NORTH] = wall1North;
 
   // allocate animations
   load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);
