@@ -89,3 +89,87 @@ void create_dungeon() {
   init_monster_table();
   create_walls();
 }
+
+typedef struct BSP BSP;
+struct BSP {
+  int x, y, width, height, child_count;
+  BSP *child1;
+  BSP *child2;
+};
+
+void carve_dungeon(BSP *bsp) {
+  if (bsp->child1) {
+    carve_dungeon(bsp->child1);
+  }
+  if (bsp->child2) {
+    carve_dungeon(bsp->child2);
+  }
+  printf("width: %d, height: %d, x: %d, y: %d\n", bsp->width, bsp->height,
+         bsp->x, bsp->y);
+}
+
+BSP *iterate_bsp(BSP *root, int iterations) {
+  printf("%d\n", iterations);
+  if (iterations <= 0) {
+    return NULL;
+  }
+
+  root->child1 = calloc(1, sizeof(BSP));
+  root->child2 = calloc(1, sizeof(BSP));
+  bool horizontal = (bool)(rand() % 2 == 0);
+  if (horizontal) {
+    int random_x = rand() % root->width;
+    root->child1->x = root->x;
+    root->child1->y = root->y;
+    root->child1->width = random_x;
+    root->child1->height = root->height;
+    root->child1->child_count = 2;
+    root->child1->child1 = NULL;
+    root->child1->child2 = NULL;
+
+    root->child2->x = root->x + random_x;
+    root->child2->y = root->y;
+    root->child2->width = root->width - random_x;
+    root->child2->height = root->height;
+    root->child2->child_count = 2;
+    root->child2->child1 = NULL;
+    root->child2->child2 = NULL;
+
+    root->child1 = iterate_bsp(root->child1, iterations - 1);
+    root->child2 = iterate_bsp(root->child2, iterations - 1);
+
+  } else {
+    int random_y = rand() % root->height;
+    root->child1->x = root->x;
+    root->child1->y = root->y;
+    root->child1->width = root->width;
+    root->child1->height = random_y;
+    root->child1->child_count = 2;
+    root->child1->child1 = NULL;
+    root->child1->child2 = NULL;
+
+    root->child2->x = root->x;
+    root->child2->y = root->y + random_y;
+    root->child2->width = root->width;
+    root->child2->height = root->height - random_y;
+    root->child1->child_count = 2;
+    root->child2->child1 = NULL;
+    root->child2->child2 = NULL;
+
+    root->child1 = iterate_bsp(root->child1, iterations - 1);
+    root->child2 = iterate_bsp(root->child2, iterations - 1);
+  }
+  return root;
+}
+
+void create_bsp_dungeon() {
+  int x, y;
+  for (y = 0; y < DUNGEON_SIZE; y++) {
+    for (x = 0; x < DUNGEON_SIZE; x++) {
+      gDungeonBlockTable[y][x] = true;
+    }
+  }
+  BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL};
+  iterate_bsp(&root, 5);
+  carve_dungeon(&root);
+}

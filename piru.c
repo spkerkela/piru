@@ -625,6 +625,7 @@ bool start_game(enum GAME_START_MODE start_mode) {
   load_assets();
   init_player();
   create_dungeon();
+  create_bsp_dungeon();
   Point monster_point;
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
