@@ -297,10 +297,10 @@ void draw_monsters() {
     int height = currentMonsterAnimation.frames[current_frame].h;
     SDL_Rect monster_quad = {isometric_point.x + (SCREEN_WIDTH / 2) +
                                  currentMonsterAnimation.offset_x +
-                                 monsters[i].pixel_x - gPlayer.pixel_x,
+                                 monsters[i].pixel_x + gPlayer.pixel_x,
                              isometric_point.y + (SCREEN_HEIGHT / 2) +
                                  currentMonsterAnimation.offset_y +
-                                 monsters[i].pixel_y - gPlayer.pixel_y,
+                                 monsters[i].pixel_y + gPlayer.pixel_y,
                              width, height};
     SDL_RenderCopy(gRenderer, currentMonsterAnimation.image.texture,
                    &currentMonsterAnimation.frames[current_frame],
@@ -361,8 +361,8 @@ void draw_damage_text() {
       color.g = damage_text[i].g;
       color.b = damage_text[i].b;
       screen_point = cartesian_to_isometric(p);
-      rect.x = (screen_point.x + SCREEN_WIDTH / 2) - gPlayer.pixel_x;
-      rect.y = (screen_point.y + SCREEN_HEIGHT / 2) - gPlayer.pixel_y +
+      rect.x = (screen_point.x + SCREEN_WIDTH / 2) + gPlayer.pixel_x;
+      rect.y = (screen_point.y + SCREEN_HEIGHT / 2) + gPlayer.pixel_y +
                damage_text[i].y_offset;
       draw_text(damage_text[i].text, color, NULL, &rect);
     }
