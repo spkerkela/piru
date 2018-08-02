@@ -169,17 +169,19 @@ void select_character_menu() {
   }
 }
 
+int min(int a, int b) { return a > b ? b : a; }
+int max(int a, int b) { return a > b ? a : b; }
+
 void draw_walls() {
   int x, y;
   Point isometric_point, cartesian_point;
   ImageAsset asset;
   asset = gImageAssets[WALL_1_NORTH];
-  for (y = 0; y < DUNGEON_SIZE; y++) {
-    for (x = 0; x < DUNGEON_SIZE; x++) {
-      if (x < gPlayer.world_x - CUTOFF_X || x > gPlayer.world_x + CUTOFF_X ||
-          y < gPlayer.world_y - CUTOFF_Y || y > gPlayer.world_y + CUTOFF_Y) {
-        continue;
-      }
+  for (y = max(gPlayer.world_y - CUTOFF_Y, 0);
+       y < min(gPlayer.world_y + CUTOFF_Y, DUNGEON_SIZE); y++) {
+    for (x = max(gPlayer.world_x - CUTOFF_X, 0);
+         x < min(gPlayer.world_x + CUTOFF_X, DUNGEON_SIZE); x++) {
+
       int wall_mask = gDungeonWallTable[y][x];
 
       SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -224,12 +226,11 @@ void draw_floor() {
   int x, y;
   Point isometric_point, cartesian_point;
   ImageAsset asset;
-  for (y = 0; y < DUNGEON_SIZE; y++) {
-    for (x = 0; x < DUNGEON_SIZE; x++) {
-      if (x < gPlayer.world_x - CUTOFF_X || x > gPlayer.world_x + CUTOFF_X ||
-          y < gPlayer.world_y - CUTOFF_Y || y > gPlayer.world_y + CUTOFF_Y) {
-        continue;
-      }
+  for (y = max(gPlayer.world_y - CUTOFF_Y, 0);
+       y < min(gPlayer.world_y + CUTOFF_Y, DUNGEON_SIZE); y++) {
+    for (x = max(gPlayer.world_x - CUTOFF_X, 0);
+         x < min(gPlayer.world_x + CUTOFF_X, DUNGEON_SIZE); x++) {
+
       cartesian_point.x = x - gPlayer.world_x;
       cartesian_point.y = y - gPlayer.world_y;
       isometric_point = cartesian_to_isometric(cartesian_point);
