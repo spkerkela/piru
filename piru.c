@@ -434,7 +434,9 @@ void handle_cursor() {
   mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
   gSelectedTile = isometric_to_cartesian(mouse_point);
   int monster_clicked = -1;
-  if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0) {
+  if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0 &&
+      gSelectedTile.x < DUNGEON_SIZE - 1 &&
+      gSelectedTile.y < DUNGEON_SIZE - 1) {
     if (gMouseIsDown) {
       int x, y;
       x = gSelectedTile.x;
