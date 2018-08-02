@@ -61,8 +61,10 @@ void try_attack(Player *player) {
     player->animation_frame = 0;
     player->next_state_fn = attack;
   } else if (find_path(player_point,
-                       find_nearest_node_to_monster(player->target_monster_id),
+                       find_nearest_node_to_monster(player->target_monster_id,
+                                                    player_point),
                        player->path, &tile_is_blocked)) {
+    player->target = monster_point;
     player->point_in_path = 0;
     player->next_state_fn = move;
   } else {
@@ -116,10 +118,6 @@ void player_do_walk(Player *player) {
 void move(Player *player) {
   player->previous_world_x = player->world_x;
   player->previous_world_y = player->world_y;
-  if (player->target_monster_id >= 0) {
-    try_attack(player);
-    return;
-  }
   if (player->world_x == player->target.x &&
       player->world_y == player->target.y) {
     if (player->target_monster_id >= 0) {

@@ -445,7 +445,8 @@ void handle_cursor() {
       }
 
       if (monster_clicked >= 0) {
-        gSelectedTile = find_nearest_node_to_monster(monster_clicked);
+        gSelectedTile =
+            find_nearest_node_to_monster(monster_clicked, player_position);
         if (gPlayer.state != PLAYER_ATTACKING) {
           gPlayer.target_monster_id = monster_clicked;
         }

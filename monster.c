@@ -138,8 +138,7 @@ Point get_monster_point(int id) {
   return monster_point;
 }
 
-Point find_nearest_node_to_monster(int monster_clicked) {
-  Point player_point = get_player_point(&gPlayer);
+Point find_nearest_node_to_monster(int monster_clicked, Point from) {
   // Find nearest free node to monster
   int i;
 
@@ -150,7 +149,7 @@ Point find_nearest_node_to_monster(int monster_clicked) {
   for (i = 0; i < 8; i++) {
     lookup.x = monster_point.x + movement_directions_x[i];
     lookup.y = monster_point.y + movement_directions_y[i];
-    double distance = get_distance(player_point, lookup);
+    double distance = get_distance(from, lookup);
     if (distance < smallest_distance && !tile_is_blocked(lookup)) {
       smallest_distance = distance;
       dir = i;
