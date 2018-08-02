@@ -3,7 +3,7 @@
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
-int gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
+char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 
 bool tile_is_blocked(const Point p) {
   return gDungeonBlockTable[p.y][p.x] || gDungeonMonsterTable[p.y][p.x] >= 0;

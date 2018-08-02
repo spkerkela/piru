@@ -9,7 +9,7 @@
 
 extern char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 extern bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
-extern int gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
+extern char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 extern int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
 
 bool tile_is_blocked(const Point p);
