@@ -39,6 +39,8 @@ typedef struct Player {
   int point_in_path;
   int world_x;
   int world_y;
+  int previous_world_x;
+  int previous_world_y;
   int next_x;
   int next_y;
   bool moving_between_points;

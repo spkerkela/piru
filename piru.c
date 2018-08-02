@@ -194,8 +194,8 @@ void draw_walls() {
         continue;
       }
       SDL_Rect fillRect = {isometric_point.x - WALL_WIDTH_HALF +
-                               (SCREEN_WIDTH / 2) - gPlayer.pixel_x,
-                           isometric_point.y + (SCREEN_HEIGHT / 2) -
+                               (SCREEN_WIDTH / 2) + gPlayer.pixel_x,
+                           isometric_point.y + (SCREEN_HEIGHT / 2) +
                                gPlayer.pixel_y - WALL_HEIGHT,
                            WALL_WIDTH, WALL_HEIGHT};
       SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
@@ -227,8 +227,8 @@ void draw_floor() {
         asset = gImageAssets[SPRITE_GROVEL];
       }
       SDL_Rect fillRect = {isometric_point.x - TILE_WIDTH_HALF +
-                               (SCREEN_WIDTH / 2) - gPlayer.pixel_x,
-                           isometric_point.y + (SCREEN_HEIGHT / 2) -
+                               (SCREEN_WIDTH / 2) + gPlayer.pixel_x,
+                           isometric_point.y + (SCREEN_HEIGHT / 2) +
                                gPlayer.pixel_y,
                            TILE_WIDTH, TILE_HEIGHT};
       SDL_RenderCopy(gRenderer, asset.texture, NULL, &fillRect);
@@ -409,7 +409,7 @@ bool gMouseIsDown = false;
 
 void handle_cursor() {
   int mx, my;
-  Point player_position = {gPlayer.world_x, gPlayer.world_y};
+  Point player_position = {gPlayer.previous_world_x, gPlayer.previous_world_y};
   SDL_GetMouseState(&mx, &my);
   Point mouse_point;
   Point offset = cartesian_to_isometric(player_position);
@@ -609,7 +609,13 @@ bool start_game(enum GAME_START_MODE start_mode) {
   memset(monsters, 0, MAX_MONSTERS);
   created_monsters = 0;
   int ms;
-  for (ms = 0; ms < 500; ms++) {
+  int monsters_to_create = 500;
+  if (gPlayer.character_class == MAGE) {
+    monsters_to_create = 0;
+  } else if (gPlayer.character_class == ROGUE) {
+    monsters_to_create = MAX_MONSTERS;
+  }
+  for (ms = 0; ms < monsters_to_create; ms++) {
     monster_point.x = (rand() % DUNGEON_SIZE - 1) + 1;
     monster_point.y = (rand() % DUNGEON_SIZE - 1) + 1;
     create_monster(monster_point);

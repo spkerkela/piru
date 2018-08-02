@@ -79,3 +79,42 @@ Point get_direction_from_path(enum PATH_CODE code) {
 
   return point;
 }
+
+Point get_direction_from_player_direction(enum PLAYER_DIRECTION direction) {
+  Point point;
+  point.x = 0;
+  point.y = 0;
+  switch (direction) {
+  case PLAYER_NORTH: // UP_LEFT:
+    point.x--;
+    point.y--;
+    break;
+  case PLAYER_NORTH_EAST_2: // UP:
+    point.y--;
+    break;
+  case PLAYER_EAST:
+    point.x++;
+    point.y--;
+    break;
+  case PLAYER_NORTH_WEST_2:
+    point.x--;
+    break;
+  case PLAYER_SOUTH_EAST_2:
+    point.x++;
+    break;
+  case PLAYER_WEST:
+    point.x--;
+    point.y++;
+    break;
+  case PLAYER_SOUTH_WEST_2:
+    point.y++;
+    break;
+  case PLAYER_SOUTH:
+    point.x++;
+    point.y++;
+    break;
+  default:
+    break;
+  }
+  return point;
+}
