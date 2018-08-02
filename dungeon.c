@@ -50,6 +50,7 @@ void create_dungeon() {
   int x, y;
   for (x = 0; x < DUNGEON_SIZE; x++) {
     for (y = 0; y < DUNGEON_SIZE; y++) {
+      gDungeonWallTable[y][x] = 0;
 
       if (x == 0 || x == DUNGEON_SIZE - 1 || y == 0 || y == DUNGEON_SIZE - 1) {
         gDungeon[y][x] = 'w';
