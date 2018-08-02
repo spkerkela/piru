@@ -174,32 +174,48 @@ void draw_walls() {
   Point isometric_point, cartesian_point;
   ImageAsset asset;
   asset = gImageAssets[WALL_1_NORTH];
-  for (y = 1; y < DUNGEON_SIZE - 1; y++) {
-    for (x = 1; x < DUNGEON_SIZE - 1; x++) {
+  for (y = 0; y < DUNGEON_SIZE; y++) {
+    for (x = 0; x < DUNGEON_SIZE; x++) {
       if (x < gPlayer.world_x - CUTOFF_X || x > gPlayer.world_x + CUTOFF_X ||
           y < gPlayer.world_y - CUTOFF_Y || y > gPlayer.world_y + CUTOFF_Y) {
         continue;
       }
-      if (x == y) {
-        continue;
-      }
-      cartesian_point.x = x - gPlayer.world_x;
-      cartesian_point.y = y - gPlayer.world_y;
+      int wall_mask = gDungeonWallTable[y][x];
+
+      SDL_RendererFlip flip = SDL_FLIP_NONE;
+      cartesian_point.x = x - gPlayer.world_x + 1;
+      cartesian_point.y = y - gPlayer.world_y + 1;
       isometric_point = cartesian_to_isometric(cartesian_point);
-      SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
-      if (x == 1) {
-      } else if (y == 1) {
-        flip = SDL_FLIP_NONE;
-      } else {
-        continue;
-      }
+
       SDL_Rect fillRect = {isometric_point.x - WALL_WIDTH_HALF +
                                (SCREEN_WIDTH / 2) + gPlayer.pixel_x,
                            isometric_point.y + (SCREEN_HEIGHT / 2) +
                                gPlayer.pixel_y - WALL_HEIGHT,
                            WALL_WIDTH, WALL_HEIGHT};
-      SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
-                       flip);
+
+      if (wall_mask & WALL_NORTH_EAST) {
+        asset = gImageAssets[WALL_1_NORTH];
+        SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                         flip);
+      }
+      if (wall_mask & WALL_NORTH_WEST) {
+        flip = SDL_FLIP_HORIZONTAL;
+        asset = gImageAssets[WALL_1_NORTH];
+        SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                         flip);
+      }
+      if (wall_mask & WALL_SOUTH_EAST) {
+        asset = gImageAssets[WALL_1_EAST];
+        flip = SDL_FLIP_NONE;
+        SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                         flip);
+      }
+      if (wall_mask & WALL_SOUTH_WEST) {
+        asset = gImageAssets[WALL_1_EAST];
+        flip = SDL_FLIP_HORIZONTAL;
+        SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                         flip);
+      }
     }
   }
 }

@@ -20,4 +20,9 @@
 #define CUTOFF_Y 13
 #define MAX_MONSTERS 1024
 
+#define WALL_NORTH_WEST 1 << 0
+#define WALL_NORTH_EAST 1 << 1
+#define WALL_SOUTH_EAST 1 << 2
+#define WALL_SOUTH_WEST 1 << 3
+
 #endif

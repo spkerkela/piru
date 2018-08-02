@@ -3,6 +3,7 @@
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
+int gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 
 bool tile_is_blocked(const Point p) {
   return gDungeonBlockTable[p.y][p.x] || gDungeonMonsterTable[p.y][p.x] >= 0;
@@ -21,10 +22,35 @@ void init_monster_table() {
     }
   }
 }
+
+void create_walls() {
+  int x, y;
+  for (y = 0; y < DUNGEON_SIZE; y++) {
+    for (x = 0; x < DUNGEON_SIZE; x++) {
+      if (gDungeonBlockTable[y][x]) {
+        continue;
+      }
+      if (gDungeonBlockTable[y - 1][x]) {
+        gDungeonWallTable[y][x] |= WALL_NORTH_EAST;
+      }
+      if (gDungeonBlockTable[y + 1][x]) {
+        gDungeonWallTable[y][x] |= WALL_SOUTH_WEST;
+      }
+      if (gDungeonBlockTable[y][x - 1]) {
+        gDungeonWallTable[y][x] |= WALL_NORTH_WEST;
+      }
+      if (gDungeonBlockTable[y][x + 1]) {
+        gDungeonWallTable[y][x] |= WALL_SOUTH_EAST;
+      }
+    }
+  }
+}
+
 void create_dungeon() {
   int x, y;
   for (x = 0; x < DUNGEON_SIZE; x++) {
     for (y = 0; y < DUNGEON_SIZE; y++) {
+
       if (x == 0 || x == DUNGEON_SIZE - 1 || y == 0 || y == DUNGEON_SIZE - 1) {
         gDungeon[y][x] = 'w';
         gDungeonBlockTable[y][x] = true;
@@ -60,4 +86,5 @@ void create_dungeon() {
   gDungeonBlockTable[5][5] = true;
 
   init_monster_table();
+  create_walls();
 }
