@@ -249,11 +249,9 @@ void connect_children(BSP *bsp) {
   }
 }
 
-BSP *iterate_bsp(BSP *root, int iterations) {
-  if (iterations <= 0) {
-    return NULL;
-  }
-  if (root->width < 8 || root->height < 8) {
+BSP *iterate_bsp(BSP *root) {
+
+  if (root->width < 16 || root->height < 16) {
     return NULL;
   }
 
@@ -282,8 +280,8 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child2->child2 = NULL;
     root->child2->parent = root;
 
-    root->child1 = iterate_bsp(root->child1, iterations - 1);
-    root->child2 = iterate_bsp(root->child2, iterations - 1);
+    root->child1 = iterate_bsp(root->child1);
+    root->child2 = iterate_bsp(root->child2);
 
   } else {
     int random_y =
@@ -306,8 +304,8 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child2->child2 = NULL;
     root->child2->parent = root;
 
-    root->child1 = iterate_bsp(root->child1, iterations - 1);
-    root->child2 = iterate_bsp(root->child2, iterations - 1);
+    root->child1 = iterate_bsp(root->child1);
+    root->child2 = iterate_bsp(root->child2);
   }
   return root;
 }
@@ -321,7 +319,7 @@ void create_bsp_dungeon() {
     }
   }
   BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL, NULL};
-  iterate_bsp(&root, 5);
+  iterate_bsp(&root);
   carve_dungeon(&root);
   connect_children(&root);
   init_monster_table();
