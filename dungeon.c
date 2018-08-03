@@ -107,7 +107,8 @@ struct BSP {
   int x, y, width, height, child_count;
   BSP *child1;
   BSP *child2;
-  SDL_Rect room;
+  BSP *parent;
+  SDL_Rect *room;
 };
 
 void carve_dungeon(BSP *bsp) {
@@ -136,11 +137,106 @@ void carve_dungeon(BSP *bsp) {
   int xx = bsp->x + 1;
   int yy = bsp->y + 1;
 
-  int x, y;
-  for (y = yy; y < height; y++) {
-    for (x = xx; x < width; x++) {
-      gDungeon[y][x] = 'f';
-      gDungeonBlockTable[y][x] = false;
+  bsp->room = malloc(sizeof(SDL_Rect));
+  if (bsp->room) {
+    bsp->room->x = xx;
+    bsp->room->y = yy;
+    bsp->room->w = width;
+    bsp->room->h = height;
+    int x, y;
+    for (y = yy; y < height; y++) {
+      for (x = xx; x < width; x++) {
+        gDungeon[y][x] = 'f';
+        gDungeonBlockTable[y][x] = false;
+      }
+    }
+  }
+}
+
+Point center(const SDL_Rect *rect) {
+  Point center_point;
+  center_point.x = (rect->x + rect->w) / 2;
+  center_point.y = (rect->y + rect->h) / 2;
+  return center_point;
+}
+
+void create_vertical_tunnel(int y1, int y2, int x) {
+  int y;
+  for (y = min(y1, y2); y < max(y1, y2) + 1; y++) {
+    gDungeon[y][x] = 'f';
+    gDungeonBlockTable[y][x] = false;
+  }
+}
+
+void create_horizontal_tunnel(int x1, int x2, int y) {
+  int x;
+  for (x = min(x1, x2); x < max(x1, x2) + 1; x++) {
+    gDungeon[y][x] = 'f';
+    gDungeonBlockTable[y][x] = false;
+  }
+}
+
+SDL_Rect *get_random_room(BSP *bsp) {
+  if (bsp->child1 && bsp->child2) {
+    bool cointoss = rand() % 2 == 0;
+    if (cointoss) {
+      if (bsp->child1->room) {
+        return bsp->child1->room;
+      } else {
+        return bsp->child2->room;
+      }
+    } else {
+      if (bsp->child2->room) {
+        return bsp->child2->room;
+      } else {
+        return bsp->child1->room;
+      }
+    }
+  }
+  if (bsp->child1) {
+    return bsp->child1->room;
+  } else if (bsp->child2) {
+    return bsp->child2->room;
+  }
+  return NULL;
+}
+
+void connect_rooms(SDL_Rect *room1, SDL_Rect *room2) {
+  Point room1_center = center(room1);
+  Point room2_center = center(room2);
+  bool cointoss = rand() % 2 == 0;
+  if (cointoss) {
+    create_horizontal_tunnel(room1_center.x, room2_center.x, room1_center.y);
+    create_vertical_tunnel(room1_center.y, room2_center.y, room2_center.x);
+  } else {
+    create_vertical_tunnel(room1_center.y, room2_center.y, room2_center.x);
+    create_horizontal_tunnel(room1_center.x, room2_center.x, room1_center.y);
+  }
+}
+
+void connect_children(BSP *bsp) {
+  if (bsp->child1 && bsp->child2) {
+    if (bsp->child1->room && bsp->child2->room) {
+      SDL_Rect *room1 = bsp->child1->room;
+      SDL_Rect *room2 = bsp->child2->room;
+      connect_rooms(room1, room2);
+    }
+    connect_children(bsp->child1);
+    connect_children(bsp->child2);
+  } else if (bsp->parent) {
+    BSP *sibling;
+    if (bsp->parent->child1 == bsp) {
+      sibling = bsp->parent->child2;
+    } else {
+      sibling = bsp->parent->child1;
+    }
+    if (sibling) {
+      SDL_Rect *room1 = get_random_room(sibling);
+      SDL_Rect *room2 = get_random_room(bsp);
+      if (room1 && room2) {
+
+        connect_rooms(room1, room2);
+      }
     }
   }
 }
@@ -155,9 +251,10 @@ BSP *iterate_bsp(BSP *root, int iterations) {
 
   root->child1 = calloc(1, sizeof(BSP));
   root->child2 = calloc(1, sizeof(BSP));
+  root->room = NULL;
   bool horizontal = (bool)(rand() % 2 == 0);
   if (horizontal) {
-    int random_x = rand() % root->width;
+    int random_x = random_at_most(root->width);
     root->child1->x = root->x;
     root->child1->y = root->y;
     root->child1->width = random_x;
@@ -165,6 +262,7 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child1->child_count = 2;
     root->child1->child1 = NULL;
     root->child1->child2 = NULL;
+    root->child1->parent = root;
 
     root->child2->x = root->x + random_x;
     root->child2->y = root->y;
@@ -173,12 +271,13 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child2->child_count = 2;
     root->child2->child1 = NULL;
     root->child2->child2 = NULL;
+    root->child2->parent = root;
 
     root->child1 = iterate_bsp(root->child1, iterations - 1);
     root->child2 = iterate_bsp(root->child2, iterations - 1);
 
   } else {
-    int random_y = rand() % root->height;
+    int random_y = random_at_most(root->height);
     root->child1->x = root->x;
     root->child1->y = root->y;
     root->child1->width = root->width;
@@ -186,6 +285,7 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child1->child_count = 2;
     root->child1->child1 = NULL;
     root->child1->child2 = NULL;
+    root->child1->parent = root;
 
     root->child2->x = root->x;
     root->child2->y = root->y + random_y;
@@ -194,6 +294,7 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child1->child_count = 2;
     root->child2->child1 = NULL;
     root->child2->child2 = NULL;
+    root->child2->parent = root;
 
     root->child1 = iterate_bsp(root->child1, iterations - 1);
     root->child2 = iterate_bsp(root->child2, iterations - 1);
@@ -209,9 +310,10 @@ void create_bsp_dungeon() {
       gDungeonBlockTable[y][x] = true;
     }
   }
-  BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL};
-  iterate_bsp(&root, 14);
+  BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL, NULL};
+  iterate_bsp(&root, 8);
   carve_dungeon(&root);
+  connect_children(&root);
   init_monster_table();
   create_walls();
 }

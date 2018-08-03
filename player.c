@@ -49,7 +49,7 @@ void init_player() {
 
   gPlayer.target_monster_id = -1;
   gPlayer.moving_between_points = false;
-  gPlayer.walk_interval = 100;
+  gPlayer.walk_interval = 20;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
   gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 1;

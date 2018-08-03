@@ -12,6 +12,7 @@
 #include "enums.h"
 #include "monster.h"
 #include "pathfinding.h"
+#include "piru_math.h"
 #include "player.h"
 #include "point.h"
 #include "sdl2.h"
@@ -168,9 +169,6 @@ void select_character_menu() {
     render_select_character_screen(selected, temp_characters, CHAR_COUNT);
   }
 }
-
-int min(int a, int b) { return a > b ? b : a; }
-int max(int a, int b) { return a > b ? a : b; }
 
 void draw_walls() {
   int x, y;

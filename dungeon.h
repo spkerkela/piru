@@ -2,6 +2,7 @@
 #define _DUNGEON_H
 
 #include "constants.h"
+#include "piru_math.h"
 #include "player.h"
 #include "structs.h"
 #include <stdbool.h>

@@ -21,6 +21,7 @@
     "string_view": "c",
     "__bit_reference": "c",
     "memory": "c",
-    "type_traits": "c"
+    "type_traits": "c",
+    "piru_math.h": "c"
   }
 }
