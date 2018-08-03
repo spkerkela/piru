@@ -16,8 +16,8 @@
 #define WALL_WIDTH_HALF (WALL_WIDTH / 2)
 #define WALL_HEIGHT_HALF (WALL_HEIGHT / 2)
 
-#define CUTOFF_X 13
-#define CUTOFF_Y 13
+#define CUTOFF_X 14
+#define CUTOFF_Y 14
 #define MAX_MONSTERS 1024
 
 #define WALL_NORTH_WEST 1 << 0

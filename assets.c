@@ -100,7 +100,7 @@ bool load_assets() {
       load_image_asset("assets/player_attack.png");
 
   // tiles
-  ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_1.png");
+  ImageAsset grovelSpriteSheet = load_image_asset("assets/iso_dirt_2.png");
   ImageAsset stoneSpriteSheet = load_image_asset("assets/iso_stone_1.png");
 
   // walls
