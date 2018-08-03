@@ -6,8 +6,24 @@ player_state_fn stand, move, move_offset, try_attack, attack;
 
 void init_player() {
   gPlayer.next_state_fn = stand;
-  gPlayer.world_x = 1;
-  gPlayer.world_y = 1;
+  bool tile_found = false;
+  int x, y;
+  Point p;
+  for (y = 0; y < DUNGEON_SIZE; y++) {
+    if (tile_found) {
+      break;
+    }
+    for (x = 0; x < DUNGEON_SIZE; x++) {
+      p.x = x;
+      p.y = y;
+      if (!tile_is_blocked(p)) {
+        gPlayer.world_x = x;
+        gPlayer.world_y = y;
+        tile_found = true;
+        break;
+      }
+    }
+  };
   gPlayer.previous_world_x = gPlayer.world_x;
   gPlayer.previous_world_y = gPlayer.world_y;
   gPlayer.next_x = -1;
@@ -33,7 +49,7 @@ void init_player() {
 
   gPlayer.target_monster_id = -1;
   gPlayer.moving_between_points = false;
-  gPlayer.walk_interval = 200;
+  gPlayer.walk_interval = 100;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
   gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 1;

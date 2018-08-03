@@ -98,19 +98,45 @@ struct BSP {
 };
 
 void carve_dungeon(BSP *bsp) {
+  bool is_leaf = true;
   if (bsp->child1) {
     carve_dungeon(bsp->child1);
+    is_leaf = false;
   }
   if (bsp->child2) {
     carve_dungeon(bsp->child2);
+    is_leaf = false;
   }
-  printf("width: %d, height: %d, x: %d, y: %d\n", bsp->width, bsp->height,
-         bsp->x, bsp->y);
+  if (!is_leaf) {
+    return;
+  }
+  int width, height;
+  width = 0;
+  height = 0;
+  if (bsp->width < 10 || bsp->height < 10) {
+    return;
+  }
+  do {
+    width = bsp->width - 2;
+    height = bsp->height - 2;
+  } while (width <= 2 || width <= 2);
+  int xx = bsp->x + 1;
+  int yy = bsp->y + 1;
+
+  int x, y;
+  for (y = yy; y < height; y++) {
+    for (x = xx; x < width; x++) {
+      gDungeon[y][x] = 'f';
+      gDungeonBlockTable[y][x] = false;
+    }
+  }
 }
 
 BSP *iterate_bsp(BSP *root, int iterations) {
-  printf("%d\n", iterations);
   if (iterations <= 0) {
+    return NULL;
+  }
+  if (root->width < 4 || root->height < 4) {
     return NULL;
   }
 
@@ -166,10 +192,13 @@ void create_bsp_dungeon() {
   int x, y;
   for (y = 0; y < DUNGEON_SIZE; y++) {
     for (x = 0; x < DUNGEON_SIZE; x++) {
+      gDungeon[y][x] = 'w';
       gDungeonBlockTable[y][x] = true;
     }
   }
   BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL};
-  iterate_bsp(&root, 5);
+  iterate_bsp(&root, 8);
   carve_dungeon(&root);
+  init_monster_table();
+  create_walls();
 }

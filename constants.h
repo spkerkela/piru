@@ -3,7 +3,7 @@
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
-#define DUNGEON_SIZE (2560 * 2)
+#define DUNGEON_SIZE (112)
 #define MAX_NODES 300
 #define MAX_PATH_LENGTH 25
 #define MAX_DAMAGE_TEXT 50
