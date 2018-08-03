@@ -5,6 +5,18 @@ bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
 char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 
+void clear_dungeon() {
+  int x, y;
+  for (y = 0; y < DUNGEON_SIZE; y++) {
+    for (x = 0; x < DUNGEON_SIZE; x++) {
+      gDungeon[y][x] = 0;
+      gDungeonBlockTable[y][x] = false;
+      gDungeonMonsterTable[y][x] = -1;
+      gDungeonWallTable[y][x] = 0;
+    }
+  }
+}
+
 bool tile_is_blocked(const Point p) {
   return gDungeonBlockTable[p.y][p.x] || gDungeonMonsterTable[p.y][p.x] >= 0;
 }

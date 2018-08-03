@@ -623,6 +623,7 @@ bool start_game(enum GAME_START_MODE start_mode) {
   printf("level: %d class: %d\n", gPlayer.level, gPlayer.character_class);
   init_clock();
   load_assets();
+  clear_dungeon();
   create_bsp_dungeon();
   init_player();
   // create_dungeon();
