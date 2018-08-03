@@ -311,7 +311,7 @@ void create_bsp_dungeon() {
     }
   }
   BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL, NULL};
-  iterate_bsp(&root, 8);
+  iterate_bsp(&root, 5);
   carve_dungeon(&root);
   connect_children(&root);
   init_monster_table();

@@ -424,7 +424,7 @@ bool gMouseIsDown = false;
 
 void handle_cursor() {
   int mx, my;
-  Point player_position = {gPlayer.previous_world_x, gPlayer.previous_world_y};
+  Point player_position = {gPlayer.world_x, gPlayer.world_y};
   SDL_GetMouseState(&mx, &my);
   Point mouse_point;
   Point offset = cartesian_to_isometric(player_position);
