@@ -164,7 +164,11 @@ void create_vertical_tunnel(int y1, int y2, int x) {
   int y;
   for (y = min(y1, y2); y < max(y1, y2) + 1; y++) {
     gDungeon[y][x] = 'f';
+    gDungeon[y][x - 1] = 'f';
+    gDungeon[y][x + 1] = 'f';
     gDungeonBlockTable[y][x] = false;
+    gDungeonBlockTable[y][x - 1] = false;
+    gDungeonBlockTable[y][x + 1] = false;
   }
 }
 
@@ -172,7 +176,11 @@ void create_horizontal_tunnel(int x1, int x2, int y) {
   int x;
   for (x = min(x1, x2); x < max(x1, x2) + 1; x++) {
     gDungeon[y][x] = 'f';
+    gDungeon[y - 1][x] = 'f';
+    gDungeon[y + 1][x] = 'f';
     gDungeonBlockTable[y][x] = false;
+    gDungeonBlockTable[y - 1][x] = false;
+    gDungeonBlockTable[y + 1][x] = false;
   }
 }
 
@@ -254,7 +262,8 @@ BSP *iterate_bsp(BSP *root, int iterations) {
   root->room = NULL;
   bool horizontal = (bool)(rand() % 2 == 0);
   if (horizontal) {
-    int random_x = random_at_most(root->width);
+    int random_x =
+        random_between(root->width / 3, root->width - (root->width / 3));
     root->child1->x = root->x;
     root->child1->y = root->y;
     root->child1->width = random_x;
@@ -277,7 +286,8 @@ BSP *iterate_bsp(BSP *root, int iterations) {
     root->child2 = iterate_bsp(root->child2, iterations - 1);
 
   } else {
-    int random_y = random_at_most(root->height);
+    int random_y =
+        random_between(root->height / 3, root->height - (root->height / 3));
     root->child1->x = root->x;
     root->child1->y = root->y;
     root->child1->width = root->width;

@@ -52,7 +52,7 @@ void init_player() {
   gPlayer.walk_interval = 300;
   gPlayer.frames_since_walk = 0;
   gPlayer.frames_since_animation_frame = 0;
-  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 1;
+  gPlayer.animation_intervals[ANIM_WARRIOR_ATTACK] = 30;
   gPlayer.animation_intervals[ANIM_WARRIOR_WALK] = 80;
   gPlayer.animation_intervals[ANIM_WARRIOR_IDLE] = 100;
 }

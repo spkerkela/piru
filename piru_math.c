@@ -21,3 +21,7 @@ long random_at_most(long max) {
   // Truncated division is intentional
   return x / bin_size;
 }
+
+long random_between(long min, long max) {
+  return random_at_most(max + 1 - min) + min;
+}
