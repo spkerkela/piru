@@ -107,6 +107,7 @@ struct BSP {
   int x, y, width, height, child_count;
   BSP *child1;
   BSP *child2;
+  SDL_Rect room;
 };
 
 void carve_dungeon(BSP *bsp) {
@@ -148,7 +149,7 @@ BSP *iterate_bsp(BSP *root, int iterations) {
   if (iterations <= 0) {
     return NULL;
   }
-  if (root->width < 4 || root->height < 4) {
+  if (root->width < 8 || root->height < 8) {
     return NULL;
   }
 
@@ -209,7 +210,7 @@ void create_bsp_dungeon() {
     }
   }
   BSP root = {0, 0, DUNGEON_SIZE, DUNGEON_SIZE, 2, NULL, NULL};
-  iterate_bsp(&root, 8);
+  iterate_bsp(&root, 14);
   carve_dungeon(&root);
   init_monster_table();
   create_walls();
