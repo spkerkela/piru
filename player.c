@@ -6,24 +6,9 @@ player_state_fn stand, move, move_offset, try_attack, attack;
 
 void init_player() {
   gPlayer.next_state_fn = stand;
-  bool tile_found = false;
-  int x, y;
-  Point p;
-  for (y = 0; y < DUNGEON_SIZE; y++) {
-    if (tile_found) {
-      break;
-    }
-    for (x = 0; x < DUNGEON_SIZE; x++) {
-      p.x = x;
-      p.y = y;
-      if (!tile_is_blocked(p)) {
-        gPlayer.world_x = x;
-        gPlayer.world_y = y;
-        tile_found = true;
-        break;
-      }
-    }
-  };
+  gPlayer.world_x = gPlayerLevelSpawn.x;
+  gPlayer.world_y = gPlayerLevelSpawn.y;
+
   gPlayer.previous_world_x = gPlayer.world_x;
   gPlayer.previous_world_y = gPlayer.world_y;
   gPlayer.next_x = -1;

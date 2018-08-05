@@ -20,6 +20,7 @@ extern char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 extern bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 extern char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 extern int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
+extern Point gPlayerLevelSpawn;
 
 bool split_bsp(BSP *root);
 

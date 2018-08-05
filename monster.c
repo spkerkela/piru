@@ -162,6 +162,9 @@ Point find_nearest_node_to_monster(int monster_clicked, Point from) {
 }
 
 bool create_monster(const Point at) {
+  if (point_equal(at, gPlayerLevelSpawn)) {
+    return false;
+  }
   if (gDungeonBlockTable[at.y][at.x] || gDungeonMonsterTable[at.y][at.x] >= 0) {
     return false;
   }

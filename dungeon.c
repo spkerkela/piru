@@ -4,6 +4,7 @@ char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
 char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
+Point gPlayerLevelSpawn;
 BSP *bsps[MAX_DUNGEON_ROOMS];
 int bsp_count = 0;
 
@@ -341,5 +342,10 @@ void create_bsp_dungeon() {
   }
   init_monster_table();
   create_walls();
+  for (i = bsp_count; i >= 0; i--) {
+    if (bsps[i] && bsps[i]->room) {
+      gPlayerLevelSpawn = center(bsps[i]->room);
+    }
+  }
   free_bsp();
 }
