@@ -170,7 +170,7 @@ void select_character_menu() {
   }
 }
 
-void draw_walls() {
+void draw_walls_behind() {
   int x, y;
   Point isometric_point, cartesian_point;
   ImageAsset asset;
@@ -204,6 +204,58 @@ void draw_walls() {
         SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
                          flip);
       }
+      if (wall_mask & WALL_SOUTH_EAST) {
+        asset = gImageAssets[WALL_1_EAST];
+        flip = SDL_FLIP_NONE;
+        SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                         flip);
+      }
+      if (wall_mask & WALL_SOUTH_WEST) {
+        asset = gImageAssets[WALL_1_EAST];
+        flip = SDL_FLIP_HORIZONTAL;
+        SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                         flip);
+      }
+    }
+  }
+}
+
+void draw_walls_in_front() {
+  int x, y;
+  Point isometric_point, cartesian_point;
+  ImageAsset asset;
+  asset = gImageAssets[WALL_1_NORTH];
+  for (y = gPlayer.world_y - 1, 0;
+       y < min(gPlayer.world_y + CUTOFF_Y, DUNGEON_SIZE); y++) {
+    for (x = gPlayer.world_x - 1;
+         x < min(gPlayer.world_x + CUTOFF_X, DUNGEON_SIZE); x++) {
+      int wall_mask = gDungeonWallTable[y][x];
+
+      SDL_RendererFlip flip = SDL_FLIP_NONE;
+      cartesian_point.x = x - gPlayer.world_x + 1;
+      cartesian_point.y = y - gPlayer.world_y + 1;
+      isometric_point = cartesian_to_isometric(cartesian_point);
+
+      SDL_Rect fillRect = {isometric_point.x - WALL_WIDTH_HALF +
+                               (SCREEN_WIDTH / 2) + gPlayer.pixel_x,
+                           isometric_point.y + (SCREEN_HEIGHT / 2) +
+                               gPlayer.pixel_y - WALL_HEIGHT,
+                           WALL_WIDTH, WALL_HEIGHT};
+
+      if (x != gPlayer.world_x && y != gPlayer.world_y) {
+        if (wall_mask & WALL_NORTH_EAST) {
+          asset = gImageAssets[WALL_1_NORTH];
+          SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                           flip);
+        }
+        if (wall_mask & WALL_NORTH_WEST) {
+          flip = SDL_FLIP_HORIZONTAL;
+          asset = gImageAssets[WALL_1_NORTH];
+          SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
+                           flip);
+        }
+      }
+
       if (wall_mask & WALL_SOUTH_EAST) {
         asset = gImageAssets[WALL_1_EAST];
         flip = SDL_FLIP_NONE;
@@ -395,7 +447,7 @@ void draw_and_blit() {
   SDL_RenderClear(gRenderer);
 
   draw_floor();
-  draw_walls();
+  draw_walls_behind();
   // draw_debug_path();
 
   draw_monsters();
@@ -413,6 +465,8 @@ void draw_and_blit() {
   SDL_RenderCopy(gRenderer, currentPlayerAnimation.image.texture,
                  &currentPlayerAnimation.frames[current_frame],
                  &playerRenderQuad);
+
+  draw_walls_in_front();
 
   draw_ui();
   draw_cursor();
