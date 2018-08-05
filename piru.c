@@ -170,6 +170,21 @@ void select_character_menu() {
   }
 }
 
+void draw_player() {
+  Animation currentPlayerAnimation =
+      animations[gPlayer.animation][gPlayer.direction];
+  int current_frame = gPlayer.animation_frame;
+  int width = currentPlayerAnimation.frames[current_frame].w;
+  int height = currentPlayerAnimation.frames[current_frame].h;
+  SDL_Rect playerRenderQuad = {
+      (SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
+      (SCREEN_HEIGHT / 2) + currentPlayerAnimation.offset_y, width, height};
+
+  SDL_RenderCopy(gRenderer, currentPlayerAnimation.image.texture,
+                 &currentPlayerAnimation.frames[current_frame],
+                 &playerRenderQuad);
+}
+
 void draw_walls() {
   int x, y;
   Point isometric_point, cartesian_point;
@@ -203,6 +218,9 @@ void draw_walls() {
         asset = gImageAssets[WALL_1_NORTH];
         SDL_RenderCopyEx(gRenderer, asset.texture, NULL, &fillRect, 0, NULL,
                          flip);
+      }
+      if (x == gPlayer.world_x && y == gPlayer.world_y) {
+        draw_player();
       }
       if (wall_mask & WALL_SOUTH_EAST) {
         asset = gImageAssets[WALL_1_EAST];
@@ -401,19 +419,6 @@ void draw_and_blit() {
   draw_monsters();
 
   // Render texture to screen
-  Animation currentPlayerAnimation =
-      animations[gPlayer.animation][gPlayer.direction];
-  int current_frame = gPlayer.animation_frame;
-  int width = currentPlayerAnimation.frames[current_frame].w;
-  int height = currentPlayerAnimation.frames[current_frame].h;
-  SDL_Rect playerRenderQuad = {
-      (SCREEN_WIDTH / 2) + currentPlayerAnimation.offset_x,
-      (SCREEN_HEIGHT / 2) + currentPlayerAnimation.offset_y, width, height};
-
-  SDL_RenderCopy(gRenderer, currentPlayerAnimation.image.texture,
-                 &currentPlayerAnimation.frames[current_frame],
-                 &playerRenderQuad);
-
   draw_ui();
   draw_cursor();
   // Update screen
