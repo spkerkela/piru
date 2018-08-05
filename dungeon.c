@@ -251,17 +251,24 @@ void connect_children(BSP *bsp) {
 
 BSP *iterate_bsp(BSP *root) {
 
-  if (root->width < 16 || root->height < 16) {
+  if (root->width < 8 || root->height < 8) {
     return NULL;
   }
 
   root->child1 = calloc(1, sizeof(BSP));
   root->child2 = calloc(1, sizeof(BSP));
   root->room = NULL;
-  bool horizontal = (bool)(rand() % 2 == 0);
+  bool horizontal;
+  double width_to_height_ratio = (double)root->width / (double)root->height;
+  if (width_to_height_ratio < 0.6) {
+    horizontal = false;
+  } else if (width_to_height_ratio >= 0.16180339887) { // golden ratio :)
+    horizontal = true;
+  } else {
+    horizontal = (bool)(rand() % 2 == 0);
+  }
   if (horizontal) {
-    int random_x =
-        random_between(root->width / 3, root->width - (root->width / 3));
+    int random_x = random_between(2, root->width - 2);
     root->child1->x = root->x;
     root->child1->y = root->y;
     root->child1->width = random_x;
@@ -284,8 +291,7 @@ BSP *iterate_bsp(BSP *root) {
     root->child2 = iterate_bsp(root->child2);
 
   } else {
-    int random_y =
-        random_between(root->height / 3, root->height - (root->height / 3));
+    int random_y = random_between(2, root->height - 2);
     root->child1->x = root->x;
     root->child1->y = root->y;
     root->child1->width = root->width;
