@@ -18,6 +18,9 @@
 
 #define CUTOFF_X 14
 #define CUTOFF_Y 14
+#define MAX_DUNGEON_ROOMS 25600
+#define MAX_ROOM_SIZE 30
+#define MIN_ROOM_SIZE 10
 #define MAX_MONSTERS 1024
 
 #define WALL_NORTH_WEST 1 << 0
