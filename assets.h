@@ -15,5 +15,6 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows,
                      enum ANIMATION animationIndex, int offset_x, int offset_y);
 bool load_assets();
 bool load_font();
+void free_image_assets();
 
 #endif

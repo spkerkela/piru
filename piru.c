@@ -647,6 +647,7 @@ bool start_game(enum GAME_START_MODE start_mode) {
   }
   init_damage_text();
   run_game_loop(start_mode);
+  free_image_assets();
   printf("Started game..\n");
   printf("Woah, that was quick, game over!\n");
   return false;

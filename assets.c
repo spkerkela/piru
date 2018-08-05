@@ -38,6 +38,15 @@ ImageAsset load_image_asset(char *fileName) {
   return asset;
 }
 
+void free_image_assets() {
+  int i;
+  for (i = 0; i < MAX_SPRITES; i++) {
+    if (gImageAssets[i].texture) {
+      SDL_DestroyTexture(gImageAssets[i].texture);
+    }
+  }
+}
+
 bool load_animations(ImageAsset spriteSheet, int columns, int rows,
                      enum ANIMATION animationIndex, int offset_x,
                      int offset_y) {
