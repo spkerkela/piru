@@ -760,18 +760,16 @@ int main_menu() {
 }
 
 int main(int argc, char const *argv[]) {
-  char buff[256];
   int error;
   lua_State *L = luaL_newstate(); /* opens Lua */
   luaL_openlibs(L);
 
-  while (fgets(buff, sizeof(buff), stdin) != NULL) {
-    error =
-        luaL_loadbuffer(L, buff, strlen(buff), "line") || lua_pcall(L, 0, 0, 0);
-    if (error) {
-      fprintf(stderr, "%s", lua_tostring(L, -1));
-      lua_pop(L, 1); /* pop error message from the stack */
-    }
+  error = luaL_loadfile(L, "scripts/piru.lua");
+  if (error) {
+    fprintf(stderr, "%s", lua_tostring(L, -1));
+    lua_pop(L, 1); /* pop error message from the stack */
+  } else {
+    lua_pcall(L, 0, 0, 0);
   }
 
   lua_close(L);
