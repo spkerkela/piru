@@ -770,6 +770,24 @@ int main(int argc, char const *argv[]) {
     lua_pop(L, 1); /* pop error message from the stack */
   } else {
     lua_pcall(L, 0, 0, 0);
+    lua_getglobal(L, "printer");
+    lua_pushfstring(L, "the big %s", "thing!!");
+    error = lua_pcall(L, 1, 3, 0);
+    if (error) {
+      fprintf(stderr, "%s\n", lua_tostring(L, -1));
+      lua_pop(L, 1); /* pop error message from the stack */
+    }
+    lua_setglobal(L, "a");
+    lua_setglobal(L, "b");
+    lua_setglobal(L, "c");
+    printf("%s\n", lua_typename(L, lua_type(L, 0)));
+    lua_pop(L, 1);
+    printf("%s\n", lua_typename(L, lua_type(L, 0)));
+    lua_pop(L, 1);
+    printf("%s\n", lua_typename(L, lua_type(L, 0)));
+    lua_pop(L, 1);
+    printf("%s\n", lua_typename(L, lua_type(L, 0)));
+    lua_pop(L, 1);
   }
 
   lua_close(L);
