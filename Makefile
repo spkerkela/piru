@@ -11,7 +11,7 @@ ifeq ($(UNAME), Darwin)
 FRAMEWORKS=-framework SDL2 -framework SDL2_image -framework SDL2_ttf
 
 piru: $(src)
-	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS) -lprofiler
+	$(CC) -o $@ $^ $(C_FLAGS) $(FRAMEWORKS) -Iinclude -Llib -llua -lprofiler
 
 %.d: %.c
 	@$(CPP) $(C_FLAGS) $< -MM -MT $(@:.d=.o) >$@	
