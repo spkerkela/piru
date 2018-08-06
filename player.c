@@ -27,6 +27,11 @@ void init_player() {
   gPlayer.mana = 22;
   gPlayer.damage = 10;
 
+  gPlayer.active_spell = gSpells[SPELL_BASH];
+  gPlayer.right_spell = gSpells[SPELL_BASH];
+  gPlayer.left_spell = gSpells[SPELL_BASE_ATTACK];
+  gPlayer.no_mana_fallback_spell = gSpells[SPELL_BASE_ATTACK];
+
   Point target = {-1, -1};
   gPlayer.target = target;
   Point new_target = {-1, -1};
@@ -56,11 +61,19 @@ void clear_player_path(Player *player) {
 void try_attack(Player *player) {
   Point player_point = get_player_point(player);
   Point monster_point = get_monster_point(player->target_monster_id);
-  if (get_distance(player_point, monster_point) <= player->attack_radius) {
+  Spell spell;
+  bool enough_mana = player->mana > player->active_spell.base_mana_cost;
+  if (enough_mana) {
+    spell = player->active_spell;
+  } else {
+    spell = player->no_mana_fallback_spell;
+  }
+  if (get_distance(player_point, monster_point) <= spell.range) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               monster_point.x, monster_point.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
   } else if (find_path(player_point,
                        find_nearest_node_to_monster(player->target_monster_id,
                                                     player_point),
@@ -180,9 +193,18 @@ void attack(Player *player) {
     int target_id = player->target_monster_id;
     Point monster_point = get_monster_point(target_id);
     Point player_point = get_player_point(player);
-    if (get_distance(player_point, monster_point) <= player->attack_radius) {
+
+    Spell spell;
+    bool enough_mana = player->mana > player->active_spell.base_mana_cost;
+    if (enough_mana) {
+      spell = player->active_spell;
+    } else {
+      spell = player->no_mana_fallback_spell;
+    }
+    if (get_distance(player_point, monster_point) <= spell.range) {
       char *str = calloc(10, sizeof(char));
-      int damage = rand() % 100 < 20 ? player->damage * 2 : player->damage;
+      int base_damage = (int)((double)player->damage * spell.dps_multiplier);
+      int damage = rand() % 100 < 20 ? base_damage * 2 : base_damage;
       sprintf(str, "%d", damage);
       Point monster_point = get_monster_point(target_id);
       DamageText dt = {str, monster_point.x, monster_point.y};

@@ -14,6 +14,16 @@ typedef struct {
   int y;
 } Point;
 
+typedef struct {
+  int id;
+  char *name;
+  enum SPELL_TYPE type;
+  enum DAMAGE_TYPE damage_type;
+  int base_mana_cost;
+  double dps_multiplier;
+  double range;
+} Spell;
+
 typedef struct Player {
   player_state_fn *next_state_fn;
   Point target;
@@ -26,6 +36,10 @@ typedef struct Player {
   enum PLAYER_STATE state;
   enum PLAYER_STATE next_state;
   enum PLAYER_DESTINATION_ACTION destination_action;
+  Spell active_spell;
+  Spell left_spell;
+  Spell right_spell;
+  Spell no_mana_fallback_spell;
   int target_monster_id;
   int damage;
   int hp;
@@ -121,7 +135,8 @@ typedef struct {
   int monster_id;
   int item_id;
   int object_id;
-  int player_id;
+  bool leftButtonDown;
+  bool rightButtonDown;
 } MouseCursor;
 
 typedef struct DamageText {

@@ -6,6 +6,7 @@
 #include "enums.h"
 #include "monster.h"
 #include "point.h"
+#include "spell.h"
 #include "structs.h"
 #include "time.h"
 #include <string.h>
