@@ -1,5 +1,6 @@
 #include "dungeon.h"
 
+typedef unsigned int uint;
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonVisibleTable[DUNGEON_SIZE][DUNGEON_SIZE];
@@ -119,9 +120,12 @@ void cast_light(uint x, uint y, uint radius, uint row, float start_slope,
     return;
   }
   float next_start_slope = start_slope;
-  for (uint i = row; i <= radius; i++) {
+  uint i;
+  for (i = row; i <= radius; i++) {
     bool blocked = false;
-    for (int dx = -i, dy = -i; dx <= 0; dx++) {
+    int dx;
+    int dy;
+    for (dx = -i, dy = -i; dx <= 0; dx++) {
       float l_slope = (dx - 0.5) / (dy + 0.5);
       float r_slope = (dx + 0.5) / (dy - 0.5);
       if (start_slope < r_slope) {
@@ -167,7 +171,8 @@ void cast_light(uint x, uint y, uint radius, uint row, float start_slope,
 }
 
 void update_fov(Point p, int radius) {
-  for (uint i = 0; i < 8; i++) {
+  uint i;
+  for (i = 0; i < 8; i++) {
     cast_light((uint)p.x, (uint)p.y, (uint)radius, 1, 1.0, 0.0,
                multipliers[0][i], multipliers[1][i], multipliers[2][i],
                multipliers[3][i]);
