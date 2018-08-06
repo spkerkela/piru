@@ -185,6 +185,35 @@ void draw_player() {
                  &playerRenderQuad);
 }
 
+void draw_monster(int i) {
+  int offset_x = gPlayer.world_x;
+  int offset_y = gPlayer.world_y;
+  if (monsters[i].world_x < gPlayer.world_x - CUTOFF_X ||
+      monsters[i].world_x > gPlayer.world_x + CUTOFF_X ||
+      monsters[i].world_y < gPlayer.world_y - CUTOFF_Y ||
+      monsters[i].world_y > gPlayer.world_y + CUTOFF_Y) {
+    return;
+  }
+  Point monster_point = {monsters[i].world_x - offset_x,
+                         monsters[i].world_y - offset_y};
+  Point isometric_point = cartesian_to_isometric(monster_point);
+
+  int current_frame = monsters[i].animation_frame;
+  Animation currentMonsterAnimation =
+      animations[monsters[i].animation][monsters[i].direction];
+  int width = currentMonsterAnimation.frames[current_frame].w;
+  int height = currentMonsterAnimation.frames[current_frame].h;
+  SDL_Rect monster_quad = {isometric_point.x + (SCREEN_WIDTH / 2) +
+                               currentMonsterAnimation.offset_x +
+                               monsters[i].pixel_x + gPlayer.pixel_x,
+                           isometric_point.y + (SCREEN_HEIGHT / 2) +
+                               currentMonsterAnimation.offset_y +
+                               monsters[i].pixel_y + gPlayer.pixel_y,
+                           width, height};
+  SDL_RenderCopy(gRenderer, currentMonsterAnimation.image.texture,
+                 &currentMonsterAnimation.frames[current_frame], &monster_quad);
+}
+
 void draw_walls() {
   int x, y;
   Point isometric_point, cartesian_point;
@@ -221,6 +250,9 @@ void draw_walls() {
       }
       if (x == gPlayer.world_x && y == gPlayer.world_y) {
         draw_player();
+      }
+      if (gDungeonMonsterTable[y][x] >= 0) {
+        draw_monster(gDungeonMonsterTable[y][x]);
       }
       if (wall_mask & WALL_SOUTH_EAST) {
         asset = gImageAssets[WALL_1_EAST];
@@ -310,34 +342,8 @@ void draw_cursor() {
 
 void draw_monsters() {
   int i;
-  int offset_x = gPlayer.world_x;
-  int offset_y = gPlayer.world_y;
   for (i = 0; i < created_monsters; i++) {
-    if (monsters[i].world_x < gPlayer.world_x - CUTOFF_X ||
-        monsters[i].world_x > gPlayer.world_x + CUTOFF_X ||
-        monsters[i].world_y < gPlayer.world_y - CUTOFF_Y ||
-        monsters[i].world_y > gPlayer.world_y + CUTOFF_Y) {
-      continue;
-    }
-    Point monster_point = {monsters[i].world_x - offset_x,
-                           monsters[i].world_y - offset_y};
-    Point isometric_point = cartesian_to_isometric(monster_point);
-
-    int current_frame = monsters[i].animation_frame;
-    Animation currentMonsterAnimation =
-        animations[monsters[i].animation][monsters[i].direction];
-    int width = currentMonsterAnimation.frames[current_frame].w;
-    int height = currentMonsterAnimation.frames[current_frame].h;
-    SDL_Rect monster_quad = {isometric_point.x + (SCREEN_WIDTH / 2) +
-                                 currentMonsterAnimation.offset_x +
-                                 monsters[i].pixel_x + gPlayer.pixel_x,
-                             isometric_point.y + (SCREEN_HEIGHT / 2) +
-                                 currentMonsterAnimation.offset_y +
-                                 monsters[i].pixel_y + gPlayer.pixel_y,
-                             width, height};
-    SDL_RenderCopy(gRenderer, currentMonsterAnimation.image.texture,
-                   &currentMonsterAnimation.frames[current_frame],
-                   &monster_quad);
+    draw_monster(i);
   }
 }
 
@@ -416,7 +422,7 @@ void draw_and_blit() {
   draw_walls();
   // draw_debug_path();
 
-  draw_monsters();
+  // draw_monsters();
 
   // Render texture to screen
   draw_ui();
