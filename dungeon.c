@@ -359,7 +359,7 @@ void free_bsp() {
   bsp_count = 0;
 }
 
-void create_bsp_dungeon() {
+void create_bsp_dungeon(Point location, Point size) {
   int x, y, i;
   free_bsp();
   for (y = 0; y < DUNGEON_SIZE; y++) {
@@ -373,10 +373,10 @@ void create_bsp_dungeon() {
   if (!root) {
     return;
   }
-  root->x = 0;
-  root->y = 0;
-  root->width = DUNGEON_SIZE;
-  root->height = DUNGEON_SIZE;
+  root->x = location.x;
+  root->y = location.y;
+  root->width = size.x;
+  root->height = size.y;
   root->child1 = NULL;
   root->child2 = NULL;
   bsps[bsp_count++] = root;

@@ -38,7 +38,7 @@ void carve_dungeon(BSP *bsp);
 void clear_dungeon();
 void connect_points(Point point1, Point point2);
 void connect_rooms(SDL_Rect *room1, SDL_Rect *room2);
-void create_bsp_dungeon();
+void create_bsp_dungeon(Point location, Point size);
 void create_dungeon();
 void create_horizontal_tunnel(int x1, int x2, int y);
 void create_vertical_tunnel(int y1, int y2, int x);

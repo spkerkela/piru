@@ -639,7 +639,9 @@ bool start_game(enum GAME_START_MODE start_mode) {
   init_clock();
   load_assets();
   clear_dungeon();
-  create_bsp_dungeon();
+  Point location = {0, 0};
+  Point size = {DUNGEON_SIZE / 2, DUNGEON_SIZE / 2};
+  create_bsp_dungeon(location, size);
   init_player();
   // create_dungeon();
   Point monster_point;
