@@ -113,6 +113,7 @@ void player_do_walk(Player *player) {
     player->pixel_y = isometric.y;
     player->point_in_path++;
     player->frames_since_walk = 0;
+    update_fov(get_player_point(player), 5);
   }
 }
 

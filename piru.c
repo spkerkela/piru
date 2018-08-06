@@ -223,7 +223,9 @@ void draw_walls() {
        y < min(gPlayer.world_y + CUTOFF_Y, DUNGEON_SIZE); y++) {
     for (x = max(gPlayer.world_x - CUTOFF_X, 0);
          x < min(gPlayer.world_x + CUTOFF_X, DUNGEON_SIZE); x++) {
-
+      if (!gDungeonVisibleTable[y][x]) {
+        continue;
+      }
       int wall_mask = gDungeonWallTable[y][x];
 
       SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -281,6 +283,9 @@ void draw_floor() {
 
       cartesian_point.x = x - gPlayer.world_x;
       cartesian_point.y = y - gPlayer.world_y;
+      if (!gDungeonVisibleTable[y][x]) {
+        continue;
+      }
       isometric_point = cartesian_to_isometric(cartesian_point);
 
       // Render texture to screen
@@ -611,6 +616,7 @@ void run_game_loop(enum GAME_START_MODE start_mode) {
   gGameRunning = true;
   gGamePaused = false;
   init_cursor();
+  update_fov(get_player_point(&gPlayer), 5);
   draw_and_blit();
   tick();
   while (gGameRunning) {

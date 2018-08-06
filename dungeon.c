@@ -2,11 +2,16 @@
 
 char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
+bool gDungeonVisibleTable[DUNGEON_SIZE][DUNGEON_SIZE];
 int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
 char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 Point gPlayerLevelSpawn;
 BSP *bsps[MAX_DUNGEON_ROOMS];
 int bsp_count = 0;
+static int multipliers[4][8] = {{1, 0, 0, -1, -1, 0, 0, 1},
+                                {0, 1, -1, 0, 0, -1, 1, 0},
+                                {0, 1, 1, 0, 0, -1, -1, 0},
+                                {1, 0, 0, 1, -1, 0, 0, -1}};
 
 void clear_dungeon() {
   int x, y;
@@ -16,6 +21,7 @@ void clear_dungeon() {
       gDungeonBlockTable[y][x] = false;
       gDungeonMonsterTable[y][x] = -1;
       gDungeonWallTable[y][x] = 0;
+      gDungeonVisibleTable[y][x] = false;
     }
   }
 }
@@ -23,6 +29,8 @@ void clear_dungeon() {
 bool tile_is_blocked(const Point p) {
   return gDungeonBlockTable[p.y][p.x] || gDungeonMonsterTable[p.y][p.x] >= 0;
 }
+
+bool tile_is_visible(const Point p) { return gDungeonVisibleTable[p.y][p.x]; }
 
 bool tile_is_blocked_for_monster(const Point p) {
   return tile_is_blocked(p) || (gPlayer.next_x == p.x && gPlayer.next_y == p.y);
@@ -103,6 +111,67 @@ void create_dungeon() {
 
   init_monster_table();
   create_walls();
+}
+
+void cast_light(uint x, uint y, uint radius, uint row, float start_slope,
+                float end_slope, uint xx, uint xy, uint yx, uint yy) {
+  if (start_slope < end_slope) {
+    return;
+  }
+  float next_start_slope = start_slope;
+  for (uint i = row; i <= radius; i++) {
+    bool blocked = false;
+    for (int dx = -i, dy = -i; dx <= 0; dx++) {
+      float l_slope = (dx - 0.5) / (dy + 0.5);
+      float r_slope = (dx + 0.5) / (dy - 0.5);
+      if (start_slope < r_slope) {
+        continue;
+      } else if (end_slope > l_slope) {
+        break;
+      }
+
+      int sax = dx * xx + dy * xy;
+      int say = dx * yx + dy * yy;
+      if ((sax < 0 && (uint)abs(sax) > x) || (say < 0 && (uint)abs(say) > y)) {
+        continue;
+      }
+      uint ax = x + sax;
+      uint ay = y + say;
+      if (ax >= DUNGEON_SIZE || ay >= DUNGEON_SIZE) {
+        continue;
+      }
+
+      uint radius2 = radius * radius;
+      if ((uint)(dx * dx + dy * dy) < radius2) {
+        gDungeonVisibleTable[ay][ax] = true;
+      }
+
+      if (blocked) {
+        if (gDungeonBlockTable[ay][ax]) {
+          next_start_slope = r_slope;
+          continue;
+        } else {
+          blocked = false;
+          start_slope = next_start_slope;
+        }
+      } else if (gDungeonBlockTable[ay][ax]) {
+        blocked = true;
+        next_start_slope = r_slope;
+        cast_light(x, y, radius, i + 1, start_slope, l_slope, xx, xy, yx, yy);
+      }
+    }
+    if (blocked) {
+      break;
+    }
+  }
+}
+
+void update_fov(Point p, int radius) {
+  for (uint i = 0; i < 8; i++) {
+    cast_light((uint)p.x, (uint)p.y, (uint)radius, 1, 1.0, 0.0,
+               multipliers[0][i], multipliers[1][i], multipliers[2][i],
+               multipliers[3][i]);
+  }
 }
 
 Point center(const SDL_Rect *rect) {
@@ -223,15 +292,6 @@ bool split_bsp(BSP *root) {
   if (root->child1 || root->child2) {
     return false;
   }
-  /*
-  double width_to_height_ratio = (double)root->width / (double)root->height;
-  if (width_to_height_ratio < 0.6) {
-    horizontal = false;
-  } else if (width_to_height_ratio >= 0.16180339887) { // golden ratio :)
-    horizontal = true;
-  } else {
-  }
-  */
 
   bool horizontal = (bool)(rand() % 2 == 0);
   if (root->width > root->height &&
@@ -306,6 +366,7 @@ void create_bsp_dungeon() {
     for (x = 0; x < DUNGEON_SIZE; x++) {
       gDungeon[y][x] = 'w';
       gDungeonBlockTable[y][x] = true;
+      gDungeonVisibleTable[y][x] = false;
     }
   }
   BSP *root = malloc(sizeof(BSP));
@@ -347,5 +408,7 @@ void create_bsp_dungeon() {
       gPlayerLevelSpawn = center(bsps[i]->room);
     }
   }
+
+  gDungeonVisibleTable[gPlayerLevelSpawn.y][gPlayerLevelSpawn.x] = true;
   free_bsp();
 }

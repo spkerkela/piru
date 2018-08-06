@@ -18,6 +18,7 @@ struct BSP {
 
 extern char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 extern bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
+extern bool gDungeonVisibleTable[DUNGEON_SIZE][DUNGEON_SIZE];
 extern char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 extern int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
 extern Point gPlayerLevelSpawn;
@@ -30,7 +31,9 @@ SDL_Rect *get_room(BSP *root);
 
 bool tile_is_blocked(const Point p);
 bool tile_is_blocked_for_monster(const Point p);
+bool tile_is_visible(const Point p);
 
+void update_fov(Point p, int radius);
 void carve_dungeon(BSP *bsp);
 void clear_dungeon();
 void connect_points(Point point1, Point point2);
