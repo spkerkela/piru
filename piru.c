@@ -25,6 +25,7 @@ extern TTF_Font *gFont;
 
 bool gGameRunning;
 bool gGamePaused;
+MouseCursor gCursor;
 SDL_Rect gPlayerSprites[8 * 16];
 MouseCursor gCursor;
 
@@ -426,22 +427,21 @@ void draw_and_blit() {
   SDL_RenderPresent(gRenderer);
 }
 
-bool gMouseIsDown = false;
+bool gShiftIsDown = false;
 
 void handle_cursor() {
-  int mx, my;
   Point player_position = {gPlayer.world_x, gPlayer.world_y};
-  SDL_GetMouseState(&mx, &my);
+  SDL_GetMouseState(&gCursor.x, &gCursor.y);
   Point mouse_point;
   Point offset = cartesian_to_isometric(player_position);
-  mouse_point.x = mx - (SCREEN_WIDTH / 2) + offset.x;
-  mouse_point.y = my - (SCREEN_HEIGHT / 2) + offset.y;
+  mouse_point.x = gCursor.x - (SCREEN_WIDTH / 2) + offset.x;
+  mouse_point.y = gCursor.y - (SCREEN_HEIGHT / 2) + offset.y;
   gSelectedTile = isometric_to_cartesian(mouse_point);
   int monster_clicked = -1;
   if (gSelectedTile.x >= 0 && gSelectedTile.y >= 0 &&
       gSelectedTile.x < DUNGEON_SIZE - 1 &&
       gSelectedTile.y < DUNGEON_SIZE - 1) {
-    if (gMouseIsDown) {
+    if (gCursor.leftButtonDown || gCursor.rightButtonDown) {
       int x, y;
       x = gSelectedTile.x;
       y = gSelectedTile.y;
@@ -472,9 +472,16 @@ void handle_cursor() {
             find_nearest_node_to_monster(monster_clicked, player_position);
         if (gPlayer.state != PLAYER_ATTACKING) {
           gPlayer.target_monster_id = monster_clicked;
+          if (gCursor.leftButtonDown) {
+            gPlayer.active_spell = gPlayer.left_spell;
+          } else if (gCursor.rightButtonDown) {
+            gPlayer.active_spell = gPlayer.right_spell;
+          }
         }
       }
-      gPlayer.new_target = gSelectedTile;
+      if (gCursor.leftButtonDown && !gShiftIsDown) {
+        gPlayer.new_target = gSelectedTile;
+      }
     }
   }
 }
@@ -483,16 +490,21 @@ void update_input() {
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0) {
     if (e.type == SDL_MOUSEBUTTONUP) {
-      gMouseIsDown = false;
-    }
-    if (e.type == SDL_MOUSEBUTTONDOWN) {
-      gMouseIsDown = true;
-    }
-    if (e.type == SDL_QUIT) {
+      if (e.button.button == SDL_BUTTON_LEFT) {
+        gCursor.leftButtonDown = false;
+      } else if (e.button.button == SDL_BUTTON_RIGHT) {
+        gCursor.rightButtonDown = false;
+      }
+    } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+      if (e.button.button == SDL_BUTTON_LEFT) {
+        gCursor.leftButtonDown = true;
+      } else if (e.button.button == SDL_BUTTON_RIGHT) {
+        gCursor.rightButtonDown = true;
+      }
+    } else if (e.type == SDL_QUIT) {
       gGameRunning = false;
       break;
-    }
-    if (e.type == SDL_KEYDOWN) {
+    } else if (e.type == SDL_KEYDOWN) {
       switch (e.key.keysym.sym) {
       case SDLK_RETURN:
         gGameRunning = false;
@@ -506,6 +518,20 @@ void update_input() {
       case SDLK_2:
         gPlayer.mana = gPlayer.max_mana;
         break;
+      case SDLK_LSHIFT:
+        gShiftIsDown = true;
+        gPlayer.target.x = gPlayer.world_x;
+        gPlayer.target.y = gPlayer.world_y;
+        gPlayer.new_target.x = gPlayer.world_x;
+        gPlayer.new_target.y = gPlayer.world_y;
+        break;
+      default:
+        break;
+      }
+    } else if (e.type == SDL_KEYUP) {
+      switch (e.key.keysym.sym) {
+      case SDLK_LSHIFT:
+        gShiftIsDown = false;
       default:
         break;
       }
@@ -597,7 +623,8 @@ void init_cursor() {
   gCursor.monster_id = -1;
   gCursor.item_id = -1;
   gCursor.object_id = -1;
-  gCursor.player_id = -1;
+  gCursor.leftButtonDown = false;
+  gCursor.rightButtonDown = false;
 }
 
 void run_game_loop(enum GAME_START_MODE start_mode) {
