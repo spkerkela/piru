@@ -26,6 +26,7 @@ extern TTF_Font *gFont;
 bool gGameRunning;
 bool gGamePaused;
 SDL_Rect gPlayerSprites[8 * 16];
+MouseCursor gCursor;
 
 char *direction_str[PLAYER_DIRECTION_COUNT] = {
     "SOUTH", "SOUTH_WEST_1", "SOUTH_WEST_2", "SOUTH_WEST_3",
@@ -302,8 +303,6 @@ void draw_floor() {
                                gPlayer.pixel_y,
                            TILE_WIDTH, TILE_HEIGHT};
       SDL_RenderCopy(gRenderer, asset.texture, NULL, &fillRect);
-
-      SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 0);
     }
   }
   cartesian_point.x = gSelectedTile.x - gPlayer.world_x;
@@ -338,18 +337,9 @@ void draw_debug_path() {
 }
 
 void draw_cursor() {
-  int mx, my;
-  SDL_GetMouseState(&mx, &my);
-  SDL_Rect cursorQuad = {mx, my, 24, 24};
+  SDL_Rect cursorQuad = {gCursor.x, gCursor.y, 24, 24};
   SDL_RenderCopy(gRenderer, gImageAssets[SPRITE_CURSOR].texture, NULL,
                  &cursorQuad);
-}
-
-void draw_monsters() {
-  int i;
-  for (i = 0; i < created_monsters; i++) {
-    draw_monster(i);
-  }
 }
 
 void draw_health_and_mana() {
@@ -601,8 +591,6 @@ void game_loop() {
     update_input();
   }
 }
-
-MouseCursor gCursor;
 
 void init_cursor() {
   SDL_GetMouseState(&gCursor.x, &gCursor.y);
