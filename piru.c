@@ -516,6 +516,12 @@ void update_input() {
       case SDLK_2:
         gPlayer.mana = gPlayer.max_mana;
         break;
+      case SDLK_3:
+        gPlayer.right_spell = gSpells[SPELL_BASH];
+        break;
+      case SDLK_4:
+        gPlayer.right_spell = gSpells[SPELL_STOMP];
+        break;
       case SDLK_LSHIFT:
         gShiftIsDown = true;
         gPlayer.target.x = gPlayer.world_x;

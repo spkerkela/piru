@@ -7,6 +7,8 @@
 #include "structs.h"
 #include "time.h"
 #include <stdio.h>
+#include <stdlib.h>
+
 extern DamageText damage_text[MAX_DAMAGE_TEXT];
 extern int damage_text_count;
 

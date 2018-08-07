@@ -41,7 +41,8 @@ typedef struct Player {
   Spell right_spell;
   Spell no_mana_fallback_spell;
   int target_monster_id;
-  int damage;
+  int base_damage_min;
+  int base_damage_max;
   int hp;
   int max_hp;
   int mana;

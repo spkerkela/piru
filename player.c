@@ -25,7 +25,8 @@ void init_player() {
   gPlayer.hp = gPlayer.max_hp;
   gPlayer.max_mana = 50;
   gPlayer.mana = 22;
-  gPlayer.damage = 10;
+  gPlayer.base_damage_min = 5;
+  gPlayer.base_damage_max = 8;
 
   gPlayer.active_spell = gSpells[SPELL_BASH];
   gPlayer.right_spell = gSpells[SPELL_BASH];
@@ -186,14 +187,53 @@ void move_offset(Player *player) {
   }
 }
 
+int player_base_damage(Player *player) {
+  int damage = random_between(player->base_damage_min, player->base_damage_max);
+  return (int)((double)damage * player->active_spell.dps_multiplier);
+}
+
+void handle_target_attack(Player *player) {
+  int target_id = player->target_monster_id;
+  Point monster_point = get_monster_point(target_id);
+  Point player_point = get_player_point(player);
+
+  if (get_distance(player_point, monster_point) <= player->active_spell.range) {
+
+    int base_damage = player_base_damage(player);
+    int damage = rand() % 100 < 20 ? base_damage * 2 : base_damage;
+    Point monster_point = get_monster_point(target_id);
+    RGB_Color color = {255, 255, 0};
+    create_damage_text(monster_point, damage, color);
+    monsters[target_id].hp -= damage;
+  }
+}
+
+void handle_target_player_position(Player *player) {
+  Spell spell = player->active_spell;
+
+  int x, y;
+  int range = (int)spell.range;
+  for (y = player->world_y - range; y < player->world_y + spell.range + 1;
+       y++) {
+    for (x = player->world_x - range; x < player->world_x + spell.range + 1;
+         x++) {
+
+      int base_damage = player_base_damage(player);
+      int monster_id = gDungeonMonsterTable[y][x];
+      if (monster_id >= 0) {
+        int damage = rand() % 100 < 20 ? base_damage * 2 : base_damage;
+        RGB_Color color = {255, 255, 0};
+        create_damage_text(get_monster_point(monster_id), damage, color);
+        monsters[monster_id].hp -= damage;
+      }
+    }
+  }
+}
+
 void attack(Player *player) {
   player->animation = ANIM_WARRIOR_ATTACK;
   player->state = PLAYER_ATTACKING;
   if (player->animation_frame == 8 && player->previous_animation_frame != 8) {
-    int target_id = player->target_monster_id;
-    Point monster_point = get_monster_point(target_id);
-    Point player_point = get_player_point(player);
-
     Spell spell;
     bool enough_mana = player->mana > player->active_spell.base_mana_cost;
     if (enough_mana) {
@@ -201,13 +241,15 @@ void attack(Player *player) {
     } else {
       spell = player->no_mana_fallback_spell;
     }
-    if (get_distance(player_point, monster_point) <= spell.range) {
-      int base_damage = (int)((double)player->damage * spell.dps_multiplier);
-      int damage = rand() % 100 < 20 ? base_damage * 2 : base_damage;
-      Point monster_point = get_monster_point(target_id);
-      RGB_Color color = {255, 255, 0};
-      create_damage_text(monster_point, damage, color);
-      monsters[target_id].hp -= damage;
+    switch (spell.type) {
+    case SPELL_TYPE_TARGET_ONE:
+      handle_target_attack(player);
+      break;
+    case SPELL_TYPE_TARGET_PLAYER_POSITION:
+      handle_target_player_position(player);
+      break;
+    default:
+      break;
     }
     player->target_monster_id = -1;
   }
