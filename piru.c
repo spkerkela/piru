@@ -402,6 +402,10 @@ void draw_damage_text() {
 void draw_ui() {
   draw_health_and_mana();
   draw_damage_text();
+
+  SDL_Color color = {255, 255, 0};
+  SDL_Rect dest = {10, 10, 40, 20};
+  draw_text(gPlayer.right_spell.name, color, NULL, &dest);
 }
 
 void draw_and_blit() {

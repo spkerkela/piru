@@ -23,7 +23,7 @@ void init_player() {
   gPlayer.destination_action = PLAYER_DESTINATION_NONE;
   gPlayer.max_hp = 1000;
   gPlayer.hp = gPlayer.max_hp;
-  gPlayer.max_mana = 50;
+  gPlayer.max_mana = 60;
   gPlayer.mana = 22;
   gPlayer.base_damage_min = 5;
   gPlayer.base_damage_max = 8;
@@ -69,20 +69,29 @@ void try_attack(Player *player) {
   } else {
     spell = player->no_mana_fallback_spell;
   }
-  if (spell.type == SPELL_TYPE_TARGET_PLAYER_POSITION ||
-      spell.type == SPELL_TYPE_TARGET_AREA || SPELL_TYPE_TARGET_SELF) {
+  if (spell.type == SPELL_TYPE_TARGET_AREA &&
+      get_distance(player_point, gSelectedTile) <= spell.range) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               gSelectedTile.x, gSelectedTile.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
     player->mana -= spell.base_mana_cost;
-  } else if (get_distance(player_point, monster_point) <= spell.range) {
+  } else if (spell.type == SPELL_TYPE_TARGET_PLAYER_POSITION ||
+             SPELL_TYPE_TARGET_SELF) {
+    player->direction = player_get_direction8(player->world_x, player->world_y,
+                                              gSelectedTile.x, gSelectedTile.y);
+    player->animation_frame = 0;
+    player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
+  } else if (player->target_monster_id >= 0 &&
+             get_distance(player_point, monster_point) <= spell.range) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               monster_point.x, monster_point.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
     player->mana -= spell.base_mana_cost;
-  } else if (find_path(player_point,
+  } else if (player->target_monster_id >= 0 &&
+             find_path(player_point,
                        find_nearest_node_to_monster(player->target_monster_id,
                                                     player_point),
                        player->path, &tile_is_blocked)) {
@@ -205,7 +214,6 @@ void handle_target_attack(Player *player) {
   Point player_point = get_player_point(player);
 
   if (get_distance(player_point, monster_point) <= player->active_spell.range) {
-
     int base_damage = player_base_damage(player);
     int damage = rand() % 100 < 20 ? base_damage * 2 : base_damage;
     Point monster_point = get_monster_point(target_id);
@@ -215,15 +223,12 @@ void handle_target_attack(Player *player) {
   }
 }
 
-void handle_target_player_position(Player *player) {
+void handle_area(Player *player, const Point point) {
   Spell spell = player->active_spell;
   int x, y;
-  int range = (int)spell.range;
-  for (y = player->world_y - range; y < player->world_y + spell.range + 1;
-       y++) {
-    for (x = player->world_x - range; x < player->world_x + spell.range + 1;
-         x++) {
-
+  int radius = (int)spell.radius;
+  for (y = point.y - radius; y < point.y + radius + 1; y++) {
+    for (x = point.x - radius; x < point.x + radius + 1; x++) {
       int base_damage = player_base_damage(player);
       int monster_id = gDungeonMonsterTable[y][x];
       if (monster_id >= 0) {
@@ -235,6 +240,13 @@ void handle_target_player_position(Player *player) {
     }
   }
 }
+
+void handle_target_player_position(Player *player) {
+  Point point = get_player_point(player);
+  handle_area(player, point);
+}
+
+void handle_target_area(Player *player) { handle_area(player, gSelectedTile); }
 
 void attack(Player *player) {
   player->animation = ANIM_WARRIOR_ATTACK;
@@ -253,6 +265,9 @@ void attack(Player *player) {
       break;
     case SPELL_TYPE_TARGET_PLAYER_POSITION:
       handle_target_player_position(player);
+      break;
+    case SPELL_TYPE_TARGET_AREA:
+      handle_target_area(player);
       break;
     default:
       break;

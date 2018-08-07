@@ -14,7 +14,7 @@ typedef struct {
   int y;
 } Point;
 
-typedef struct {
+typedef struct Spell {
   int id;
   char *name;
   enum SPELL_TYPE type;
@@ -22,6 +22,7 @@ typedef struct {
   int base_mana_cost;
   double dps_multiplier;
   double range;
+  double radius;
 } Spell;
 
 typedef struct Player {

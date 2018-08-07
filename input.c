@@ -19,6 +19,7 @@ void handle_cursor() {
       gSelectedTile.x < DUNGEON_SIZE - 1 &&
       gSelectedTile.y < DUNGEON_SIZE - 1) {
     if (gCursor.leftButtonDown || gCursor.rightButtonDown) {
+      Point saveSelect = gSelectedTile;
       int x, y;
       x = gSelectedTile.x;
       y = gSelectedTile.y;
@@ -59,6 +60,7 @@ void handle_cursor() {
       if (gCursor.leftButtonDown && !gShiftIsDown) {
         gPlayer.new_target = gSelectedTile;
       }
+      gSelectedTile = saveSelect;
     }
   }
 }
@@ -100,6 +102,9 @@ void update_input() {
         break;
       case SDLK_4:
         gPlayer.right_spell = gSpells[SPELL_STOMP];
+        break;
+      case SDLK_5:
+        gPlayer.right_spell = gSpells[SPELL_QUAKE];
         break;
       case SDLK_LSHIFT:
         gShiftIsDown = true;
