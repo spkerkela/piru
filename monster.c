@@ -25,16 +25,9 @@ void monster_attack(int id) {
   if (monsters[id].animation_frame == 8 &&
       monsters[id].previous_animation_frame != 8) {
     if (get_distance_to_player(id) <= monsters[id].attack_radius) {
-      char *str = calloc(10, sizeof(char));
-      sprintf(str, "%d", monsters[id].damage);
-      DamageText dt;
-      dt.text = str;
-      dt.x = gPlayer.world_x;
-      dt.y = gPlayer.world_y;
-      dt.r = 255;
-      dt.g = 0;
-      dt.b = 0;
-      push_damage_text(dt);
+      RGB_Color color = {255, 0, 0};
+      create_damage_text(get_player_point(&gPlayer), monsters[id].damage,
+                         color);
       gPlayer.hp -= monsters[id].damage;
     }
   }

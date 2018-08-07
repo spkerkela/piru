@@ -139,15 +139,15 @@ typedef struct {
   bool rightButtonDown;
 } MouseCursor;
 
+typedef struct {
+  int r, g, b;
+} RGB_Color;
+
 typedef struct DamageText {
-  char *text;
-  int x, y;
+  int x, y, y_offset, frames_alive;
   bool alive;
-  int y_offset;
-  int frames_alive;
-  int r;
-  int g;
-  int b;
+  SDL_Texture *texture;
+  int width;
 } DamageText;
 
 #endif

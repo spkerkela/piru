@@ -202,17 +202,11 @@ void attack(Player *player) {
       spell = player->no_mana_fallback_spell;
     }
     if (get_distance(player_point, monster_point) <= spell.range) {
-      char *str = calloc(10, sizeof(char));
       int base_damage = (int)((double)player->damage * spell.dps_multiplier);
       int damage = rand() % 100 < 20 ? base_damage * 2 : base_damage;
-      sprintf(str, "%d", damage);
       Point monster_point = get_monster_point(target_id);
-      DamageText dt = {str, monster_point.x, monster_point.y};
-      dt.r = 255;
-      dt.g = 255;
-      dt.b = 0;
-
-      push_damage_text(dt);
+      RGB_Color color = {255, 255, 0};
+      create_damage_text(monster_point, damage, color);
       monsters[target_id].hp -= damage;
     }
     player->target_monster_id = -1;
