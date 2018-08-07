@@ -22,6 +22,7 @@
     "__bit_reference": "c",
     "memory": "c",
     "type_traits": "c",
-    "piru_math.h": "c"
+    "piru_math.h": "c",
+    "input.h": "c"
   }
 }

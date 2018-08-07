@@ -63,13 +63,20 @@ void try_attack(Player *player) {
   Point player_point = get_player_point(player);
   Point monster_point = get_monster_point(player->target_monster_id);
   Spell spell;
-  bool enough_mana = player->mana > player->active_spell.base_mana_cost;
+  bool enough_mana = player->mana >= player->active_spell.base_mana_cost;
   if (enough_mana) {
     spell = player->active_spell;
   } else {
     spell = player->no_mana_fallback_spell;
   }
-  if (get_distance(player_point, monster_point) <= spell.range) {
+  if (spell.type == SPELL_TYPE_TARGET_PLAYER_POSITION ||
+      spell.type == SPELL_TYPE_TARGET_AREA || SPELL_TYPE_TARGET_SELF) {
+    player->direction = player_get_direction8(player->world_x, player->world_y,
+                                              gSelectedTile.x, gSelectedTile.y);
+    player->animation_frame = 0;
+    player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
+  } else if (get_distance(player_point, monster_point) <= spell.range) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               monster_point.x, monster_point.y);
     player->animation_frame = 0;
@@ -91,7 +98,7 @@ void try_attack(Player *player) {
 void stand(Player *player) {
   player->animation = ANIM_WARRIOR_IDLE;
   player->state = PLAYER_STANDING;
-  if (player->target_monster_id >= 0) {
+  if (gCursor.rightButtonDown || player->target_monster_id >= 0) {
     player->next_state_fn = try_attack;
   } else if (!point_equal(player->target, player->new_target)) {
     Point player_point = get_player_point(player);
@@ -210,7 +217,6 @@ void handle_target_attack(Player *player) {
 
 void handle_target_player_position(Player *player) {
   Spell spell = player->active_spell;
-
   int x, y;
   int range = (int)spell.range;
   for (y = player->world_y - range; y < player->world_y + spell.range + 1;

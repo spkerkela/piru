@@ -4,6 +4,7 @@
 #include "damage_text.h"
 #include "direction.h"
 #include "enums.h"
+#include "input.h"
 #include "monster.h"
 #include "point.h"
 #include "spell.h"
