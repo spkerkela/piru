@@ -133,6 +133,8 @@ bool load_assets() {
   ImageAsset orbHealth = load_image_asset("assets/orbs_1.png");
   ImageAsset orbMana = load_image_asset("assets/orbs_2.png");
 
+  ImageAsset quake = load_image_asset("assets/earth_crack.png");
+
   // allocate images
   gImageAssets[SPRITE_WARRIOR_WALK] = warriorMoveSpriteSheet;
   gImageAssets[SPRITE_WARRIOR_ATTACK] = warriorAttackSpriteSheet;
@@ -150,6 +152,7 @@ bool load_assets() {
   gImageAssets[ORB_MANA] = orbMana;
   gImageAssets[WALL_1_EAST] = wall1East;
   gImageAssets[WALL_1_NORTH] = wall1North;
+  gImageAssets[EARTH_CRACK] = quake;
 
   // allocate animations
   load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);
@@ -161,5 +164,6 @@ bool load_assets() {
   load_animations(skeletonAttackSpriteSheet, 16, 8, ANIM_SKELETON_ATTACK, -118,
                   -80);
   load_animations(skeletonDeadSpriteSheet, 1, 8, ANIM_SKELETON_DEAD, -80, 0);
+  load_animations(quake, 5, 1, ANIM_EARTH_CRACK, 0, 0);
   return true;
 }

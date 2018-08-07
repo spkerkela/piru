@@ -77,7 +77,7 @@ void try_attack(Player *player) {
     player->next_state_fn = attack;
     player->mana -= spell.base_mana_cost;
   } else if (spell.type == SPELL_TYPE_TARGET_PLAYER_POSITION ||
-             SPELL_TYPE_TARGET_SELF) {
+             spell.type == SPELL_TYPE_TARGET_SELF) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               gSelectedTile.x, gSelectedTile.y);
     player->animation_frame = 0;
