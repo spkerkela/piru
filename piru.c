@@ -475,6 +475,8 @@ void update_ground_effect_animations() {
   int id;
   for (id = 0; id < MAX_GROUND_EFFECTS; id++) {
     if (!ground_effects[id].active) {
+      gDungeonGroundEffectTable[ground_effects[id].y][ground_effects[id].x] =
+          -1;
       continue;
     }
     ground_effects[id].previous_animation_frame =

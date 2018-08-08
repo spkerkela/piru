@@ -22,6 +22,6 @@ Spell gSpells[SPELL_COUNT] = {{SPELL_BASE_ATTACK, "Attack",
                                16,
                                2.0,
                                8.0,
-                               2.0,
+                               1.0,
                                true,
                                {ANIM_EARTH_CRACK, 100}}};
