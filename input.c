@@ -50,11 +50,13 @@ void handle_cursor() {
             find_nearest_node_to_monster(monster_clicked, player_position);
         if (gPlayer.state != PLAYER_ATTACKING) {
           gPlayer.target_monster_id = monster_clicked;
-          if (gCursor.leftButtonDown) {
-            gPlayer.active_spell = gPlayer.left_spell;
-          } else if (gCursor.rightButtonDown) {
-            gPlayer.active_spell = gPlayer.right_spell;
-          }
+        }
+      }
+      if (gPlayer.state != PLAYER_ATTACKING) {
+        if (gCursor.leftButtonDown) {
+          gPlayer.active_spell = gPlayer.left_spell;
+        } else if (gCursor.rightButtonDown) {
+          gPlayer.active_spell = gPlayer.right_spell;
         }
       }
       if (gCursor.leftButtonDown && !gShiftIsDown) {
