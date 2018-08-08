@@ -12,9 +12,9 @@ void create_ground_effect(const Point at, GroundEffect effect) {
         effect.active = true;
         effect.animation_frame = 0;
         effect.previous_animation_frame = effect.animation_frame;
-        ground_effects[i] = effect;
         effect.x = at.x;
         effect.y = at.y;
+        ground_effects[i] = effect;
         gDungeonGroundEffectTable[at.y][at.x] = i;
         break;
       }
