@@ -237,6 +237,11 @@ void handle_area(Player *player, const Point point) {
         create_damage_text(get_monster_point(monster_id), damage, color);
         monsters[monster_id].hp -= damage;
       }
+      if (spell.leaves_ground_effect) {
+        GroundEffect effect = spell.effect;
+        Point p = {x, y};
+        create_ground_effect(p, effect);
+      }
     }
   }
 }

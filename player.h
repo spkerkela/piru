@@ -3,6 +3,7 @@
 #include "assets.h"
 #include "damage_text.h"
 #include "direction.h"
+#include "effect.h"
 #include "enums.h"
 #include "input.h"
 #include "monster.h"

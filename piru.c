@@ -302,6 +302,13 @@ void draw_floor() {
                                gPlayer.pixel_y,
                            TILE_WIDTH, TILE_HEIGHT};
       SDL_RenderCopy(gRenderer, asset.texture, NULL, &fillRect);
+      int ground_effect_id = gDungeonGroundEffectTable[y][x];
+      if (ground_effect_id >= 0 && ground_effects[ground_effect_id].active) {
+        GroundEffect effect = ground_effects[ground_effect_id];
+        Animation animation = animations[effect.animation][0];
+        SDL_RenderCopy(gRenderer, animation.image.texture,
+                       &animation.frames[effect.animation_frame], &fillRect);
+      }
     }
   }
   cartesian_point.x = gSelectedTile.x - gPlayer.world_x;
@@ -418,8 +425,6 @@ void draw_and_blit() {
   draw_walls();
   // draw_debug_path();
 
-  // draw_monsters();
-
   // Render texture to screen
   draw_ui();
   draw_cursor();
@@ -468,18 +473,21 @@ void update_monster_animations() {
 
 void update_ground_effect_animations() {
   int id;
-  for (id = 0; id < ground_effect_count; id++) {
+  for (id = 0; id < MAX_GROUND_EFFECTS; id++) {
     if (!ground_effects[id].active) {
       continue;
     }
-    ground_effects[id].previous_animation_frame = monsters[id].animation_frame;
+    ground_effects[id].previous_animation_frame =
+        ground_effects[id].animation_frame;
     if (ground_effects[id].frames_since_animation_frame >=
         ground_effects[id].animation_interval) {
       ground_effects[id].frames_since_animation_frame = 0;
       int animFrames = animations[ground_effects[id].animation][0].columns;
       ground_effects[id].animation_frame++;
       if (ground_effects[id].animation_frame >= animFrames) {
-        ground_effects[id].animation_frame = 0;
+        ground_effects[id].active = false;
+        gDungeonGroundEffectTable[ground_effects[id].y][ground_effects[id].x] =
+            -1;
       }
     } else {
       ground_effects[id].frames_since_animation_frame += gClock.delta;

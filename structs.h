@@ -15,12 +15,13 @@ typedef struct {
 } Point;
 
 typedef struct GroundEffect {
-  bool active;
   enum ANIMATION animation;
-  int animation_frame;
   int animation_interval;
+  bool active;
+  int animation_frame;
   int frames_since_animation_frame;
   int previous_animation_frame;
+  int x, y;
 } GroundEffect;
 
 typedef struct Spell {
@@ -32,6 +33,7 @@ typedef struct Spell {
   double dps_multiplier;
   double range;
   double radius;
+  bool leaves_ground_effect;
   GroundEffect effect;
 } Spell;
 
