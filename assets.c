@@ -48,8 +48,8 @@ void free_image_assets() {
 }
 
 bool load_animations(ImageAsset spriteSheet, int columns, int rows,
-                     enum ANIMATION animationIndex, int offset_x,
-                     int offset_y) {
+                     enum ANIMATION animationIndex, int offset_x, int offset_y,
+                     bool character) {
   int width;
   int height;
   SDL_QueryTexture(spriteSheet.texture, NULL, NULL, &width, &height);
@@ -57,42 +57,58 @@ bool load_animations(ImageAsset spriteSheet, int columns, int rows,
   int animationRows = rows;
   int frameWidth = width / animationColumns;
   int frameHeight = height / animationRows;
-  if (animationIndex == ANIM_WARRIOR_WALK ||
-      animationIndex == ANIM_WARRIOR_IDLE ||
-      animationIndex == ANIM_WARRIOR_ATTACK) // Player animation
-  {
-    enum PLAYER_DIRECTION dir;
-    for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++) {
-      int x;
-      for (x = 0; x < animationColumns; x++) {
-        animations[animationIndex][dir].columns = animationColumns;
-        animations[animationIndex][dir].rows = 1;
-        animations[animationIndex][dir].speed = 1;
-        animations[animationIndex][dir].image = spriteSheet;
-        animations[animationIndex][dir].frames[x].x = x * frameWidth;
-        animations[animationIndex][dir].frames[x].y = dir * frameHeight;
-        animations[animationIndex][dir].frames[x].w = frameWidth;
-        animations[animationIndex][dir].frames[x].h = frameHeight;
-        animations[animationIndex][dir].offset_x = offset_x;
-        animations[animationIndex][dir].offset_y = offset_y;
+  if (character) {
+    if (animationIndex == ANIM_WARRIOR_WALK ||
+        animationIndex == ANIM_WARRIOR_IDLE ||
+        animationIndex == ANIM_WARRIOR_ATTACK) // Player animation
+    {
+      enum PLAYER_DIRECTION dir;
+      for (dir = PLAYER_SOUTH; dir < PLAYER_DIRECTION_COUNT; dir++) {
+        int x;
+        for (x = 0; x < animationColumns; x++) {
+          animations[animationIndex][dir].columns = animationColumns;
+          animations[animationIndex][dir].rows = 1;
+          animations[animationIndex][dir].speed = 1;
+          animations[animationIndex][dir].image = spriteSheet;
+          animations[animationIndex][dir].frames[x].x = x * frameWidth;
+          animations[animationIndex][dir].frames[x].y = dir * frameHeight;
+          animations[animationIndex][dir].frames[x].w = frameWidth;
+          animations[animationIndex][dir].frames[x].h = frameHeight;
+          animations[animationIndex][dir].offset_x = offset_x;
+          animations[animationIndex][dir].offset_y = offset_y;
+        }
+      }
+    } else {
+      enum MONSTER_DIRECTION dir;
+      for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++) {
+        int x;
+        for (x = 0; x < animationColumns; x++) {
+          animations[animationIndex][dir].columns = animationColumns;
+          animations[animationIndex][dir].rows = 1;
+          animations[animationIndex][dir].speed = 1;
+          animations[animationIndex][dir].image = spriteSheet;
+          animations[animationIndex][dir].frames[x].x = x * frameWidth;
+          animations[animationIndex][dir].frames[x].y = dir * frameHeight;
+          animations[animationIndex][dir].frames[x].w = frameWidth;
+          animations[animationIndex][dir].frames[x].h = frameHeight;
+          animations[animationIndex][dir].offset_x = offset_x;
+          animations[animationIndex][dir].offset_y = offset_y;
+        }
       }
     }
   } else {
-    enum MONSTER_DIRECTION dir;
-    for (dir = MONSTER_SOUTH_WEST; dir < MONSTER_DIRECTION_COUNT; dir++) {
-      int x;
-      for (x = 0; x < animationColumns; x++) {
-        animations[animationIndex][dir].columns = animationColumns;
-        animations[animationIndex][dir].rows = 1;
-        animations[animationIndex][dir].speed = 1;
-        animations[animationIndex][dir].image = spriteSheet;
-        animations[animationIndex][dir].frames[x].x = x * frameWidth;
-        animations[animationIndex][dir].frames[x].y = dir * frameHeight;
-        animations[animationIndex][dir].frames[x].w = frameWidth;
-        animations[animationIndex][dir].frames[x].h = frameHeight;
-        animations[animationIndex][dir].offset_x = offset_x;
-        animations[animationIndex][dir].offset_y = offset_y;
-      }
+    int x;
+    for (x = 0; x < animationColumns; x++) {
+      animations[animationIndex][0].columns = animationColumns;
+      animations[animationIndex][0].rows = 1;
+      animations[animationIndex][0].speed = 1;
+      animations[animationIndex][0].image = spriteSheet;
+      animations[animationIndex][0].frames[x].x = x * frameWidth;
+      animations[animationIndex][0].frames[x].y = 0;
+      animations[animationIndex][0].frames[x].w = frameWidth;
+      animations[animationIndex][0].frames[x].h = frameHeight;
+      animations[animationIndex][0].offset_x = offset_x;
+      animations[animationIndex][0].offset_y = offset_y;
     }
   }
 
@@ -155,15 +171,20 @@ bool load_assets() {
   gImageAssets[EARTH_CRACK] = quake;
 
   // allocate animations
-  load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96);
-  load_animations(warriorIdleSpriteSheet, 8, 16, ANIM_WARRIOR_IDLE, -80, -88);
+  load_animations(warriorMoveSpriteSheet, 8, 16, ANIM_WARRIOR_WALK, -96, -96,
+                  true);
+  load_animations(warriorIdleSpriteSheet, 8, 16, ANIM_WARRIOR_IDLE, -80, -88,
+                  true);
   load_animations(warriorAttackSpriteSheet, 9, 16, ANIM_WARRIOR_ATTACK, -174,
-                  -88);
-  load_animations(skeletonIdleSpriteSheet, 8, 8, ANIM_SKELETON_IDLE, -80, -56);
-  load_animations(skeletonWalkSpriteSheet, 8, 8, ANIM_SKELETON_WALK, -80, -56);
+                  -88, true);
+  load_animations(skeletonIdleSpriteSheet, 8, 8, ANIM_SKELETON_IDLE, -80, -56,
+                  true);
+  load_animations(skeletonWalkSpriteSheet, 8, 8, ANIM_SKELETON_WALK, -80, -56,
+                  true);
   load_animations(skeletonAttackSpriteSheet, 16, 8, ANIM_SKELETON_ATTACK, -118,
-                  -80);
-  load_animations(skeletonDeadSpriteSheet, 1, 8, ANIM_SKELETON_DEAD, -80, 0);
-  load_animations(quake, 5, 1, ANIM_EARTH_CRACK, 0, 0);
+                  -80, true);
+  load_animations(skeletonDeadSpriteSheet, 1, 8, ANIM_SKELETON_DEAD, -80, 0,
+                  true);
+  load_animations(quake, 5, 1, ANIM_EARTH_CRACK, 0, 0, true);
   return true;
 }

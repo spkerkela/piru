@@ -9,6 +9,7 @@
 #include "damage_text.h"
 #include "direction.h"
 #include "dungeon.h"
+#include "effect.h"
 #include "enums.h"
 #include "input.h"
 #include "monster.h"
@@ -465,9 +466,31 @@ void update_monster_animations() {
   }
 }
 
+void update_ground_effect_animations() {
+  int id;
+  for (id = 0; id < ground_effect_count; id++) {
+    if (!ground_effects[id].active) {
+      continue;
+    }
+    ground_effects[id].previous_animation_frame = monsters[id].animation_frame;
+    if (ground_effects[id].frames_since_animation_frame >=
+        ground_effects[id].animation_interval) {
+      ground_effects[id].frames_since_animation_frame = 0;
+      int animFrames = animations[ground_effects[id].animation][0].columns;
+      ground_effects[id].animation_frame++;
+      if (ground_effects[id].animation_frame >= animFrames) {
+        ground_effects[id].animation_frame = 0;
+      }
+    } else {
+      ground_effects[id].frames_since_animation_frame += gClock.delta;
+    }
+  }
+}
+
 void update_animations() {
   update_player_animations();
   update_monster_animations();
+  update_ground_effect_animations();
 }
 
 void update_monsters() {

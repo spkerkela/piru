@@ -14,6 +14,15 @@ typedef struct {
   int y;
 } Point;
 
+typedef struct GroundEffect {
+  bool active;
+  enum ANIMATION animation;
+  int animation_frame;
+  int animation_interval;
+  int frames_since_animation_frame;
+  int previous_animation_frame;
+} GroundEffect;
+
 typedef struct Spell {
   int id;
   char *name;
@@ -23,6 +32,7 @@ typedef struct Spell {
   double dps_multiplier;
   double range;
   double radius;
+  GroundEffect effect;
 } Spell;
 
 typedef struct Player {
@@ -62,8 +72,8 @@ typedef struct Player {
   bool moving_between_points;
   int pixel_x;
   int pixel_y;
-  int walk_interval;
   int frames_since_walk;
+  int walk_interval;
   int frames_since_animation_frame;
   int animation_intervals[MAX_ANIMATIONS];
   double attack_radius;

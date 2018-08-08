@@ -5,6 +5,7 @@ char gDungeon[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonBlockTable[DUNGEON_SIZE][DUNGEON_SIZE];
 bool gDungeonVisibleTable[DUNGEON_SIZE][DUNGEON_SIZE];
 int gDungeonMonsterTable[DUNGEON_SIZE][DUNGEON_SIZE];
+int gDungeonGroundEffectTable[DUNGEON_SIZE][DUNGEON_SIZE];
 char gDungeonWallTable[DUNGEON_SIZE][DUNGEON_SIZE];
 Point gPlayerLevelSpawn;
 BSP *bsps[MAX_DUNGEON_ROOMS];
@@ -21,6 +22,7 @@ void clear_dungeon() {
       gDungeon[y][x] = 0;
       gDungeonBlockTable[y][x] = false;
       gDungeonMonsterTable[y][x] = -1;
+      gDungeonGroundEffectTable[y][x] = -1;
       gDungeonWallTable[y][x] = 0;
       gDungeonVisibleTable[y][x] = false;
     }

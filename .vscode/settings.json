@@ -23,6 +23,7 @@
     "memory": "c",
     "type_traits": "c",
     "piru_math.h": "c",
-    "input.h": "c"
+    "input.h": "c",
+    "effect.h": "c"
   }
 }
