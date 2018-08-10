@@ -24,6 +24,20 @@ typedef struct GroundEffect {
   int x, y;
 } GroundEffect;
 
+typedef struct Projectile {
+  enum ANIMATION animation;
+  enum PROJECTILE_PATH path_type;
+  double speed;
+  enum DAMAGE_TYPE damage_type;
+  bool active;
+  int damage;
+  int animation_interval;
+  int animation_frame;
+  int frames_since_animation_frame;
+  int previous_animation_frame;
+  double x, y;
+} Projectile;
+
 typedef struct Spell {
   int id;
   char *name;
@@ -35,6 +49,8 @@ typedef struct Spell {
   double radius;
   bool leaves_ground_effect;
   GroundEffect effect;
+  Projectile projectile;
+  int projectile_count;
 } Spell;
 
 typedef struct Player {
