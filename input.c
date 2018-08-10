@@ -108,6 +108,9 @@ void update_input() {
       case SDLK_5:
         gPlayer.right_spell = gSpells[SPELL_QUAKE];
         break;
+      case SDLK_6:
+        gPlayer.right_spell = gSpells[SPELL_FIREBALL];
+        break;
       case SDLK_LSHIFT:
         gShiftIsDown = true;
         gPlayer.target.x = gPlayer.world_x;

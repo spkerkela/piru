@@ -7,6 +7,7 @@
 #define MAX_NODES 300
 #define MAX_PATH_LENGTH 25
 #define MAX_DAMAGE_TEXT 50
+#define MAX_PROJECTILES 1024
 #define TILE_WIDTH 64
 #define TILE_HEIGHT 32
 #define WALL_WIDTH 64

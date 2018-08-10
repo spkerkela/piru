@@ -36,6 +36,8 @@ typedef struct Projectile {
   int frames_since_animation_frame;
   int previous_animation_frame;
   double x, y;
+  double vel_x, vel_y;
+  int target_x, target_y;
 } Projectile;
 
 typedef struct Spell {
