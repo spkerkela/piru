@@ -66,7 +66,6 @@ void try_attack(Player *player) {
   bool enough_mana = player->mana > player->active_spell.base_mana_cost;
   if (enough_mana) {
     spell = player->active_spell;
-    player->mana -= spell.base_mana_cost;
   } else {
     spell = player->no_mana_fallback_spell;
   }
@@ -76,18 +75,28 @@ void try_attack(Player *player) {
                                               gSelectedTile.x, gSelectedTile.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
   } else if (spell.type == SPELL_TYPE_TARGET_PLAYER_POSITION ||
              spell.type == SPELL_TYPE_TARGET_SELF) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               gSelectedTile.x, gSelectedTile.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
+  } else if (player->target_monster_id < 0 &&
+             spell.type == SPELL_TYPE_TARGET_ONE) {
+    player->direction = player_get_direction8(player->world_x, player->world_y,
+                                              gSelectedTile.x, gSelectedTile.y);
+    player->animation_frame = 0;
+    player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
   } else if (player->target_monster_id >= 0 &&
              get_distance(player_point, monster_point) <= spell.range) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               monster_point.x, monster_point.y);
     player->animation_frame = 0;
     player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
   } else if (player->target_monster_id >= 0 &&
              find_path(player_point,
                        find_nearest_node_to_monster(player->target_monster_id,
