@@ -35,4 +35,5 @@ Spell gSpells[SPELL_COUNT] = {{SPELL_BASE_ATTACK, "Attack",
                                2.0,
                                false,
                                {ANIM_NONE},
-                               {ANIM_NONE, PROJECTILE_PATH_STRAIGHT, 1.0}}};
+                               {ANIM_FIREBALL, PROJECTILE_PATH_STRAIGHT, 8.0},
+                               1}};

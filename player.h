@@ -8,6 +8,7 @@
 #include "input.h"
 #include "monster.h"
 #include "point.h"
+#include "projectile.h"
 #include "spell.h"
 #include "structs.h"
 #include "time.h"

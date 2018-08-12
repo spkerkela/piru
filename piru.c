@@ -17,6 +17,7 @@
 #include "piru_math.h"
 #include "player.h"
 #include "point.h"
+#include "projectile.h"
 #include "sdl2.h"
 #include "structs.h"
 #include "time.h"
@@ -321,6 +322,43 @@ void draw_floor() {
                  &fillRect);
 }
 
+void draw_projectiles() {
+  int i, x, y, off_x, off_y;
+
+  Point isometric_point, cartesian_point;
+  for (i = 0; i < projectile_count; i++) {
+    if (projectiles[i].active) {
+      x = (int)projectiles[i].x;
+      y = (int)projectiles[i].y;
+      if (x < max(gPlayer.world_x - CUTOFF_X, 0) ||
+          x >= min(gPlayer.world_x + CUTOFF_X, DUNGEON_SIZE) ||
+          y < max(gPlayer.world_y - CUTOFF_Y, 0) ||
+          y >= min(gPlayer.world_y + CUTOFF_Y, DUNGEON_SIZE)) {
+        continue;
+      }
+
+      cartesian_point.x = x - gPlayer.world_x;
+      cartesian_point.y = y - gPlayer.world_y;
+      isometric_point = cartesian_to_isometric(cartesian_point);
+      off_x = 32 * (projectiles[i].x - (double)x);
+      off_y = 16 * (projectiles[i].y - (double)y);
+      int current_frame = projectiles[i].animation_frame;
+      Animation animation = animations[projectiles[i].animation][0];
+      int width = animation.frames[current_frame].w;
+      int height = animation.frames[current_frame].h;
+      SDL_Rect fillRect = {
+          isometric_point.x + (SCREEN_WIDTH / 2) + animation.offset_x + off_x +
+              gPlayer.pixel_x - (width / 2),
+          isometric_point.y + (SCREEN_HEIGHT / 2) + animation.offset_y + off_y +
+              gPlayer.pixel_y - (height / 2),
+          width, height};
+      SDL_RenderCopy(gRenderer, animation.image.texture,
+                     &animation.frames[projectiles[i].animation_frame],
+                     &fillRect);
+    }
+  }
+}
+
 void draw_debug_path() {
   int i;
   Point draw_point;
@@ -422,6 +460,7 @@ void draw_and_blit() {
   SDL_RenderClear(gRenderer);
 
   draw_floor();
+  draw_projectiles();
   draw_walls();
   // draw_debug_path();
 
@@ -500,11 +539,34 @@ void update_ground_effect_animations() {
     }
   }
 }
+void update_spell_animations() {
+  int id;
+  for (id = 0; id < projectile_count; id++) {
+    if (!projectiles[id].active) {
 
+      projectiles[id].animation_frame = 0;
+      ground_effects[id].frames_since_animation_frame = 0;
+      continue;
+    }
+    projectiles[id].previous_animation_frame = projectiles[id].animation_frame;
+    if (projectiles[id].frames_since_animation_frame >=
+        projectiles[id].animation_interval) {
+      projectiles[id].frames_since_animation_frame = 0;
+      int animFrames = animations[projectiles[id].animation][0].columns;
+      projectiles[id].animation_frame++;
+      if (projectiles[id].animation_frame >= animFrames) {
+        projectiles[id].animation_frame = 0;
+      }
+    } else {
+      projectiles[id].frames_since_animation_frame += gClock.delta;
+    }
+  }
+}
 void update_animations() {
   update_player_animations();
   update_monster_animations();
   update_ground_effect_animations();
+  update_spell_animations();
 }
 
 void update_monsters() {
@@ -527,12 +589,32 @@ void update_damage_texts() {
   }
 }
 
+void update_projectiles() {
+  int i = 0;
+  int projectiles_to_update = projectile_count;
+  int updated = 0;
+  if (projectile_count > 0) {
+    puts("");
+  }
+  while (updated < projectiles_to_update) {
+    if (projectiles[i].active) {
+      update_projectile(i);
+      updated++;
+      i++;
+      if (projectiles_to_update > 2) {
+        puts("");
+      }
+    }
+  }
+}
+
 void game_loop() {
   if (!gGamePaused) {
     update_input();
     update_animations();
     update_player();
     update_monsters();
+    update_projectiles();
     update_damage_texts();
     // printf("%d, %d\n", gClock.delta, gClock.last_tick_time);
     gGameRunning = gGameRunning && gPlayer.hp > 0;

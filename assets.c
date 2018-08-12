@@ -132,6 +132,8 @@ bool load_assets() {
   ImageAsset wall1East = load_image_asset("assets/wall_1_east.png");
   ImageAsset wall1North = load_image_asset("assets/wall_1_north.png");
 
+  // spells
+  ImageAsset fireballSpriteSheet = load_image_asset("assets/fireball.png");
   // enemies
   ImageAsset selectionSpriteSheet =
       load_image_asset("assets/iso_selection.png");
@@ -186,5 +188,6 @@ bool load_assets() {
   load_animations(skeletonDeadSpriteSheet, 1, 8, ANIM_SKELETON_DEAD, -80, 0,
                   true);
   load_animations(quake, 5, 1, ANIM_EARTH_CRACK, 0, 0, true);
+  load_animations(fireballSpriteSheet, 8, 7, ANIM_FIREBALL, 0, 0, false);
   return true;
 }

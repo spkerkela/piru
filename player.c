@@ -69,8 +69,15 @@ void try_attack(Player *player) {
   } else {
     spell = player->no_mana_fallback_spell;
   }
-  if (spell.type == SPELL_TYPE_TARGET_AREA &&
-      get_distance(player_point, gSelectedTile) <= spell.range) {
+  if (spell.type == SPELL_TYPE_FIRE_PROJECTILE) {
+    player->direction = player_get_direction8(player->world_x, player->world_y,
+                                              gSelectedTile.x, gSelectedTile.y);
+    player->animation_frame = 0;
+    player->next_state_fn = attack;
+    player->mana -= spell.base_mana_cost;
+
+  } else if (spell.type == SPELL_TYPE_TARGET_AREA &&
+             get_distance(player_point, gSelectedTile) <= spell.range) {
     player->direction = player_get_direction8(player->world_x, player->world_y,
                                               gSelectedTile.x, gSelectedTile.y);
     player->animation_frame = 0;
@@ -260,6 +267,20 @@ void handle_target_player_position(Player *player) {
 
 void handle_target_area(Player *player) { handle_area(player, gSelectedTile); }
 
+void handle_fire_projectile(Player *player) {
+  Point player_point = get_player_point(player);
+  Point direction;
+  if (point_equal(player_point, gSelectedTile)) {
+    direction = get_direction_from_player_direction(player->direction);
+  } else {
+    direction = get_direction_to_point(player_point, gSelectedTile);
+  }
+  int i;
+  for (i = 0; i < player->active_spell.projectile_count; i++) {
+    create_projectile(player->active_spell.projectile, player_point, direction);
+  }
+}
+
 void attack(Player *player) {
   player->animation = ANIM_WARRIOR_ATTACK;
   player->state = PLAYER_ATTACKING;
@@ -272,6 +293,9 @@ void attack(Player *player) {
       spell = player->no_mana_fallback_spell;
     }
     switch (spell.type) {
+    case SPELL_TYPE_FIRE_PROJECTILE:
+      handle_fire_projectile(player);
+      break;
     case SPELL_TYPE_TARGET_ONE:
       handle_target_attack(player);
       break;

@@ -131,6 +131,7 @@ typedef struct {
 typedef struct {
   uint32_t last_tick_time;
   uint32_t delta;
+  float delta_seconds;
 } Clock;
 
 typedef struct {

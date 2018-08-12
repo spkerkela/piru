@@ -108,6 +108,9 @@ enum SPRITE {
   // ground animations
   EARTH_CRACK,
 
+  // spell effects
+  SPRITE_FIREBALL,
+
   // misc
   SPRITE_CURSOR,
   SPRITE_SELECTION,
@@ -128,6 +131,7 @@ enum ANIMATION {
   ANIM_SKELETON_ATTACK,
   ANIM_SKELETON_DEAD,
   ANIM_EARTH_CRACK,
+  ANIM_FIREBALL,
   MAX_ANIMATIONS
 };
 

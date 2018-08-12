@@ -118,3 +118,22 @@ Point get_direction_from_player_direction(enum PLAYER_DIRECTION direction) {
   }
   return point;
 }
+
+Point get_direction_to_point(const Point from, const Point to) {
+  Point ret;
+  ret.x = to.x - from.x;
+  ret.y = to.y - from.y;
+
+  return ret;
+}
+
+void get_normalized(const Point point, double *x, double *y) {
+  if (point.x == 0 && point.y == 0) {
+    *x = 0;
+    *y = 0;
+  }
+  double length =
+      sqrt((double)(point.x * point.x) + (double)(point.y * point.y));
+  *x = (double)point.x / length;
+  *y = (double)point.y / length;
+}
