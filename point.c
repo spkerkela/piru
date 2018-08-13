@@ -127,6 +127,22 @@ Point get_direction_to_point(const Point from, const Point to) {
   return ret;
 }
 
+void cartesian_to_isometric_float(double cartesian_x, double cartesian_y,
+                                  double *x, double *y) {
+  *x = (double)(cartesian_x - cartesian_y) * TILE_WIDTH_HALF;
+  *y = (double)(cartesian_x + cartesian_y) * TILE_HEIGHT_HALF;
+}
+
+void isometric_to_cartesian_float(const Point isometric_point, double *x,
+                                  double *y) {
+  *x = (((double)isometric_point.x / TILE_WIDTH_HALF) +
+        ((double)isometric_point.y / TILE_HEIGHT_HALF)) /
+       2.0;
+  *y = (((double)isometric_point.y / TILE_HEIGHT_HALF) -
+        ((double)isometric_point.x / TILE_WIDTH_HALF)) /
+       2.0;
+}
+
 void get_normalized(const Point point, double *x, double *y) {
   if (point.x == 0 && point.y == 0) {
     *x = 0;

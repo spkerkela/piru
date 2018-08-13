@@ -17,6 +17,10 @@ Point get_direction_from_player_direction(enum PLAYER_DIRECTION direction);
 
 Point get_direction_to_point(const Point from, const Point to);
 void get_normalized(const Point point, double *x, double *y);
+void cartesian_to_isometric_float(double cartesian_x, double cartesian_y,
+                                  double *x, double *y);
+void isometric_to_cartesian_float(const Point isometric_point, double *x,
+                                  double *y);
 
 double get_distance(const Point a, const Point b);
 

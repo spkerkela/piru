@@ -323,10 +323,10 @@ void draw_floor() {
 }
 
 void draw_projectiles() {
-  int i, x, y, off_x, off_y;
+  int i, x, y;
 
-  Point isometric_point, cartesian_point;
-  for (i = 0; i < projectile_count; i++) {
+  Point cartesian_point;
+  for (i = 0; i < MAX_PROJECTILES; i++) {
     if (projectiles[i].active) {
       x = (int)projectiles[i].x;
       y = (int)projectiles[i].y;
@@ -339,19 +339,19 @@ void draw_projectiles() {
 
       cartesian_point.x = x - gPlayer.world_x;
       cartesian_point.y = y - gPlayer.world_y;
-      isometric_point = cartesian_to_isometric(cartesian_point);
-      off_x = 32 * (projectiles[i].x - (double)x);
-      off_y = 16 * (projectiles[i].y - (double)y);
+      double d_x, d_y;
+      cartesian_to_isometric_float(projectiles[i].x - (double)gPlayer.world_x,
+                                   projectiles[i].y - (double)gPlayer.world_y,
+                                   &d_x, &d_y);
       int current_frame = projectiles[i].animation_frame;
       Animation animation = animations[projectiles[i].animation][0];
       int width = animation.frames[current_frame].w;
       int height = animation.frames[current_frame].h;
-      SDL_Rect fillRect = {
-          isometric_point.x + (SCREEN_WIDTH / 2) + animation.offset_x + off_x +
-              gPlayer.pixel_x - (width / 2),
-          isometric_point.y + (SCREEN_HEIGHT / 2) + animation.offset_y + off_y +
-              gPlayer.pixel_y - (height / 2),
-          width, height};
+      SDL_Rect fillRect = {(int)d_x + (SCREEN_WIDTH / 2) + animation.offset_x +
+                               gPlayer.pixel_x - (width / 2),
+                           (int)d_y + (SCREEN_HEIGHT / 2) + animation.offset_y +
+                               gPlayer.pixel_y - (height / 2),
+                           width, height};
       SDL_RenderCopy(gRenderer, animation.image.texture,
                      &animation.frames[projectiles[i].animation_frame],
                      &fillRect);
@@ -541,9 +541,8 @@ void update_ground_effect_animations() {
 }
 void update_spell_animations() {
   int id;
-  for (id = 0; id < projectile_count; id++) {
+  for (id = 0; id < MAX_PROJECTILES; id++) {
     if (!projectiles[id].active) {
-
       projectiles[id].animation_frame = 0;
       ground_effects[id].frames_since_animation_frame = 0;
       continue;
@@ -590,20 +589,10 @@ void update_damage_texts() {
 }
 
 void update_projectiles() {
-  int i = 0;
-  int projectiles_to_update = projectile_count;
-  int updated = 0;
-  if (projectile_count > 0) {
-    puts("");
-  }
-  while (updated < projectiles_to_update) {
+  int i;
+  for (i = 0; i < MAX_PROJECTILES; i++) {
     if (projectiles[i].active) {
       update_projectile(i);
-      updated++;
-      i++;
-      if (projectiles_to_update > 2) {
-        puts("");
-      }
     }
   }
 }
@@ -680,6 +669,7 @@ bool start_game(enum GAME_START_MODE start_mode) {
     create_monster(monster_point);
   }
   init_damage_text();
+  init_projectiles();
   run_game_loop(start_mode);
   free_image_assets();
   printf("Started game..\n");

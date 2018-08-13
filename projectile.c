@@ -2,6 +2,14 @@
 
 Projectile projectiles[MAX_PROJECTILES];
 int projectile_count = 0;
+
+void init_projectiles() {
+  projectile_count = 0;
+  memset(projectiles, 0, MAX_PROJECTILES - 1);
+}
+
+int get_projectile_count() { return projectile_count; }
+
 void create_projectile(Projectile projectile, Point at, Point target) {
   if (projectile_count < MAX_PROJECTILES) {
     projectile.active = true;
