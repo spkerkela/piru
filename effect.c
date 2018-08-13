@@ -5,7 +5,8 @@ void create_ground_effect(const Point at, GroundEffect effect) {
   if (!gDungeonBlockTable[at.y][at.x]) {
     int i;
     for (i = 0; i < MAX_GROUND_EFFECTS; i++) {
-      if (ground_effects[i].active) {
+      if (ground_effects[i].active && ground_effects[i].x != at.x &&
+          ground_effects[i].y && at.y) {
         continue;
       } else {
         effect.frames_since_animation_frame = 0;

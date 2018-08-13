@@ -44,6 +44,14 @@ void update_projectile(int i) {
   if (projectile_position.x < 0 || projectile_position.x >= DUNGEON_SIZE ||
       projectile_position.y < 0 || projectile_position.y >= DUNGEON_SIZE ||
       tile_is_blocked(projectile_position)) {
+    int target_id =
+        gDungeonMonsterTable[projectile_position.y][projectile_position.x];
+    if (target_id >= 0) {
+      Point monster_point = get_monster_point(target_id);
+      RGB_Color color = {255, 255, 0};
+      create_damage_text(monster_point, 10, color);
+      monsters[target_id].hp -= 10;
+    }
     projectiles[i].active = false;
     projectile_count--;
   }
