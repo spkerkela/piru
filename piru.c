@@ -325,7 +325,6 @@ void draw_floor() {
 void draw_projectiles() {
   int i, x, y;
 
-  Point cartesian_point;
   for (i = 0; i < MAX_PROJECTILES; i++) {
     if (projectiles[i].active) {
       x = (int)projectiles[i].x;
@@ -337,8 +336,6 @@ void draw_projectiles() {
         continue;
       }
 
-      cartesian_point.x = x - gPlayer.world_x;
-      cartesian_point.y = y - gPlayer.world_y;
       double d_x, d_y;
       cartesian_to_isometric_float(projectiles[i].x - (double)gPlayer.world_x,
                                    projectiles[i].y - (double)gPlayer.world_y,
