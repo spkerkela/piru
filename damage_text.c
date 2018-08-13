@@ -74,7 +74,8 @@ bool update_damage_text(int id) {
       int alpha = (int)(255 * (1 - (double)damage_text[id].frames_alive /
                                        (double)frames_to_show));
       damage_text[id].frames_alive += gClock.delta;
-      damage_text[id].y_offset -= 3;
+      damage_text[id].y_offset =
+          -(40 * (double)damage_text[id].frames_alive / (double)frames_to_show);
       SDL_SetTextureAlphaMod(damage_text[id].texture, alpha);
     } else {
       damage_text[id].alive = false;
