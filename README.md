@@ -4,12 +4,12 @@ An attempt to create an old-school ARPG in C.
 
 ## Dependencies
 
-Requires SDL2. On Windows uses MINGW, configure SDL paths in the Makefile.
+Requires SDL2, SDL2-mixer, SDL2-ttf, SDL2-image
 
 ## Building
 
 ```bash
-$ make
+$ scons
 ```
 
 ## Running
@@ -21,5 +21,5 @@ $ ./piru
 ## Cleanup
 
 ```bash
-$ make clean
+$ scons -c
 ```
