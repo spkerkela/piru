@@ -6,10 +6,10 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #else
-#include <SDL2/SDL.H>
-#include <SDL2/SDL_render.H>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_render.h"
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL_ttf.h"
 #endif
 #include "constants.h"
 #include <stdbool.h>
