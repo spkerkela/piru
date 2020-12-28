@@ -1,6 +1,9 @@
 #ifndef _DIRECTION_H
 #define _DIRECTION_H
 #include "enums.h"
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>

@@ -1,6 +1,6 @@
 #include "piru_math.h"
-int min(int a, int b) { return a > b ? b : a; }
-int max(int a, int b) { return a > b ? a : b; }
+int piru_min(int a, int b) { return a > b ? b : a; }
+int piru_max(int a, int b) { return a > b ? a : b; }
 
 // Assumes 0 <= max <= RAND_MAX
 // Returns in the closed interval [0, max]

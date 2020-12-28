@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-int min(int a, int b);
-int max(int a, int b);
+int piru_min(int a, int b);
+int piru_max(int a, int b);
 long random_at_most(long max);
 long random_between(long min, long max);
 
