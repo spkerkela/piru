@@ -69,17 +69,12 @@ static const char *test_random_at_most_zero(void) {
 }
 
 static const char *test_random_between_range(void) {
-    /*
-     * Note: random_between(min, max) uses random_at_most(max + 1 - min) + min,
-     * which produces values in [min, max+1] due to the +1 offset.
-     * This tests the actual behavior of the function.
-     */
     srand(42);
     int i;
     for (i = 0; i < 1000; i++) {
         long val = random_between(5, 15);
         mu_assert("random_between should return value >= min", val >= 5);
-        mu_assert("random_between should return value <= max+1", val <= 16);
+        mu_assert("random_between should return value <= max", val <= 15);
     }
     return NULL;
 }
@@ -90,20 +85,14 @@ static const char *test_random_between_negative_range(void) {
     for (i = 0; i < 1000; i++) {
         long val = random_between(-10, -5);
         mu_assert("random_between should handle negative min", val >= -10);
-        mu_assert("random_between should handle negative max", val <= -4);
+        mu_assert("random_between should handle negative max", val <= -5);
     }
     return NULL;
 }
 
 static const char *test_random_between_same_values(void) {
-    /*
-     * random_between(7, 7) calls random_at_most(7 + 1 - 7) = random_at_most(1),
-     * which returns 0 or 1, plus 7 = 7 or 8.
-     * This documents the off-by-one behavior in random_between.
-     */
     long val = random_between(7, 7);
-    mu_assert("random_between same values should return val >= min", val >= 7);
-    mu_assert("random_between same values should return val <= min+1", val <= 8);
+    mu_assert_int_eq(7, (int)val);
     return NULL;
 }
 

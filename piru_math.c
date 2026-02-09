@@ -23,5 +23,5 @@ long random_at_most(long max) {
 }
 
 long random_between(long min, long max) {
-  return random_at_most(max + 1 - min) + min;
+  return random_at_most(max - min) + min;
 }
